@@ -1224,6 +1224,42 @@
       box-shadow: inset 0 0 0 1.5px var(--accent);
     }
 
+    .chapter-cell-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.28rem;
+      width: 100%;
+    }
+
+    .chapter-cell-select {
+      flex: 1;
+      min-width: 0;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chapter-add-mini-btn {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.88rem;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chapter-add-mini-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
     .notion-checkbox {
       width: 18px;
       height: 18px;
@@ -1621,6 +1657,12 @@
             <button type="button" class="filter-pill" data-filter="incomplete">Incomplete</button>
             <button type="button" class="filter-pill" data-filter="completed">Completed</button>
           </div>
+          <select id="dbChapterFilterSelect" class="input-field" style="min-width: 170px; font-weight: 600;" title="Filter rows by chapter">
+            <option value="__all__">All Chapters</option>
+          </select>
+          <button type="button" class="btn" id="openChapterReportBtn" title="View days taken, total time, and progress for selected chapter">
+            📊 Chapter Report
+          </button>
           <input type="search" id="rowSearchInput" class="input-field" placeholder="Search chapter or topic..." />
         </div>
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;">
@@ -1644,9 +1686,14 @@
           <button type="button" class="btn" id="closeReportViewBtn">✕ Close Report</button>
           <span class="report-title">REPORT</span>
         </div>
-        <div class="date-selector-pill">
-          <span>📅 Base Date:</span>
-          <input type="date" id="reportBaseDateInput" class="input-field" style="min-height: 26px; padding: 0.15rem 0.4rem;" />
+        <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;">
+          <div class="date-selector-pill">
+            <span>📅 Base Date:</span>
+            <input type="date" id="reportBaseDateInput" class="input-field" style="min-height: 26px; padding: 0.15rem 0.4rem;" />
+          </div>
+          <button type="button" class="btn btn-danger" id="resetReportLogsBtn" title="Clear all recorded session logs to start fresh">
+            🗑 Reset Report Logs
+          </button>
         </div>
       </div>
 
@@ -1913,6 +1960,35 @@
     </div>
   </div>
 
+  <!-- QUICK ADD CHAPTER TO DROPDOWN MODAL -->
+  <div class="modal-backdrop hidden" id="quickAddChapterModal">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>➕ Add Chapter to Subject List</h3>
+        <button type="button" class="btn btn-icon" data-close-modal="quickAddChapterModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label for="quickNewChapterInput">New Chapter Name</label>
+        <input type="text" id="quickNewChapterInput" class="input-field" placeholder="e.g., Ionic Equilibrium, Rotational Motion..." />
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
+        <button type="button" class="btn" data-close-modal="quickAddChapterModal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmQuickAddChapterBtn">Add Chapter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERED CHAPTER ANALYTICS REPORT MODAL -->
+  <div class="modal-backdrop hidden" id="chapterAnalyticsModal">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 id="chapterAnalyticsTitle">📊 Chapter Progress Report</h3>
+        <button type="button" class="btn btn-icon" data-close-modal="chapterAnalyticsModal">✕</button>
+      </div>
+      <div id="chapterAnalyticsBody" style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.75rem;"></div>
+    </div>
+  </div>
+
   <div class="toast" id="toastBanner"></div>
 
   <script>
@@ -1990,14 +2066,50 @@
       let currentView = "gallery";
       let trackedDateStr = getLocalTodayStr();
       let rowFilter = "all";
+      let chapterFilter = "__all__";
       let searchQuery = "";
       let activeTimer = null;
       let cardOverlay = null;
       let editingColId = null;
+      let pendingChapterTargetRowId = null;
       let selectedNewSubjColor = "#2383e2";
 
       function getSubjectKeys() {
         return Object.keys(state?.databases || {});
+      }
+
+      function normalizeChapterKey(name) {
+        return String(name || "").trim().toLowerCase();
+      }
+
+      function getUniqueChaptersInDatabase(db) {
+        if (!db) return [];
+        const seen = new Set();
+        const uniqueList = [];
+        db.rows.forEach((r) => {
+          const title = String(getRowPrimaryTitle(db, r) || "").trim();
+          if (!title || title === "Untitled Chapter") return;
+          const norm = normalizeChapterKey(title);
+          if (!seen.has(norm)) {
+            seen.add(norm);
+            uniqueList.push(title);
+          }
+        });
+        return uniqueList;
+      }
+
+      function ensureSubjectChapterOptions(db) {
+        if (!db) return [];
+        if (!Array.isArray(db.chapterOptions)) db.chapterOptions = [];
+        const seen = new Set(db.chapterOptions.map((c) => normalizeChapterKey(c)));
+        db.rows.forEach((r) => {
+          const title = String(getRowPrimaryTitle(db, r) || "").trim();
+          if (title && title !== "Untitled Chapter" && !seen.has(normalizeChapterKey(title))) {
+            seen.add(normalizeChapterKey(title));
+            db.chapterOptions.push(title);
+          }
+        });
+        return db.chapterOptions;
       }
 
       /* ======================================================================
@@ -2086,6 +2198,7 @@
           note: noteText || "",
           color: color || "#2383e2",
           isCustom: true,
+          chapterOptions: [],
           sessionLogs: [],
           columns: [colTopic, colDate, colMins],
           rows: []
@@ -2135,6 +2248,7 @@
             note: noteText,
             color,
             isCustom: false,
+            chapterOptions: sampleRows.map((r) => r.topic),
             sessionLogs: [],
             columns,
             rows
@@ -2186,17 +2300,18 @@
          3. STORAGE & PREFERENCES
          ====================================================================== */
       function migrateWorkspaceDatabases(parsed) {
-        const legacyLogs = Array.isArray(parsed.studyLogs) ? parsed.studyLogs : [];
+        delete parsed.studyLogs;
         Object.keys(parsed.databases).forEach((k) => {
           const db = parsed.databases[k];
           if (!db.displayName) db.displayName = k;
           if (typeof db.note !== "string") db.note = "";
           if (!db.color) db.color = DEFAULT_COLORS[k] || "#2383e2";
           if (!Array.isArray(db.sessionLogs)) {
-            db.sessionLogs = legacyLogs.filter((l) => l.subject === k);
+            db.sessionLogs = [];
           }
           delete db.loggedSeconds;
           ensureDatabaseTimeStructures(db);
+          ensureSubjectChapterOptions(db);
           reconcileSubjectSessionLogs(db);
         });
       }
@@ -2320,8 +2435,9 @@
             if (r.cells[c.id]) done += 1;
           });
         });
+        const uniqueChapters = getUniqueChaptersInDatabase(db);
         return {
-          chapterCount: db.rows.length,
+          chapterCount: uniqueChapters.length,
           done,
           total,
           pct: total > 0 ? Math.round((done / total) * 100) : 0
@@ -2491,32 +2607,32 @@
           `;
         }
 
-        // Multiselect Track Time Popover with "Select All"
-        const availableRows = db.rows;
+        // Multiselect Track Time Popover with "Select All" (Deduplicated chapters)
+        const uniqueChapterNames = getUniqueChaptersInDatabase(db);
         const checkCols = db.columns.filter((c) => c.type === "checkbox");
 
         const selChCount = cardOverlay.selectedChapters.size;
         const chSummary = selChCount === 0
           ? "Select chapter(s)..."
-          : (selChCount === availableRows.length && availableRows.length > 0 ? `All ${selChCount} chapters selected` : `${selChCount} chapter(s) selected`);
+          : (selChCount === uniqueChapterNames.length && uniqueChapterNames.length > 0 ? `All ${selChCount} chapters selected` : `${selChCount} chapter(s) selected`);
 
         const selTaskCount = cardOverlay.selectedTasks.size;
         const taskSummary = selTaskCount === 0
           ? "Select task(s)..."
           : (selTaskCount === checkCols.length && checkCols.length > 0 ? `All ${selTaskCount} tasks selected` : `${selTaskCount} task(s) selected`);
 
-        const allChChecked = availableRows.length > 0 && selChCount === availableRows.length;
-        const chOptionsHtml = availableRows.length === 0
+        const allChChecked = uniqueChapterNames.length > 0 && selChCount === uniqueChapterNames.length;
+        const chOptionsHtml = uniqueChapterNames.length === 0
           ? `<div style="padding:0.35rem; font-size:0.74rem; color:var(--text-muted);">No chapters yet</div>`
           : `
             <label class="multiselect-option select-all-opt">
               <input type="checkbox" data-toggle-all-chapters="true" ${allChChecked ? "checked" : ""} />
               <span>Select All</span>
             </label>
-            ${availableRows.map((r) => `
+            ${uniqueChapterNames.map((chTitle) => `
               <label class="multiselect-option">
-                <input type="checkbox" data-toggle-chapter-opt="${escapeHtml(r.id)}" ${cardOverlay.selectedChapters.has(r.id) ? "checked" : ""} />
-                <span>${escapeHtml(getRowPrimaryTitle(db, r))}</span>
+                <input type="checkbox" data-toggle-chapter-opt="${escapeHtml(chTitle)}" ${cardOverlay.selectedChapters.has(chTitle) ? "checked" : ""} />
+                <span>${escapeHtml(chTitle)}</span>
               </label>
             `).join("")}
           `;
@@ -2585,9 +2701,15 @@
         let taskNames = [];
 
         if (cardOverlay && cardOverlay.subject === subj && cardOverlay.type === "track" && db) {
-          const matchedRows = db.rows.filter((r) => cardOverlay.selectedChapters.has(r.id));
-          chapterIds = matchedRows.map((r) => r.id);
-          chapterNames = matchedRows.map((r) => getRowPrimaryTitle(db, r));
+          chapterNames = Array.from(cardOverlay.selectedChapters);
+          const selectedNorms = new Set(chapterNames.map((n) => normalizeChapterKey(n)));
+          const todayMatchingRows = db.rows.filter(
+            (r) => selectedNorms.has(normalizeChapterKey(getRowPrimaryTitle(db, r))) && isRowScheduledForDate(db, r, todayStr)
+          );
+          const fallbackRows = todayMatchingRows.length > 0
+            ? todayMatchingRows
+            : db.rows.filter((r) => selectedNorms.has(normalizeChapterKey(getRowPrimaryTitle(db, r))));
+          chapterIds = fallbackRows.map((r) => r.id);
           taskNames = db.columns
             .filter((c) => c.type === "checkbox" && cardOverlay.selectedTasks.has(c.id))
             .map((c) => c.name);
@@ -2711,6 +2833,21 @@
         const titleEl = document.getElementById("activeDbTitle");
         if (titleEl) titleEl.textContent = `${db.displayName || state.activeSubject} Database`;
 
+        ensureSubjectChapterOptions(db);
+        const chapterFilterSelect = document.getElementById("dbChapterFilterSelect");
+        if (chapterFilterSelect) {
+          const allChList = ensureSubjectChapterOptions(db);
+          if (chapterFilter !== "__all__" && !allChList.some((c) => normalizeChapterKey(c) === normalizeChapterKey(chapterFilter))) {
+            chapterFilter = "__all__";
+          }
+          chapterFilterSelect.innerHTML = `
+            <option value="__all__" ${chapterFilter === "__all__" ? "selected" : ""}>All Chapters (${getUniqueChaptersInDatabase(db).length})</option>
+            ${allChList.map((ch) => `
+              <option value="${escapeHtml(ch)}" ${normalizeChapterKey(chapterFilter) === normalizeChapterKey(ch) ? "selected" : ""}>${escapeHtml(ch)}</option>
+            `).join("")}
+          `;
+        }
+
         const tabsEl = document.getElementById("dbSubjectTabs");
         if (tabsEl) {
           tabsEl.innerHTML = keys.map((k) => {
@@ -2750,6 +2887,10 @@
           const stats = getRowStats(db, row);
           if (rowFilter === "completed" && stats.pct < 100) return false;
           if (rowFilter === "incomplete" && stats.pct === 100 && stats.total > 0) return false;
+          if (chapterFilter !== "__all__") {
+            const rowCh = normalizeChapterKey(getRowPrimaryTitle(db, row));
+            if (rowCh !== normalizeChapterKey(chapterFilter)) return false;
+          }
           if (searchQuery.trim() !== "") {
             const q = searchQuery.toLowerCase();
             const textMatch = Object.values(row.cells).some((v) => String(v).toLowerCase().includes(q));
@@ -2769,10 +2910,30 @@
           return;
         }
 
+        const chapterList = ensureSubjectChapterOptions(db);
+
         tbody.innerHTML = filteredRows.map((row, rIdx) => {
           const stats = getRowStats(db, row);
           const cellsHtml = db.columns.map((col) => {
             const val = row.cells[col.id];
+            if (col.isPrimary) {
+              const currentCh = String(val || "").trim();
+              const opts = [
+                `<option value="">Select chapter...</option>`,
+                ...chapterList.map((ch) => `<option value="${escapeHtml(ch)}" ${normalizeChapterKey(currentCh) === normalizeChapterKey(ch) ? "selected" : ""}>${escapeHtml(ch)}</option>`)
+              ];
+              if (currentCh && !chapterList.some((c) => normalizeChapterKey(c) === normalizeChapterKey(currentCh))) {
+                opts.push(`<option value="${escapeHtml(currentCh)}" selected>${escapeHtml(currentCh)}</option>`);
+              }
+              return `
+                <td>
+                  <div class="chapter-cell-wrap">
+                    <select class="cell-input chapter-cell-select" data-cell-action="edit-value" data-col-id="${escapeHtml(col.id)}">${opts.join("")}</select>
+                    <button type="button" class="chapter-add-mini-btn" data-quick-add-chapter="${escapeHtml(row.id)}" title="Add new chapter to dropdown">+</button>
+                  </div>
+                </td>
+              `;
+            }
             if (col.type === "checkbox") {
               return `<td style="text-align:center;"><input type="checkbox" class="notion-checkbox" data-cell-action="toggle-check" data-col-id="${escapeHtml(col.id)}" ${val ? "checked" : ""} /></td>`;
             }
@@ -3296,6 +3457,22 @@
         document.getElementById("closeChallengeBoardBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
         document.getElementById("backToGalleryBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
 
+        document.getElementById("resetReportLogsBtn")?.addEventListener("click", () => {
+          getSubjectKeys().forEach((k) => {
+            const db = state.databases[k];
+            if (!db) return;
+            db.sessionLogs = [];
+            const minsCol = db.columns.find((c) => c.isStudyMinutesCol || c.name.toLowerCase() === "time (mins)");
+            if (minsCol) {
+              db.rows.forEach((r) => { r.cells[minsCol.id] = "0"; });
+            }
+          });
+          saveWorkspace();
+          renderReportCharts();
+          renderGalleryCards();
+          showToast("Reset all report logs to 0 — ready for fresh tracking!");
+        });
+
         // Gallery Card Interactions
         document.getElementById("subjectGalleryRow")?.addEventListener("click", (e) => {
           if (e.target.closest("#openAddSubjectCard")) {
@@ -3324,12 +3501,17 @@
             const subj = openTrackBtn.dataset.openTrackPopover;
             const db = state.databases[subj];
             if (!db) return;
-            const todayRows = db.rows.filter((r) => isRowScheduledForDate(db, r, trackedDateStr));
+            const todayUniqueChapters = Array.from(new Set(
+              db.rows
+                .filter((r) => isRowScheduledForDate(db, r, trackedDateStr))
+                .map((r) => String(getRowPrimaryTitle(db, r) || "").trim())
+                .filter((t) => t && t !== "Untitled Chapter")
+            ));
             const checkCols = db.columns.filter((c) => c.type === "checkbox");
             cardOverlay = {
               type: "track",
               subject: subj,
-              selectedChapters: new Set(todayRows.map((r) => r.id)),
+              selectedChapters: new Set(todayUniqueChapters),
               selectedTasks: new Set(checkCols.map((c) => c.id)),
               openDropdown: null
             };
@@ -3441,15 +3623,15 @@
 
           if (e.target.dataset.toggleAllChapters) {
             if (e.target.checked) {
-              cardOverlay.selectedChapters = new Set(db.rows.map((r) => r.id));
+              cardOverlay.selectedChapters = new Set(getUniqueChaptersInDatabase(db));
             } else {
               cardOverlay.selectedChapters.clear();
             }
             renderGalleryCards();
           } else if (e.target.dataset.toggleChapterOpt) {
-            const id = e.target.dataset.toggleChapterOpt;
-            if (e.target.checked) cardOverlay.selectedChapters.add(id);
-            else cardOverlay.selectedChapters.delete(id);
+            const chName = e.target.dataset.toggleChapterOpt;
+            if (e.target.checked) cardOverlay.selectedChapters.add(chName);
+            else cardOverlay.selectedChapters.delete(chName);
             renderGalleryCards();
           } else if (e.target.dataset.toggleAllTasks) {
             const checkCols = db.columns.filter((c) => c.type === "checkbox");
@@ -3495,7 +3677,97 @@
         // Database View Tabs, Filters, Rows & Columns
         document.getElementById("dbSubjectTabs")?.addEventListener("click", (e) => {
           const tab = e.target.closest("[data-switch-db-tab]");
-          if (tab) openSubjectDatabase(tab.dataset.switchDbTab);
+          if (tab) {
+            chapterFilter = "__all__";
+            openSubjectDatabase(tab.dataset.switchDbTab);
+          }
+        });
+
+        document.getElementById("dbChapterFilterSelect")?.addEventListener("change", (e) => {
+          chapterFilter = e.target.value || "__all__";
+          renderActiveDatabase();
+        });
+
+        document.getElementById("openChapterReportBtn")?.addEventListener("click", () => {
+          const db = state.databases[state.activeSubject];
+          if (!db) return;
+          const titleEl = document.getElementById("chapterAnalyticsTitle");
+          const bodyEl = document.getElementById("chapterAnalyticsBody");
+          if (!titleEl || !bodyEl) return;
+
+          const targetChapters = chapterFilter === "__all__"
+            ? getUniqueChaptersInDatabase(db)
+            : [chapterFilter];
+
+          titleEl.textContent = chapterFilter === "__all__"
+            ? `📊 ${db.displayName} — All Chapters Summary`
+            : `📊 Chapter Report: ${chapterFilter}`;
+
+          if (targetChapters.length === 0) {
+            bodyEl.innerHTML = `<div style="color:var(--text-muted);">No chapters recorded in this database yet.</div>`;
+            document.getElementById("chapterAnalyticsModal")?.classList.remove("hidden");
+            return;
+          }
+
+          const minsCol = db.columns.find((c) => c.isStudyMinutesCol || c.name.toLowerCase() === "time (mins)");
+          const dateCol = db.columns.find((c) => c.type === "date");
+          const checkCols = db.columns.filter((c) => c.type === "checkbox");
+
+          const cardsHtml = targetChapters.map((chName) => {
+            const normTarget = normalizeChapterKey(chName);
+            const matchingRows = db.rows.filter((r) => normalizeChapterKey(getRowPrimaryTitle(db, r)) === normTarget);
+            const distinctDates = new Set();
+            let totalRowMins = 0;
+
+            matchingRows.forEach((r) => {
+              if (dateCol && r.cells[dateCol.id]) distinctDates.add(r.cells[dateCol.id]);
+              if (minsCol) totalRowMins += Number(r.cells[minsCol.id]) || 0;
+            });
+
+            const matchingLogs = (db.sessionLogs || []).filter((l) =>
+              Array.isArray(l.chapters) && l.chapters.some((c) => normalizeChapterKey(c) === normTarget)
+            );
+            matchingLogs.forEach((l) => { if (l.date) distinctDates.add(l.date); });
+            const logSeconds = matchingLogs.reduce((s, l) => s + (Number(l.seconds) || 0), 0);
+            const totalSeconds = Math.max(logSeconds, totalRowMins * 60);
+
+            // Unique completed task checkboxes across all consecutive days for this chapter
+            let completedTasks = 0;
+            checkCols.forEach((col) => {
+              if (matchingRows.some((r) => Boolean(r.cells[col.id]))) completedTasks += 1;
+            });
+            const pct = checkCols.length > 0 ? Math.round((completedTasks / checkCols.length) * 100) : 0;
+
+            const daysList = Array.from(distinctDates).sort();
+            const daysText = daysList.length > 0
+              ? `${daysList.length} day(s) (${daysList.map(formatShortDate).join(", ")})`
+              : `${matchingRows.length} session row(s)`;
+
+            return `
+              <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:10px; padding:0.75rem 0.9rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; font-weight:800; font-size:0.92rem;">
+                  <span>${escapeHtml(chName)}</span>
+                  <span style="color:var(--accent);">${pct}% Done</span>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.45rem; margin-top:0.55rem; font-size:0.78rem;">
+                  <div style="background:var(--bg-elevated); padding:0.4rem 0.55rem; border-radius:6px; border:1px solid var(--border);">
+                    <div style="color:var(--text-secondary);">Days Taken</div>
+                    <strong>${escapeHtml(daysText)}</strong>
+                  </div>
+                  <div style="background:var(--bg-elevated); padding:0.4rem 0.55rem; border-radius:6px; border:1px solid var(--border);">
+                    <div style="color:var(--text-secondary);">Total Time Taken</div>
+                    <strong>${formatHHMMSS(totalSeconds)} (${Math.round(totalSeconds / 60)} mins)</strong>
+                  </div>
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.45rem;">
+                  Tasks Completed: <strong>${completedTasks}/${checkCols.length}</strong> (${checkCols.filter((c) => matchingRows.some((r) => Boolean(r.cells[c.id]))).map((c) => c.name).join(", ") || "None yet"})
+                </div>
+              </div>
+            `;
+          }).join("");
+
+          bodyEl.innerHTML = cardsHtml;
+          document.getElementById("chapterAnalyticsModal")?.classList.remove("hidden");
         });
 
         document.getElementById("rowFilterPills")?.addEventListener("click", (e) => {
@@ -3518,7 +3790,8 @@
           if (!db) return;
           const cells = {};
           db.columns.forEach((c) => {
-            if (c.type === "checkbox") cells[c.id] = false;
+            if (c.isPrimary) cells[c.id] = chapterFilter !== "__all__" ? chapterFilter : "";
+            else if (c.type === "checkbox") cells[c.id] = false;
             else if (c.type === "select") cells[c.id] = (c.options && c.options[0]) || "Not Started";
             else if (c.type === "date") cells[c.id] = trackedDateStr;
             else if (c.isStudyMinutesCol) cells[c.id] = "0";
@@ -3527,6 +3800,29 @@
           db.rows.push({ id: uid("row"), cells });
           saveWorkspace();
           renderActiveDatabase();
+        });
+
+        document.getElementById("confirmQuickAddChapterBtn")?.addEventListener("click", () => {
+          const db = state.databases[state.activeSubject];
+          const newCh = document.getElementById("quickNewChapterInput")?.value.trim();
+          if (!db || !newCh) {
+            showToast("Enter a chapter name");
+            return;
+          }
+          const list = ensureSubjectChapterOptions(db);
+          if (!list.some((c) => normalizeChapterKey(c) === normalizeChapterKey(newCh))) {
+            list.push(newCh);
+          }
+          if (pendingChapterTargetRowId) {
+            const row = db.rows.find((r) => r.id === pendingChapterTargetRowId);
+            const primaryCol = db.columns.find((c) => c.isPrimary) || db.columns[0];
+            if (row && primaryCol) row.cells[primaryCol.id] = newCh;
+          }
+          pendingChapterTargetRowId = null;
+          saveWorkspace();
+          document.getElementById("quickAddChapterModal")?.classList.add("hidden");
+          renderActiveDatabase();
+          showToast(`Added "${newCh}" to chapter dropdown`);
         });
 
         // Column Add / Edit Modal
@@ -3700,6 +3996,16 @@
         });
 
         document.getElementById("tableBody")?.addEventListener("click", (e) => {
+          const quickAddBtn = e.target.closest("[data-quick-add-chapter]");
+          if (quickAddBtn) {
+            pendingChapterTargetRowId = quickAddBtn.dataset.quickAddChapter;
+            const inp = document.getElementById("quickNewChapterInput");
+            if (inp) inp.value = "";
+            document.getElementById("quickAddChapterModal")?.classList.remove("hidden");
+            setTimeout(() => inp?.focus(), 50);
+            return;
+          }
+
           const btn = e.target.closest("[data-row-action]");
           if (!btn) return;
           const tr = btn.closest("tr[data-row-id]");
