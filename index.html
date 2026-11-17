@@ -672,38 +672,241 @@
 
     .card-running-timer-bar {
       width: 100%;
-      min-height: 36px;
+      min-height: 44px;
       border-radius: var(--radius-sm);
       background: var(--accent);
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.25rem 0.55rem;
+      padding: 0.35rem 0.65rem;
       font-variant-numeric: tabular-nums;
       font-weight: 800;
-      font-size: 0.86rem;
+      font-size: 1.05rem;
+      box-shadow: var(--shadow-sm);
     }
 
     .timer-mini-controls {
       display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.3rem;
     }
 
     .timer-mini-btn {
       border: none;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.22);
       color: #ffffff;
       border-radius: 6px;
-      padding: 0.2rem 0.45rem;
-      font-size: 0.72rem;
+      padding: 0.28rem 0.52rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
     }
 
     .timer-mini-btn:hover {
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    /* Bold Top Bar Running Timer Pill (Left of Sync Button) */
+    .topbar-running-timer {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 0.32rem 0.75rem;
+      font-size: 0.88rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+
+    .topbar-running-timer .tb-timer-subj {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      opacity: 0.92;
+      max-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topbar-running-timer .tb-timer-digits {
+      font-size: 0.96rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    .topbar-running-timer button {
+      border: none;
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 0.16rem 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .topbar-running-timer button:hover {
+      background: rgba(255, 255, 255, 0.38);
+    }
+
+    /* Color-Coded Status Select Pills in Database */
+    .status-select-pill {
+      font-weight: 700;
+      border-radius: 999px !important;
+      padding: 0.24rem 0.65rem !important;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .status-select-pill.status-not-started {
+      background: var(--bg-surface) !important;
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border) !important;
+    }
+
+    .status-select-pill.status-in-progress {
+      background: rgba(35, 131, 226, 0.14) !important;
+      color: #1b6ec2 !important;
+      border: 1px solid rgba(35, 131, 226, 0.3) !important;
+    }
+
+    .status-select-pill.status-done {
+      background: var(--success-bg) !important;
+      color: var(--success) !important;
+      border: 1px solid rgba(15, 123, 108, 0.3) !important;
+    }
+
+    .status-select-pill.status-high-yield {
+      background: var(--danger-bg) !important;
+      color: var(--danger) !important;
+      border: 1px solid rgba(224, 62, 62, 0.3) !important;
+    }
+
+    body.dark .status-select-pill.status-in-progress {
+      color: #6ab0f3 !important;
+    }
+
+    /* Workspace Appearance Drawer (Reference Style) */
+    .appearance-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(15, 15, 15, 0.35);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .appearance-drawer-backdrop.hidden {
+      display: none !important;
+    }
+
+    .appearance-drawer-card {
+      width: 100%;
+      max-width: 360px;
+      height: 100%;
+      overflow-y: auto;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .font-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.55rem;
+    }
+
+    .font-preview-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 0.15rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+    }
+
+    .font-preview-card:hover {
+      background: var(--bg-hover);
+    }
+
+    .font-preview-card.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .font-preview-card strong {
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .font-preview-card span {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+
+    .segmented-btn-row {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .segmented-btn-row.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .segmented-btn-row.cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .seg-choice-btn {
+      min-height: 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .seg-choice-btn:hover {
+      background: var(--bg-hover);
+    }
+
+    .seg-choice-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .accent-circle-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .accent-circle-btn.active {
+      box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--text-primary);
+      transform: scale(1.06);
     }
 
     /* Add Subject Dashed Card */
@@ -1349,6 +1552,14 @@
       <div class="topbar-actions">
         <button type="button" class="btn hidden-view" id="installPwaBtn">📲 Install App</button>
 
+        <div class="topbar-running-timer hidden-view" id="topbarRunningTimerPill" title="Active Study Session">
+          <span>⏱</span>
+          <span class="tb-timer-subj" id="tbTimerSubjLabel">PHYSICS</span>
+          <span class="tb-timer-digits" id="tbTimerDigitsLabel">00:00:00</span>
+          <button type="button" id="tbTimerPauseBtn" title="Pause / Resume">⏸</button>
+          <button type="button" id="tbTimerSaveBtn" title="Save Session">⏹</button>
+        </div>
+
         <div class="sync-split-group sync-state-idle" id="syncSplitGroup" title="One-click Anki-protocol Cloud Sync">
           <button type="button" class="btn sync-quick-btn" id="quickSyncBtn">
             <span class="sync-status-indicator"></span>
@@ -1485,21 +1696,19 @@
     <!-- 4. CHALLENGE BOARD VIEW -->
     <section id="challengeBoardView" class="hidden-view">
       <div class="challenge-header">
-        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
           <button type="button" class="btn" id="closeChallengeBoardBtn">← Back to Gallery</button>
-          <h2 style="font-size: 1.45rem; font-weight: 900; letter-spacing: 0.03em;">CHALLENGE BOARD</h2>
+          <h2 style="font-size: 1.4rem; font-weight: 900; letter-spacing: 0.02em;">CHALLENGE BOARD</h2>
         </div>
-
         <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
-          <span style="font-size: 0.74rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <span style="background:#f4717f; color:#111; padding:0.15rem 0.45rem; border-radius:4px;">&lt;3h</span>
-            <span style="background:#f5b87f; color:#111; padding:0.15rem 0.45rem; border-radius:4px;">3–8h</span>
-            <span style="background:#cbf5b3; color:#111; padding:0.15rem 0.45rem; border-radius:4px;">&gt;8h</span>
+          <span style="font-size: 0.75rem; color: var(--text-secondary);">
+            <strong style="color:#e03e3e;">■</strong> &lt;3h &nbsp;
+            <strong style="color:#d9730d;">■</strong> 3–8h &nbsp;
+            <strong style="color:#0f7b6c;">■</strong> &gt;8h
           </span>
-          <button type="button" class="btn" id="openChallengeConfigBtn">⚙️ Challenge Days</button>
+          <button type="button" class="btn btn-icon" id="openChallengeConfigBtn" title="Configure Challenge Days">⚙️</button>
         </div>
       </div>
-
       <div class="challenge-grid" id="challengeGridContainer"></div>
     </section>
   </main>
@@ -1508,16 +1717,16 @@
   <div class="modal-backdrop hidden" id="addSubjectModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Form New Subject Gallery Box</h3>
+        <h3>➕ Add New Subject Box</h3>
         <button type="button" class="btn btn-icon" data-close-modal="addSubjectModal">✕</button>
       </div>
       <div class="form-group">
         <label for="newSubjNameInput">Subject Name</label>
-        <input type="text" id="newSubjNameInput" class="input-field" placeholder="e.g., Organic Chemistry, Mock Tests..." />
+        <input type="text" id="newSubjNameInput" class="input-field" placeholder="e.g., Mock Tests, Organic Revision..." />
       </div>
       <div class="form-group">
-        <label for="newSubjNoteInput">Subtitle / Note (Optional)</label>
-        <input type="text" id="newSubjNoteInput" class="input-field" placeholder="e.g., Full Syllabus Test Series" />
+        <label for="newSubjNoteInput">Subtitle / Focus Note</label>
+        <input type="text" id="newSubjNoteInput" class="input-field" placeholder="e.g., Full Syllabus & Error Log" />
       </div>
       <div class="form-group">
         <label>Accent Color</label>
@@ -1525,7 +1734,78 @@
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
         <button type="button" class="btn" data-close-modal="addSubjectModal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="confirmCreateSubjectBtn">Create Blank Database</button>
+        <button type="button" class="btn btn-primary" id="confirmCreateSubjectBtn">Create Subject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL (WORKSPACE APPEARANCE DRAWER) -->
+  <div class="appearance-drawer-backdrop hidden" id="settingsModal">
+    <div class="appearance-drawer-card">
+      <div class="modal-header" style="margin-bottom: 0;">
+        <h3 style="display:flex; align-items:center; gap:0.45rem;">⚙️ Workspace Appearance</h3>
+        <button type="button" class="btn btn-icon" data-close-modal="settingsModal">✕</button>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Font Family</label>
+        <div class="font-card-grid" id="fontFamilyCardGrid">
+          <button type="button" class="font-preview-card" data-font-choice="Inter" style="font-family: 'Inter', sans-serif;">
+            <strong>Inter</strong>
+            <span>Default Sans</span>
+          </button>
+          <button type="button" class="font-preview-card" data-font-choice="Plus Jakarta Sans" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+            <strong>Jakarta</strong>
+            <span>Modern UI</span>
+          </button>
+          <button type="button" class="font-preview-card" data-font-choice="Poppins" style="font-family: 'Poppins', sans-serif;">
+            <strong>Poppins</strong>
+            <span>Geometric</span>
+          </button>
+          <button type="button" class="font-preview-card" data-font-choice="Lora" style="font-family: 'Lora', serif;">
+            <strong>Lora</strong>
+            <span>Notion Serif</span>
+          </button>
+          <button type="button" class="font-preview-card" data-font-choice="Merriweather" style="font-family: 'Merriweather', serif;">
+            <strong>Merriweather</strong>
+            <span>Editorial</span>
+          </button>
+          <button type="button" class="font-preview-card" data-font-choice="JetBrains Mono" style="font-family: 'JetBrains Mono', monospace;">
+            <strong>Mono</strong>
+            <span>Code Style</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Text Size</label>
+        <div class="segmented-btn-row cols-3" id="textSizeSegRow">
+          <button type="button" class="seg-choice-btn" data-size-choice="13px">Small</button>
+          <button type="button" class="seg-choice-btn" data-size-choice="14px">Default</button>
+          <button type="button" class="seg-choice-btn" data-size-choice="16px">Large</button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Page View Width</label>
+        <div class="segmented-btn-row cols-3" id="pageWidthSegRow">
+          <button type="button" class="seg-choice-btn" data-width-choice="960px">Compact</button>
+          <button type="button" class="seg-choice-btn" data-width-choice="1180px">Standard</button>
+          <button type="button" class="seg-choice-btn" data-width-choice="100%">Full Width</button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Color Theme</label>
+        <div class="segmented-btn-row cols-2" id="colorThemeSegRow">
+          <button type="button" class="seg-choice-btn" id="themeLightBtn" data-theme-choice="light">☀️ Light</button>
+          <button type="button" class="seg-choice-btn" id="themeDarkBtn" data-theme-choice="dark">🌙 Dark</button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Accent Color</label>
+        <div class="swatch-row" id="accentColorSwatches" style="gap: 0.6rem;"></div>
       </div>
     </div>
   </div>
@@ -1561,54 +1841,6 @@
           <button type="button" class="btn" data-close-modal="columnModal">Cancel</button>
           <button type="button" class="btn btn-primary" id="saveColumnBtn">Save Column</button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SETTINGS MODAL -->
-  <div class="modal-backdrop hidden" id="settingsModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>⚙️ Workspace & Appearance Settings</h3>
-        <button type="button" class="btn btn-icon" data-close-modal="settingsModal">✕</button>
-      </div>
-      <div class="form-group">
-        <label>Color Theme</label>
-        <div style="display: flex; gap: 0.5rem;">
-          <button type="button" class="btn" id="themeLightBtn" style="flex:1;">☀️ Light Mode</button>
-          <button type="button" class="btn" id="themeDarkBtn" style="flex:1;">🌙 Dark Mode</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="fontFamilySelect">Google Font Family</label>
-        <select id="fontFamilySelect" class="input-field">
-          <option value="Inter">Inter (Modern Sans)</option>
-          <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
-          <option value="Poppins">Poppins</option>
-          <option value="Lora">Lora (Notion Serif)</option>
-          <option value="Merriweather">Merriweather</option>
-          <option value="JetBrains Mono">JetBrains Mono</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="fontSizeSelect">Text Size</label>
-        <select id="fontSizeSelect" class="input-field">
-          <option value="13px">Small (Compact)</option>
-          <option value="14px">Default</option>
-          <option value="16px">Large (Comfortable)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="pageWidthSelect">Page View Width</label>
-        <select id="pageWidthSelect" class="input-field">
-          <option value="960px">Compact (960px)</option>
-          <option value="1180px">Standard (1180px)</option>
-          <option value="100%">Full Width</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Workspace Accent Color</label>
-        <div class="swatch-row" id="accentColorSwatches"></div>
       </div>
     </div>
   </div>
@@ -2062,9 +2294,7 @@
 
       function isRowScheduledForDate(db, row, dateStr) {
         const dateCols = db.columns.filter((c) => c.type === "date");
-        if (dateCols.length === 0) return true;
-        const hasAnyDate = dateCols.some((c) => Boolean(row.cells[c.id]));
-        if (!hasAnyDate) return true;
+        if (dateCols.length === 0) return false;
         return dateCols.some((c) => row.cells[c.id] === dateStr);
       }
 
@@ -2101,6 +2331,14 @@
       /* ======================================================================
          5. GALLERY VIEW & IN-CARD TIMER / MULTISELECT POPOVER
          ====================================================================== */
+      function validateTrackingDateIsToday() {
+        const pill = document.getElementById("trackingDatePill");
+        if (!pill) return true;
+        const isToday = trackedDateStr === getLocalTodayStr();
+        pill.classList.toggle("date-mismatch-error", !isToday);
+        return isToday;
+      }
+
       function updateDailyTotalHoursBadge() {
         const valEl = document.getElementById("dailyTotalHoursVal");
         if (!valEl) return;
@@ -2109,25 +2347,32 @@
           .filter((l) => l.date === trackedDateStr)
           .reduce((sum, l) => sum + (Number(l.seconds) || 0), 0);
         if (activeTimer && activeTimer.date === trackedDateStr) {
-          totalSec += Number(activeTimer.elapsedSeconds) || 0;
+          totalSec += activeTimer.elapsedSeconds;
         }
-        const hrs = totalSec / 3600;
-        valEl.textContent = hrs.toFixed(1);
+        valEl.textContent = (totalSec / 3600).toFixed(1);
       }
 
-      function validateTrackingDateIsToday() {
-        const todayStr = getLocalTodayStr();
-        const isToday = trackedDateStr === todayStr;
-        const pill = document.getElementById("trackingDatePill");
-        if (pill) {
-          pill.classList.toggle("date-mismatch-error", !isToday);
+      function updateTopbarRunningTimerUI() {
+        const pill = document.getElementById("topbarRunningTimerPill");
+        if (!pill) return;
+        if (!activeTimer) {
+          pill.classList.add("hidden-view");
+          return;
         }
-        return isToday;
+        pill.classList.remove("hidden-view");
+        const db = state?.databases?.[activeTimer.subject];
+        const subjEl = document.getElementById("tbTimerSubjLabel");
+        const digitsEl = document.getElementById("tbTimerDigitsLabel");
+        const pauseBtn = document.getElementById("tbTimerPauseBtn");
+        if (subjEl) subjEl.textContent = db?.displayName || activeTimer.subject;
+        if (digitsEl) digitsEl.textContent = formatHHMMSS(activeTimer.elapsedSeconds);
+        if (pauseBtn) pauseBtn.textContent = activeTimer.running ? "⏸" : "▶";
       }
 
       function renderGalleryCards() {
         validateTrackingDateIsToday();
         updateDailyTotalHoursBadge();
+        updateTopbarRunningTimerUI();
         const rowContainer = document.getElementById("subjectGalleryRow");
         if (!rowContainer) return;
 
@@ -2367,8 +2612,11 @@
         activeTimer.intervalId = setInterval(() => {
           if (!activeTimer || !activeTimer.running) return;
           activeTimer.elapsedSeconds += 1;
+          const formatted = formatHHMMSS(activeTimer.elapsedSeconds);
           const digitEl = document.getElementById(`liveTimerDigits-${activeTimer.subject}`);
-          if (digitEl) digitEl.textContent = formatHHMMSS(activeTimer.elapsedSeconds);
+          if (digitEl) digitEl.textContent = formatted;
+          const tbDigits = document.getElementById("tbTimerDigitsLabel");
+          if (tbDigits) tbDigits.textContent = formatted;
           const totalEl = document.getElementById(`cardTotalTime-${activeTimer.subject}`);
           if (totalEl) {
             const liveAdd = activeTimer.date === trackedDateStr ? activeTimer.elapsedSeconds : 0;
@@ -2422,6 +2670,7 @@
         }
 
         activeTimer = null;
+        updateTopbarRunningTimerUI();
         if (shouldRender) {
           renderGalleryCards();
           if (currentView === "database") renderActiveDatabase();
@@ -2528,10 +2777,17 @@
               return `<td style="text-align:center;"><input type="checkbox" class="notion-checkbox" data-cell-action="toggle-check" data-col-id="${escapeHtml(col.id)}" ${val ? "checked" : ""} /></td>`;
             }
             if (col.type === "select") {
-              const opts = (col.options || ["Not Started", "In Progress", "Done"]).map((o) =>
-                `<option value="${escapeHtml(o)}" ${val === o ? "selected" : ""}>${escapeHtml(o)}</option>`
+              const currentStatus = val || "Not Started";
+              const norm = currentStatus.toLowerCase();
+              let statusClass = "status-not-started";
+              if (norm.includes("progress")) statusClass = "status-in-progress";
+              else if (norm.includes("done") || norm.includes("complete")) statusClass = "status-done";
+              else if (norm.includes("high") || norm.includes("urgent") || norm.includes("priority")) statusClass = "status-high-yield";
+
+              const opts = (col.options || ["Not Started", "In Progress", "Done", "High Yield"]).map((o) =>
+                `<option value="${escapeHtml(o)}" ${currentStatus === o ? "selected" : ""}>${escapeHtml(o)}</option>`
               ).join("");
-              return `<td><select class="cell-input" data-cell-action="edit-value" data-col-id="${escapeHtml(col.id)}">${opts}</select></td>`;
+              return `<td><select class="cell-input status-select-pill ${statusClass}" data-cell-action="edit-value" data-col-id="${escapeHtml(col.id)}">${opts}</select></td>`;
             }
             const inputType = col.type === "number" ? "number" : (col.type === "date" ? "date" : "text");
             return `<td><input type="${inputType}" class="cell-input" data-cell-action="edit-value" data-col-id="${escapeHtml(col.id)}" value="${escapeHtml(val ?? "")}" /></td>`;
@@ -2539,7 +2795,7 @@
 
           return `
             <tr data-row-id="${escapeHtml(row.id)}" draggable="true" data-drag-row-idx="${rIdx}">
-              <td style="color:var(--text-muted); font-weight:700; cursor:grab;">⋮⋮ ${rIdx + 1}</td>
+              <td style="color:var(--text-muted); font-size:0.75rem; cursor:grab;">⋮⋮ ${rIdx + 1}</td>
               ${cellsHtml}
               <td>
                 <div class="row-progress-wrap">
@@ -2549,8 +2805,8 @@
               </td>
               <td>
                 <div style="display:flex; gap:0.25rem;">
-                  <button type="button" class="btn btn-icon" style="min-height:28px; padding:0.2rem 0.4rem;" data-row-action="duplicate" title="Duplicate row">⧉</button>
-                  <button type="button" class="btn btn-icon btn-danger" style="min-height:28px; padding:0.2rem 0.4rem;" data-row-action="delete" title="Delete row">✕</button>
+                  <button type="button" class="btn btn-icon" data-row-action="duplicate" title="Duplicate Row" style="min-height:28px; padding:0.2rem 0.4rem;">⧉</button>
+                  <button type="button" class="btn btn-icon btn-danger" data-row-action="delete" title="Delete Row" style="min-height:28px; padding:0.2rem 0.4rem;">✕</button>
                 </div>
               </td>
             </tr>
@@ -2559,25 +2815,24 @@
       }
 
       /* ======================================================================
-         7. REPORT ANALYTICS (TASKWISE & SUBJECTWISE)
+         7. REPORT CHARTS (TASKWISE & SUBJECTWISE)
          ====================================================================== */
-      function filterLogsByDateRange(logs, rangeType, baseDateStr, fromStr, toStr) {
-        const base = new Date(`${baseDateStr}T00:00:00`);
-        return logs.filter((entry) => {
-          if (!entry.date) return false;
-          if (rangeType === "today") return entry.date === baseDateStr;
-          const d = new Date(`${entry.date}T00:00:00`);
-          if (rangeType === "custom") {
-            if (fromStr && entry.date < fromStr) return false;
-            if (toStr && entry.date > toStr) return false;
+      function filterLogsByDateRange(logs, rangeType, baseDateStr, customFrom, customTo) {
+        if (rangeType === "100d") return logs;
+        if (rangeType === "today") {
+          return logs.filter((l) => l.date === baseDateStr);
+        }
+        if (rangeType === "custom") {
+          return logs.filter((l) => {
+            if (!l.date) return false;
+            if (customFrom && l.date < customFrom) return false;
+            if (customTo && l.date > customTo) return false;
             return true;
-          }
-          const diffDays = Math.floor((base - d) / 86400000);
-          if (rangeType === "7d") return diffDays >= 0 && diffDays < 7;
-          if (rangeType === "30d") return diffDays >= 0 && diffDays < 30;
-          if (rangeType === "100d") return diffDays >= 0 && diffDays < 100;
-          return true;
-        });
+          });
+        }
+        const daysBack = rangeType === "30d" ? 29 : 6;
+        const startStr = addDaysToIso(baseDateStr, -daysBack);
+        return logs.filter((l) => l.date && l.date >= startStr && l.date <= baseDateStr);
       }
 
       function renderBarChart(barsElId, labelsElId, items, defaultColor) {
@@ -3512,13 +3767,7 @@
         document.getElementById("subjectwiseFromDate")?.addEventListener("change", renderReportCharts);
         document.getElementById("subjectwiseToDate")?.addEventListener("change", renderReportCharts);
 
-        // Challenge Board Interactions
-        document.getElementById("challengeGridContainer")?.addEventListener("click", (e) => {
-          const cell = e.target.closest("[data-challenge-day]");
-          if (!cell) return;
-          openChallengeDayReport(Number(cell.dataset.challengeDay), cell.dataset.challengeDate);
-        });
-
+        // Challenge Board Config & Day Report Click
         document.getElementById("openChallengeConfigBtn")?.addEventListener("click", () => {
           const cfg = state.challengeConfig || { startDate: getLocalTodayStr(), totalDays: 100 };
           document.getElementById("challengeStartDateInput").value = cfg.startDate;
@@ -3537,42 +3786,102 @@
         });
 
         document.getElementById("saveChallengeConfigBtn")?.addEventListener("click", () => {
-          const start = document.getElementById("challengeStartDateInput")?.value || getLocalTodayStr();
-          const total = Math.min(365, Math.max(1, Number(document.getElementById("challengeTotalDaysInput")?.value) || 100));
-          state.challengeConfig = { startDate: start, totalDays: total };
+          const startDate = document.getElementById("challengeStartDateInput")?.value || getLocalTodayStr();
+          const totalDays = Math.min(365, Math.max(1, Number(document.getElementById("challengeTotalDaysInput")?.value) || 100));
+          state.challengeConfig = { startDate, totalDays };
           saveWorkspace();
           document.getElementById("challengeConfigModal")?.classList.add("hidden");
           renderChallengeBoard();
-          showToast(`Updated challenge to ${total} days`);
+          showToast(`Updated Challenge Board (${totalDays} days)`);
         });
 
-        // Settings Modal
-        document.getElementById("openSettingsBtn")?.addEventListener("click", () => {
-          document.getElementById("fontFamilySelect").value = prefs.fontFamily;
-          document.getElementById("fontSizeSelect").value = prefs.fontSize;
-          document.getElementById("pageWidthSelect").value = prefs.pageWidth;
+        document.getElementById("challengeGridContainer")?.addEventListener("click", (e) => {
+          const cell = e.target.closest("[data-challenge-day]");
+          if (!cell) return;
+          openChallengeDayReport(Number(cell.dataset.challengeDay), cell.dataset.challengeDate);
+        });
+
+        // Settings Modal (Workspace Appearance Drawer)
+        function syncAppearanceDrawerSelections() {
+          document.querySelectorAll("#fontFamilyCardGrid .font-preview-card").forEach((card) =>
+            card.classList.toggle("active", card.dataset.fontChoice === prefs.fontFamily)
+          );
+          document.querySelectorAll("#textSizeSegRow .seg-choice-btn").forEach((btn) =>
+            btn.classList.toggle("active", btn.dataset.sizeChoice === prefs.fontSize)
+          );
+          document.querySelectorAll("#pageWidthSegRow .seg-choice-btn").forEach((btn) =>
+            btn.classList.toggle("active", btn.dataset.widthChoice === prefs.pageWidth)
+          );
+          document.querySelectorAll("#colorThemeSegRow .seg-choice-btn").forEach((btn) =>
+            btn.classList.toggle("active", btn.dataset.themeChoice === prefs.theme)
+          );
           const swWrap = document.getElementById("accentColorSwatches");
           if (swWrap) {
-            swWrap.innerHTML = SWATCH_PALETTE.map((c) => `
-              <button type="button" class="swatch-btn ${prefs.accent === c ? "active" : ""}" style="background:${c};" data-pref-accent="${c}"></button>
+            const accentChoices = ["#2383e2", "#7c3aed", "#0f7b6c", "#e11d48", "#d9730d", "#0891b2"];
+            swWrap.innerHTML = accentChoices.map((c) => `
+              <button type="button" class="accent-circle-btn ${prefs.accent === c ? "active" : ""}" style="background:${c};" data-pref-accent="${c}"></button>
             `).join("");
           }
+        }
+
+        document.getElementById("openSettingsBtn")?.addEventListener("click", () => {
+          syncAppearanceDrawerSelections();
           document.getElementById("settingsModal")?.classList.remove("hidden");
         });
 
-        document.getElementById("themeLightBtn")?.addEventListener("click", () => { prefs.theme = "light"; saveAndApplyPrefs(); });
-        document.getElementById("themeDarkBtn")?.addEventListener("click", () => { prefs.theme = "dark"; saveAndApplyPrefs(); });
-        document.getElementById("fontFamilySelect")?.addEventListener("change", (e) => { prefs.fontFamily = e.target.value; saveAndApplyPrefs(); });
-        document.getElementById("fontSizeSelect")?.addEventListener("change", (e) => { prefs.fontSize = e.target.value; saveAndApplyPrefs(); });
-        document.getElementById("pageWidthSelect")?.addEventListener("change", (e) => { prefs.pageWidth = e.target.value; saveAndApplyPrefs(); });
+        document.getElementById("fontFamilyCardGrid")?.addEventListener("click", (e) => {
+          const card = e.target.closest("[data-font-choice]");
+          if (!card) return;
+          prefs.fontFamily = card.dataset.fontChoice;
+          saveAndApplyPrefs();
+          syncAppearanceDrawerSelections();
+        });
+
+        document.getElementById("textSizeSegRow")?.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-size-choice]");
+          if (!btn) return;
+          prefs.fontSize = btn.dataset.sizeChoice;
+          saveAndApplyPrefs();
+          syncAppearanceDrawerSelections();
+        });
+
+        document.getElementById("pageWidthSegRow")?.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-width-choice]");
+          if (!btn) return;
+          prefs.pageWidth = btn.dataset.widthChoice;
+          saveAndApplyPrefs();
+          syncAppearanceDrawerSelections();
+        });
+
+        document.getElementById("themeLightBtn")?.addEventListener("click", () => {
+          prefs.theme = "light";
+          saveAndApplyPrefs();
+          syncAppearanceDrawerSelections();
+        });
+
+        document.getElementById("themeDarkBtn")?.addEventListener("click", () => {
+          prefs.theme = "dark";
+          saveAndApplyPrefs();
+          syncAppearanceDrawerSelections();
+        });
+
         document.getElementById("accentColorSwatches")?.addEventListener("click", (e) => {
           const btn = e.target.closest("[data-pref-accent]");
           if (!btn) return;
           prefs.accent = btn.dataset.prefAccent;
           saveAndApplyPrefs();
-          document.querySelectorAll("#accentColorSwatches .swatch-btn").forEach((b) =>
-            b.classList.toggle("active", b.dataset.prefAccent === prefs.accent)
-          );
+          syncAppearanceDrawerSelections();
+        });
+
+        // Topbar Running Timer Controls
+        document.getElementById("tbTimerPauseBtn")?.addEventListener("click", () => {
+          if (!activeTimer) return;
+          activeTimer.running = !activeTimer.running;
+          renderGalleryCards();
+        });
+
+        document.getElementById("tbTimerSaveBtn")?.addEventListener("click", () => {
+          stopAndCommitInCardTimer(true);
         });
 
         // One-Click Cloud Sync & Details Modal
@@ -3681,7 +3990,7 @@ function doPost(e) {
           });
         });
 
-        document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
+        document.querySelectorAll(".modal-backdrop, .appearance-drawer-backdrop").forEach((backdrop) => {
           backdrop.addEventListener("click", (e) => {
             if (e.target === backdrop) backdrop.classList.add("hidden");
           });
