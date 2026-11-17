@@ -2,7 +2,12 @@
 <html lang="en" data-theme="light" data-text-size="medium" data-page-width="standard">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#2383e2" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="NEET 2027" />
+  <link id="pwaManifestLink" rel="manifest" />
   <title>NEET 2027 — 100-Day Study Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -222,33 +227,91 @@
       gap: 0.45rem;
     }
 
-    /* Red Notification Badge on Cloud Sync Button */
-    .sync-btn-wrap {
+    /* One-Click Color-Coded Sync Split Control */
+    .sync-split-group {
       position: relative;
       display: inline-flex;
+      align-items: stretch;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
     }
 
-    .sync-red-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 11px;
-      height: 11px;
+    .sync-quick-btn {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      font-weight: 700;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .sync-details-btn {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left: none;
+      padding: 0.38rem 0.48rem;
+      font-weight: 800;
+    }
+
+    /* Sync Color Codes: Idle (Neutral), Synced (Green), Syncing (Amber), Pending/CloudUpdate (Red) */
+    .sync-split-group.sync-state-synced .sync-quick-btn,
+    .sync-split-group.sync-state-synced .sync-details-btn {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #047857;
+    }
+    [data-theme="dark"] .sync-split-group.sync-state-synced .sync-quick-btn,
+    [data-theme="dark"] .sync-split-group.sync-state-synced .sync-details-btn {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #34d399;
+      color: #34d399;
+    }
+
+    .sync-split-group.sync-state-syncing .sync-quick-btn,
+    .sync-split-group.sync-state-syncing .sync-details-btn {
+      background: #fef3c7;
+      border-color: #f59e0b;
+      color: #b45309;
+    }
+    [data-theme="dark"] .sync-split-group.sync-state-syncing .sync-quick-btn,
+    [data-theme="dark"] .sync-split-group.sync-state-syncing .sync-details-btn {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: #fbbf24;
+      color: #fbbf24;
+    }
+
+    .sync-split-group.sync-state-pending .sync-quick-btn,
+    .sync-split-group.sync-state-pending .sync-details-btn {
+      background: #ffe4e6;
+      border-color: #ef4444;
+      color: #be123c;
+    }
+    [data-theme="dark"] .sync-split-group.sync-state-pending .sync-quick-btn,
+    [data-theme="dark"] .sync-split-group.sync-state-pending .sync-details-btn {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #fb7185;
+      color: #fb7185;
+    }
+
+    .sync-status-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: #ef4444;
-      border: 2px solid var(--bg-page);
-      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.28);
-      display: none;
-      animation: badgePulse 1.6s infinite;
+      background: #9ca3af;
+      display: inline-block;
     }
 
-    .sync-red-badge.visible {
-      display: block;
+    .sync-state-synced .sync-status-dot { background: #10b981; }
+    .sync-state-syncing .sync-status-dot {
+      background: #f59e0b;
+      animation: badgePulse 0.8s infinite;
+    }
+    .sync-state-pending .sync-status-dot {
+      background: #ef4444;
+      animation: badgePulse 1.4s infinite;
     }
 
     @keyframes badgePulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.18); }
+      50% { transform: scale(1.25); }
     }
 
     .sync-action-grid {
@@ -383,17 +446,6 @@
       margin-bottom: 1.25rem;
     }
 
-    .gallery-title {
-      font-size: 1.45rem;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-    }
-
-    .gallery-subtitle {
-      font-size: 0.84rem;
-      color: var(--text-secondary);
-    }
-
     .date-selector-pill {
       display: inline-flex;
       align-items: center;
@@ -452,21 +504,6 @@
     .subject-gallery-card:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
-      border-color: var(--accent-primary);
-    }
-
-    .subject-gallery-card.add-subject-card {
-      border: 2px dashed #60a5fa;
-      background: var(--bg-card);
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 0.65rem;
-      box-shadow: none;
-    }
-
-    .subject-gallery-card.add-subject-card:hover {
-      background: var(--bg-subtle);
       border-color: var(--accent-primary);
     }
 
@@ -566,7 +603,7 @@
       white-space: nowrap;
     }
 
-    /* Circular Progress Ring (Matches Sketch) */
+    /* Circular Progress Ring */
     .card-ring-center {
       display: flex;
       flex-direction: column;
@@ -638,7 +675,7 @@
     }
 
     /* ==========================================================================
-       REPORT VIEW (MATCHING SKETCH: TASKWISE & SUBJECTWISE BAR CHARTS)
+       REPORT VIEW (TASKWISE & SUBJECTWISE BAR CHARTS WITH DATE RANGE SELECTORS)
        ========================================================================== */
     .report-top-header {
       display: flex;
@@ -919,7 +956,7 @@
       z-index: 2;
     }
 
-    /* Color Rules: Red (<3h), Orange (4-7h / 3-8h), Green (>8h) */
+    /* Color Rules: Red (<3h), Orange (3-8h), Green (>8h) */
     .challenge-day-cell.day-red {
       background: #f46c7b;
       color: #111827;
@@ -1042,7 +1079,7 @@
     }
 
     /* ==========================================================================
-       IN-BOX OVERLAY POPOVER (MULTISELECT CHAPTER + TASK + CARD EDIT)
+       IN-BOX OVERLAY POPOVER (MULTISELECT CHAPTER + TASK + SELECT ALL)
        ========================================================================== */
     .card-overlay-popover {
       position: absolute;
@@ -1133,7 +1170,7 @@
       border: 1px solid var(--accent-primary);
       border-radius: var(--radius-sm);
       box-shadow: var(--shadow-md);
-      max-height: 118px;
+      max-height: 126px;
       overflow-y: auto;
       padding: 0.25rem;
       z-index: 25;
@@ -1156,6 +1193,14 @@
 
     .ms-option-row:hover {
       background: var(--bg-hover);
+    }
+
+    .ms-option-row.select-all-row {
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 2px;
+      padding-bottom: 0.32rem;
+      color: var(--accent-primary);
     }
 
     /* ==========================================================================
@@ -1709,7 +1754,7 @@
 </head>
 <body>
   <!-- ========================================================================
-       TOP HEADER WITH CENTER NEET 2027 COUNTDOWN & SETTINGS
+       TOP HEADER WITH CENTER NEET 2027 COUNTDOWN, ONE-CLICK SYNC & PWA INSTALL
        ======================================================================== -->
   <header class="topbar">
     <div class="brand-group">
@@ -1737,10 +1782,17 @@
     </div>
 
     <div class="topbar-actions">
-      <div class="sync-btn-wrap">
-        <button type="button" class="btn" id="openSyncModalBtn">☁️ Cloud Sync</button>
-        <span class="sync-red-badge" id="cloudSyncRedBadge" title="New update available on Cloud! Click to sync."></span>
+      <button type="button" class="btn btn-primary" id="pwaInstallBtn" style="display: none;" title="Install NEET 2027 Workspace on your phone">📲 Install App</button>
+
+      <!-- One-Click Color-Coded Sync Control + Details Trigger -->
+      <div class="sync-split-group" id="syncSplitGroup" title="Click Sync for instant cloud backup/merge • Click ⋮ for detailed sync status & setup">
+        <button type="button" class="btn sync-quick-btn" id="quickOneClickSyncBtn">
+          <span class="sync-status-dot" id="syncStatusDot"></span>
+          <span id="quickSyncLabel">☁️ Sync</span>
+        </button>
+        <button type="button" class="btn sync-details-btn" id="openSyncModalBtn" aria-label="Open Detailed Sync Status">⋮</button>
       </div>
+
       <button type="button" class="btn" id="openSettingsBtn">⚙️ Settings</button>
     </div>
   </header>
@@ -1764,7 +1816,7 @@
           </button>
         </div>
 
-        <div class="total-hours-badge" id="dailyTotalHoursBadge" title="Total hours studied on selected Tracking Date">
+        <div class="total-hours-badge" id="dailyTotalHoursBadge" title="Calculated from database session logs for selected Tracking Date">
           <span class="th-badge-label">TOTAL HOURS</span>
           <div class="th-badge-value-row">
             <span style="font-size: 1rem;">⏳</span>
@@ -1807,7 +1859,7 @@
     </section>
 
     <!-- ======================================================================
-         VIEW 1B: ANALYTICS REPORT VIEW (TASKWISE & SUBJECTWISE CHARTS)
+         VIEW 1B: ANALYTICS REPORT VIEW (TASKWISE & SUBJECTWISE BAR CHARTS)
          ====================================================================== -->
     <section id="reportAnalyticsView" class="view-hidden">
       <div class="report-top-header">
@@ -1843,15 +1895,22 @@
           <div id="taskwiseChartContainer"></div>
         </div>
 
-        <!-- Chart 2: SUBJECTWISE (Selectable Date) -->
+        <!-- Chart 2: SUBJECTWISE (Matching Date Range Selector) -->
         <div class="report-chart-panel">
           <h2 class="report-panel-title">SUBJECTWISE</h2>
           <div class="report-filter-bar">
-            <select id="subjectwiseDateModeSelect" class="input-field" style="font-weight: 600;">
-              <option value="selected">Selected Date</option>
-              <option value="all">All Time Total</option>
+            <select id="subjectwiseRangeSelect" class="input-field" style="font-weight: 600;">
+              <option value="today" selected>Today (Selected Date)</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="all">All 100 Days</option>
+              <option value="custom">Custom Date Range</option>
             </select>
-            <input type="date" id="subjectwiseDateInput" class="input-field" />
+            <div id="subjectwiseCustomRangeBox" style="display: none; gap: 0.35rem; align-items: center;">
+              <input type="date" id="subjectwiseStartInput" class="input-field" />
+              <span style="font-size: 0.75rem;">to</span>
+              <input type="date" id="subjectwiseEndInput" class="input-field" />
+            </div>
           </div>
           <div id="subjectwiseChartContainer"></div>
         </div>
@@ -1875,7 +1934,7 @@
 
       <div class="db-header-block">
         <h2 class="db-heading" id="activeDbHeading">Physics Syllabus Database</h2>
-        <p class="db-subtext" id="activeDbSubtext">Click + Add Column to add Checkbox, Text, Number, Select, or Date properties • Drag borders to resize • Drag ⋮⋮ to reorder.</p>
+        <p class="db-subtext" id="activeDbSubtext">Study timer sessions log automatically into this subject database • Drag borders to resize • Drag ⋮⋮ to reorder.</p>
       </div>
 
       <div class="db-toolbar">
@@ -2059,17 +2118,17 @@
   </div>
 
   <!-- ========================================================================
-       MODAL: ANKI-STYLE CLOUD SYNC & BACKUP (CLEAN LAYOUT + EMBEDDED SCRIPT)
+       MODAL: DETAILED CLOUD SYNC STATUS, GOOGLE SCRIPT & PWA GUIDE
        ======================================================================== -->
   <div class="modal-backdrop" id="syncModal">
     <div class="modal-card" style="max-width: 460px;">
       <div class="modal-head">
-        <h3 class="modal-title">☁️ Cross-Device Cloud Sync</h3>
+        <h3 class="modal-title">☁️ Detailed Cloud Sync &amp; Backup</h3>
         <button type="button" class="btn" id="closeSyncModalBtn">✕</button>
       </div>
 
       <div id="cloudUpdateAlertBanner" style="display: none; background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); padding: 0.5rem 0.7rem; border-radius: var(--radius-sm); font-size: 0.76rem; font-weight: 700; margin-bottom: 0.75rem;">
-        🔴 Newer study data is available on Cloud from another device! Click Sync Now to update.
+        🔴 Unsynced changes or newer Cloud update detected! Click Sync Now.
       </div>
 
       <div class="form-group" style="margin-bottom: 0.75rem;">
@@ -2077,7 +2136,6 @@
         <input type="url" id="appsScriptUrlInput" class="input-field" style="width: 100%;" placeholder="https://script.google.com/macros/s/.../exec" />
       </div>
 
-      <!-- Clean 2-Row Grid so buttons never overflow -->
       <div class="sync-action-grid">
         <button type="button" class="btn btn-primary full-span" id="ankiSmartSyncBtn" style="height: 38px; font-size: 0.85rem;">
           🔄 Sync Now (Save &amp; Merge)
@@ -2086,9 +2144,15 @@
         <button type="button" class="btn" id="pullCloudBtn" title="Overwrite This Device from Cloud">⬇ Pull from Cloud</button>
       </div>
 
-      <div id="syncMetaStatus" style="font-size: 0.72rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.45rem 0.65rem; border-radius: var(--radius-sm); margin-bottom: 0.75rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem;">
-        <span>Revision: <strong>#<span id="localUsnDisplay">1</span></strong> (Cloud: <strong>#<span id="cloudUsnDisplay">0</span></strong>)</span>
-        <span>Synced: <strong id="lastSyncDisplay">Never</strong></span>
+      <div id="syncMetaStatus" style="font-size: 0.72rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.5rem 0.65rem; border-radius: var(--radius-sm); margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span>Status: <strong id="detailedSyncStateLabel">Not Configured</strong></span>
+          <span>Local Rev: <strong>#<span id="localUsnDisplay">1</span></strong> • Cloud Rev: <strong>#<span id="cloudUsnDisplay">0</span></strong></span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span>Device ID: <strong id="deviceIdDisplay">—</strong></span>
+          <span>Last Synced: <strong id="lastSyncDisplay">Never</strong></span>
+        </div>
       </div>
 
       <!-- Built-in Google Apps Script Setup Accordion -->
@@ -2206,6 +2270,13 @@
           <button type="button" class="color-swatch" data-color="#0891b2" style="background: #0891b2;" title="Cyan"></button>
         </div>
       </div>
+
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.85rem; margin-top: 0.85rem;">
+        <label class="form-label">📱 Install as Mobile App (GitHub PWA)</label>
+        <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45;">
+          Host this file as <code>index.html</code> on <strong>GitHub Pages</strong> (HTTPS). Open the link on Android Chrome or iPhone Safari and tap <strong>Add to Home Screen</strong> (or the top <strong>Install App</strong> button).
+        </p>
+      </div>
     </aside>
   </div>
 
@@ -2219,6 +2290,81 @@
       "use strict";
 
       /* ======================================================================
+         0. PWA MANIFEST & SERVICE WORKER INITIALIZATION (FOR GITHUB PAGES)
+         ====================================================================== */
+      function initPwaSupport() {
+        try {
+          const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2383e2"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="800" font-size="210">N27</text></svg>`;
+          const iconDataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgIcon);
+
+          const manifestObj = {
+            name: "NEET 2027 — 100-Day Study Workspace",
+            short_name: "NEET 2027",
+            description: "Offline-first 100-day NEET 2027 syllabus database, study timer & cloud sync tracker.",
+            start_url: "./",
+            scope: "./",
+            display: "standalone",
+            orientation: "any",
+            background_color: "#ffffff",
+            theme_color: "#2383e2",
+            icons: [
+              { src: iconDataUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+              { src: iconDataUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+            ]
+          };
+
+          const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
+          const manifestLink = document.getElementById("pwaManifestLink");
+          if (manifestLink) manifestLink.href = URL.createObjectURL(manifestBlob);
+
+          if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost")) {
+            const swCode = `
+              const CACHE_NAME = 'neet-2027-pwa-v1';
+              self.addEventListener('install', (e) => {
+                self.skipWaiting();
+                e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(['./'])));
+              });
+              self.addEventListener('activate', (e) => {
+                e.waitUntil(self.clients.claim());
+              });
+              self.addEventListener('fetch', (e) => {
+                if (e.request.method !== 'GET' || e.request.url.includes('script.google.com')) return;
+                e.respondWith(
+                  fetch(e.request)
+                    .then((res) => {
+                      const copy = res.clone();
+                      caches.open(CACHE_NAME).then((c) => c.put(e.request, copy));
+                      return res;
+                    })
+                    .catch(() => caches.match(e.request))
+                );
+              });
+            `;
+            const swBlob = new Blob([swCode], { type: "application/javascript" });
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+          }
+
+          let deferredInstallPrompt = null;
+          const installBtn = document.getElementById("pwaInstallBtn");
+          window.addEventListener("beforeinstallprompt", (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            if (installBtn) installBtn.style.display = "inline-flex";
+          });
+
+          installBtn?.addEventListener("click", async () => {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            const choice = await deferredInstallPrompt.userChoice;
+            if (choice?.outcome === "accepted" && installBtn) {
+              installBtn.style.display = "none";
+            }
+            deferredInstallPrompt = null;
+          });
+        } catch (err) {}
+      }
+
+      /* ======================================================================
          1. CONSTANTS & WORKSPACE STATE
          ====================================================================== */
       const STORAGE_KEY = "neet_2027_notion_3db_v3";
@@ -2226,8 +2372,6 @@
       const EXAM_DATE_KEY = "neet_2027_exam_date_v2";
       const SCRIPT_URL_KEY = "neet_2027_apps_script_url_v2";
       const SYNC_META_KEY = "neet_2027_anki_sync_meta_v1";
-
-      const DEFAULT_SUBJECTS = ["Physics", "Chemistry", "Biology"];
 
       const DEFAULT_COLORS = {
         Physics: "#2563eb",
@@ -2261,15 +2405,10 @@
       let editingColId = null;
       let confirmActionFn = null;
 
-      /* In-Card Overlay State (Track Time Setup or Card Content Editor) */
       let cardOverlay = null;
-      /* { type: 'track' | 'edit', subject: string, selectedChapters: Set, selectedTasks: Set, openDropdown: 'chapters' | 'tasks' | null } */
-
-      /* Active Running Stopwatch Session (Replaces "Start time" button in card) */
       let activeTimer = null;
-      /* { subject: string, chapterNames: string[], taskNames: string[], elapsedSeconds: number, running: boolean, intervalId: number } */
 
-      /* Anki-Protocol Sync Metadata (Update Sequence Number & Device ID) */
+      /* Anki-Protocol Sync Metadata & Color-Coded Visual Indicator */
       let syncMeta = {
         deviceId: uid("dev"),
         localUsn: 1,
@@ -2290,49 +2429,84 @@
         } catch (err) {}
         const usnEl = document.getElementById("localUsnDisplay");
         const cloudUsnEl = document.getElementById("cloudUsnDisplay");
+        const devEl = document.getElementById("deviceIdDisplay");
         const timeEl = document.getElementById("lastSyncDisplay");
         if (usnEl) usnEl.textContent = String(syncMeta.localUsn);
         if (cloudUsnEl) cloudUsnEl.textContent = String(syncMeta.serverUsn || 0);
+        if (devEl) devEl.textContent = String(syncMeta.deviceId || "—");
         if (timeEl) timeEl.textContent = syncMeta.lastSyncedAt ? new Date(syncMeta.lastSyncedAt).toLocaleString() : "Never";
       }
 
-      function setCloudUpdateBadge(hasNewCloudData, remoteUsn = 0) {
-        const badge = document.getElementById("cloudSyncRedBadge");
+      /* Updates top-bar color code: 'idle' | 'syncing' | 'synced' | 'pending' */
+      function updateSyncVisualIndicator(visualState, detailMsg) {
+        const group = document.getElementById("syncSplitGroup");
+        const label = document.getElementById("quickSyncLabel");
+        const detailLabel = document.getElementById("detailedSyncStateLabel");
         const banner = document.getElementById("cloudUpdateAlertBanner");
-        if (remoteUsn > 0) {
-          syncMeta.serverUsn = remoteUsn;
-          saveSyncMeta();
+        if (!group) return;
+
+        group.classList.remove("sync-state-synced", "sync-state-syncing", "sync-state-pending");
+        if (visualState === "synced") {
+          group.classList.add("sync-state-synced");
+          if (label) label.textContent = "☁️ Synced";
+          if (detailLabel) detailLabel.textContent = detailMsg || "Synced (Green)";
+          if (banner) banner.style.display = "none";
+        } else if (visualState === "syncing") {
+          group.classList.add("sync-state-syncing");
+          if (label) label.textContent = "🔄 Syncing...";
+          if (detailLabel) detailLabel.textContent = detailMsg || "Syncing in progress (Amber)";
+        } else if (visualState === "pending") {
+          group.classList.add("sync-state-pending");
+          if (label) label.textContent = "☁️ Sync Needed";
+          if (detailLabel) detailLabel.textContent = detailMsg || "Changes need sync (Red)";
+          if (banner) banner.style.display = "block";
+        } else {
+          if (label) label.textContent = "☁️ Sync";
+          if (detailLabel) detailLabel.textContent = detailMsg || "Not configured";
+          if (banner) banner.style.display = "none";
         }
-        if (badge) badge.classList.toggle("visible", Boolean(hasNewCloudData));
-        if (banner) banner.style.display = hasNewCloudData ? "block" : "none";
       }
 
-      /* Background check on load & tab focus: shows red dot if another device pushed newer data */
       async function checkCloudSyncStatusSilently() {
         let url = "";
         try {
           url = localStorage.getItem(SCRIPT_URL_KEY) || "";
         } catch (err) {}
-        if (!url) return;
+        if (!url) {
+          updateSyncVisualIndicator("idle", "No Web App URL set");
+          return;
+        }
 
         try {
           const res = await fetch(`${url}?action=meta`);
           const meta = await res.json();
           const remoteUsn = Number(meta.usn) || 0;
+          syncMeta.serverUsn = remoteUsn;
+          saveSyncMeta();
+
           const isFromOtherDevice = meta.deviceId && meta.deviceId !== syncMeta.deviceId;
           if (remoteUsn > syncMeta.localUsn || (isFromOtherDevice && remoteUsn > syncMeta.serverUsn)) {
-            setCloudUpdateBadge(true, remoteUsn);
-          } else {
-            setCloudUpdateBadge(false, remoteUsn);
+            updateSyncVisualIndicator("pending", "Newer cloud data available");
+          } else if (syncMeta.localUsn > remoteUsn) {
+            updateSyncVisualIndicator("pending", "Local edits waiting to push");
+          } else if (remoteUsn > 0) {
+            updateSyncVisualIndicator("synced", "All devices up to date");
           }
         } catch (err) {
-          /* Silent background check ignores offline errors */
+          /* Keep existing visual state when offline */
         }
       }
 
       function bumpLocalUsn() {
         syncMeta.localUsn = (Number(syncMeta.localUsn) || 0) + 1;
         saveSyncMeta();
+        let hasUrl = false;
+        try {
+          hasUrl = Boolean(localStorage.getItem(SCRIPT_URL_KEY));
+        } catch (err) {}
+        if (hasUrl) {
+          updateSyncVisualIndicator("pending", "Local edits not yet synced");
+        }
       }
 
       function getSubjectColor(subjKey) {
@@ -2355,17 +2529,63 @@
           .replace(/>/g, "&gt;");
       }
 
-      /* Creates a completely blank raw editable database table for newly added subjects */
+      /* ======================================================================
+         2. DATABASE-BACKED STUDY TIME CALCULATION & LOGGING
+         ====================================================================== */
+      function ensureDatabaseTimeStructures(db) {
+        if (!Array.isArray(db.sessionLogs)) db.sessionLogs = [];
+        let minsCol = db.columns.find((c) => c.isStudyMinutesCol || c.name.toLowerCase() === "time (mins)");
+        if (!minsCol) {
+          minsCol = {
+            id: uid("col"),
+            name: "Time (mins)",
+            type: "number",
+            width: 96,
+            isStudyMinutesCol: true
+          };
+          db.columns.push(minsCol);
+          db.rows.forEach((r) => {
+            if (r.cells[minsCol.id] === undefined) r.cells[minsCol.id] = "0";
+          });
+        }
+        return minsCol;
+      }
+
+      /* Calculates total logged seconds for a subject directly from its database */
+      function getSubjectDatabaseSeconds(subjKey) {
+        const db = state?.databases?.[subjKey];
+        if (!db) return 0;
+        if (Array.isArray(db.sessionLogs)) {
+          return db.sessionLogs.reduce((sum, entry) => sum + (Number(entry.seconds) || 0), 0);
+        }
+        return Number(db.loggedSeconds) || 0;
+      }
+
+      /* Collects all session logs across all subject databases */
+      function getAllDatabaseSessionLogs() {
+        const allLogs = [];
+        getSubjectKeys().forEach((subjKey) => {
+          const db = state.databases[subjKey];
+          if (Array.isArray(db.sessionLogs)) {
+            db.sessionLogs.forEach((entry) => {
+              allLogs.push({ ...entry, subject: subjKey });
+            });
+          }
+        });
+        return allLogs;
+      }
+
       function createBlankRawDatabase(displayName, color, noteText) {
         const colTopic = { id: uid("col"), name: "Chapter / Topic", type: "text", width: 240, isPrimary: true };
         const colDate = { id: uid("col"), name: "Target Date", type: "date", width: 145 };
+        const colMins = { id: uid("col"), name: "Time (mins)", type: "number", width: 96, isStudyMinutesCol: true };
         return {
           displayName,
           note: noteText || "",
           color: color || "#2383e2",
           isCustom: true,
-          loggedSeconds: 0,
-          columns: [colTopic, colDate],
+          sessionLogs: [],
+          columns: [colTopic, colDate, colMins],
           rows: []
         };
       }
@@ -2373,7 +2593,7 @@
       function createDefaultWorkspace() {
         const today = trackedDateStr;
 
-        function makeDb(subj, color, defaultSeconds, noteText, sampleRows) {
+        function makeDb(subj, color, defaultLogs, noteText, sampleRows) {
           const colDay = { id: uid("col"), name: "Day", type: "number", width: 76 };
           const colTopic = { id: uid("col"), name: "Chapter / Topic", type: "text", width: 230, isPrimary: true };
           const colDate = { id: uid("col"), name: "Target Date", type: "date", width: 140 };
@@ -2382,6 +2602,7 @@
           const colNotes = { id: uid("col"), name: "Notes", type: "checkbox", width: 92 };
           const colMcq = { id: uid("col"), name: "MCQs", type: "checkbox", width: 92 };
           const colRev = { id: uid("col"), name: "Revise", type: "checkbox", width: 92 };
+          const colMins = { id: uid("col"), name: "Time (mins)", type: "number", width: 96, isStudyMinutesCol: true };
           const colStatus = {
             id: uid("col"),
             name: "Status",
@@ -2390,7 +2611,7 @@
             options: ["Not Started", "In Progress", "Done", "High Yield"]
           };
 
-          const columns = [colDay, colTopic, colDate, colLec, colNcert, colNotes, colMcq, colRev, colStatus];
+          const columns = [colDay, colTopic, colDate, colLec, colNcert, colNotes, colMcq, colRev, colMins, colStatus];
           const rows = sampleRows.map((r, i) => ({
             id: uid("row"),
             cells: {
@@ -2402,6 +2623,7 @@
               [colNotes.id]: Boolean(r.notes),
               [colMcq.id]: Boolean(r.mcq),
               [colRev.id]: Boolean(r.rev),
+              [colMins.id]: String(r.mins || 0),
               [colStatus.id]: r.status || "Not Started"
             }
           }));
@@ -2411,7 +2633,7 @@
             note: noteText,
             color,
             isCustom: false,
-            loggedSeconds: defaultSeconds,
+            sessionLogs: defaultLogs,
             columns,
             rows
           };
@@ -2423,51 +2645,82 @@
             startDate: today,
             totalDays: 100
           },
-          studyLogs: [
-            { id: uid("log"), date: today, subject: "Physics", chapters: ["Units & Measurements"], tasks: ["Lecture", "NCERT", "Notes"], seconds: 3600 },
-            { id: uid("log"), date: today, subject: "Chemistry", chapters: ["Some Basic Concepts of Chemistry"], tasks: ["Lecture", "MCQs"], seconds: 1800 }
-          ],
           databases: {
-            Physics: makeDb("Physics", DEFAULT_COLORS.Physics, 6300, "Mechanics & Electrodynamics", [
-              { topic: "Units & Measurements", date: today, lec: true, ncert: true, notes: true, mcq: false, rev: false, status: "In Progress" },
-              { topic: "Motion in a Straight Line", date: today, lec: true, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-              { topic: "Laws of Motion", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "High Yield" }
-            ]),
-            Chemistry: makeDb("Chemistry", DEFAULT_COLORS.Chemistry, 3600, "Physical, Organic & Inorganic", [
-              { topic: "Some Basic Concepts of Chemistry", date: today, lec: true, ncert: true, notes: false, mcq: false, rev: false, status: "In Progress" },
-              { topic: "Structure of Atom", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-              { topic: "Chemical Bonding", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "High Yield" }
-            ]),
-            Biology: makeDb("Biology", DEFAULT_COLORS.Biology, 5400, "NCERT Line-by-Line & Diagrams", [
-              { topic: "The Living World", date: today, lec: true, ncert: true, notes: true, mcq: true, rev: true, status: "Done" },
-              { topic: "Biological Classification", date: today, lec: true, ncert: true, notes: false, mcq: false, rev: false, status: "In Progress" },
-              { topic: "Cell: The Unit of Life", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "High Yield" }
-            ])
+            Physics: makeDb(
+              "Physics",
+              DEFAULT_COLORS.Physics,
+              [{ id: uid("log"), date: today, chapterIds: [], chapters: ["Units & Measurements"], tasks: ["Lecture", "NCERT", "Notes"], seconds: 3600 }],
+              "Mechanics & Electrodynamics",
+              [
+                { topic: "Units & Measurements", date: today, lec: true, ncert: true, notes: true, mcq: false, rev: false, mins: 60, status: "In Progress" },
+                { topic: "Motion in a Straight Line", date: today, lec: true, ncert: false, notes: false, mcq: false, rev: false, mins: 0, status: "Not Started" },
+                { topic: "Laws of Motion", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, mins: 0, status: "High Yield" }
+              ]
+            ),
+            Chemistry: makeDb(
+              "Chemistry",
+              DEFAULT_COLORS.Chemistry,
+              [{ id: uid("log"), date: today, chapterIds: [], chapters: ["Some Basic Concepts of Chemistry"], tasks: ["Lecture", "MCQs"], seconds: 1800 }],
+              "Physical, Organic & Inorganic",
+              [
+                { topic: "Some Basic Concepts of Chemistry", date: today, lec: true, ncert: true, notes: false, mcq: false, rev: false, mins: 30, status: "In Progress" },
+                { topic: "Structure of Atom", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, mins: 0, status: "Not Started" },
+                { topic: "Chemical Bonding", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, mins: 0, status: "High Yield" }
+              ]
+            ),
+            Biology: makeDb(
+              "Biology",
+              DEFAULT_COLORS.Biology,
+              [{ id: uid("log"), date: today, chapterIds: [], chapters: ["The Living World"], tasks: ["Lecture", "NCERT", "Notes", "MCQs", "Revise"], seconds: 5400 }],
+              "NCERT Line-by-Line & Diagrams",
+              [
+                { topic: "The Living World", date: today, lec: true, ncert: true, notes: true, mcq: true, rev: true, mins: 90, status: "Done" },
+                { topic: "Biological Classification", date: today, lec: true, ncert: true, notes: false, mcq: false, rev: false, mins: 0, status: "In Progress" },
+                { topic: "Cell: The Unit of Life", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, mins: 0, status: "High Yield" }
+              ]
+            )
           }
         };
       }
 
       /* ======================================================================
-         2. STORAGE & PREFERENCES
+         3. STORAGE & PREFERENCES
          ====================================================================== */
+      function migrateWorkspaceDatabases(parsed) {
+        const legacyLogs = Array.isArray(parsed.studyLogs) ? parsed.studyLogs : [];
+        Object.keys(parsed.databases).forEach((k) => {
+          const db = parsed.databases[k];
+          if (!db.displayName) db.displayName = k;
+          if (typeof db.note !== "string") db.note = "";
+          if (!db.color) db.color = DEFAULT_COLORS[k] || "#2383e2";
+          if (!Array.isArray(db.sessionLogs)) {
+            db.sessionLogs = legacyLogs.filter((l) => l.subject === k);
+            if (db.sessionLogs.length === 0 && Number(db.loggedSeconds) > 0) {
+              db.sessionLogs.push({
+                id: uid("log"),
+                date: trackedDateStr,
+                chapterIds: [],
+                chapters: [],
+                tasks: ["General Study"],
+                seconds: Number(db.loggedSeconds)
+              });
+            }
+          }
+          ensureDatabaseTimeStructures(db);
+        });
+      }
+
       function loadWorkspace() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
             if (parsed?.databases && Object.keys(parsed.databases).length > 0) {
-              Object.keys(parsed.databases).forEach((k) => {
-                const db = parsed.databases[k];
-                if (typeof db.loggedSeconds !== "number") db.loggedSeconds = 0;
-                if (!db.displayName) db.displayName = k;
-                if (typeof db.note !== "string") db.note = "";
-                if (!db.color) db.color = DEFAULT_COLORS[k] || "#2383e2";
-              });
+              migrateWorkspaceDatabases(parsed);
               state = parsed;
               if (!state.databases[state.activeSubject]) {
                 state.activeSubject = Object.keys(state.databases)[0];
               }
-              if (!Array.isArray(state.studyLogs)) state.studyLogs = [];
               if (!state.challengeConfig) {
                 state.challengeConfig = { startDate: trackedDateStr, totalDays: 100 };
               }
@@ -2507,6 +2760,7 @@
         } catch (err) {}
         applyAllPrefs();
       }
+
       function savePrefs(incrementUsn = true) {
         try {
           localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
@@ -2540,7 +2794,7 @@
       }
 
       /* ======================================================================
-         3. ANALYTICS, FORMATTING & NEET 2027 COUNTDOWN
+         4. ANALYTICS, FORMATTING & NEET 2027 COUNTDOWN
          ====================================================================== */
       function formatHHMMSS(totalSeconds) {
         const sec = Math.max(0, Math.floor(Number(totalSeconds) || 0));
@@ -2594,6 +2848,7 @@
             savedExamDate = inputEl.value;
             try {
               localStorage.setItem(EXAM_DATE_KEY, savedExamDate);
+              bumpLocalUsn();
             } catch (err) {}
             tickCountdown();
           }
@@ -2616,10 +2871,11 @@
         setInterval(tickCountdown, 1000);
       }
 
+      /* Calculates daily Total Hours directly from all subject database sessionLogs */
       function updateDailyTotalHoursBadge() {
         const valEl = document.getElementById("dailyTotalHoursVal");
         if (!valEl) return;
-        const logs = Array.isArray(state?.studyLogs) ? state.studyLogs : [];
+        const logs = getAllDatabaseSessionLogs();
         let totalSec = logs
           .filter((l) => l.date === trackedDateStr)
           .reduce((sum, l) => sum + (Number(l.seconds) || 0), 0);
@@ -2661,6 +2917,7 @@
 
             const isRunningThis = activeTimer && activeTimer.subject === subj;
             const overlayHtml = buildCardOverlayHtml(subj, db);
+            const totalDbSeconds = getSubjectDatabaseSeconds(subj) + (isRunningThis ? activeTimer.elapsedSeconds : 0);
 
             let middleStatusLine = escapeHtml(db.note || `${todayDoneTasks}/${todayTotalTasks} tasks done today`);
             if (isRunningThis) {
@@ -2675,7 +2932,7 @@
                   <span class="live-clock-digits" id="inCardLiveClock-${escapeHtml(subj)}">${formatHHMMSS(activeTimer.elapsedSeconds)}</span>
                   <div class="live-mini-controls">
                     <button type="button" class="mini-timer-btn" data-timer-action="toggle-pause" title="Pause or Resume">${activeTimer.running ? "⏸" : "▶"}</button>
-                    <button type="button" class="mini-timer-btn stop" data-timer-action="stop-save" title="Stop and add to Total time">⏹ Save</button>
+                    <button type="button" class="mini-timer-btn stop" data-timer-action="stop-save" title="Stop and log session into database">⏹ Save</button>
                   </div>
                 </div>
               `
@@ -2715,7 +2972,7 @@
 
                 <div class="card-bottom-area">
                   <div class="total-time-label">
-                    Total time : <span id="cardTotalTime-${escapeHtml(subj)}">${formatHHMMSS(db.loggedSeconds || 0)}</span>
+                    Total time : <span id="cardTotalTime-${escapeHtml(subj)}">${formatHHMMSS(totalDbSeconds)}</span>
                   </div>
                   ${bottomButtonHtml}
                 </div>
@@ -2737,7 +2994,7 @@
         rowContainer.innerHTML = cardsHtml + addCardHtml;
       }
 
-      /* Builds either the Multiselect Track Time Popover or the In-Box Content Editor */
+      /* Builds Multiselect Track Time Popover (with Select All) or In-Box Content Editor */
       function buildCardOverlayHtml(subj, db) {
         if (!cardOverlay || cardOverlay.subject !== subj) return "";
 
@@ -2772,7 +3029,7 @@
                   <label class="ms-label">Accent Color</label>
                   <div style="display: flex; gap: 0.35rem; align-items: center; justify-content: space-between;">
                     <div style="display: flex; gap: 0.3rem;">${swatchesHtml}</div>
-                    <button type="button" class="mini-timer-btn" data-reset-card-time="${escapeHtml(subj)}" title="Reset logged time to 00:00:00">Reset 00:00</button>
+                    <button type="button" class="mini-timer-btn" data-reset-card-time="${escapeHtml(subj)}" title="Clear database session logs to 00:00:00">Reset 00:00</button>
                   </div>
                 </div>
               </div>
@@ -2788,6 +3045,9 @@
         if (cardOverlay.type === "track") {
           const allRows = db.rows;
           const checkCols = db.columns.filter((c) => c.type === "checkbox");
+
+          const allChaptersSelected = allRows.length > 0 && allRows.every((r) => cardOverlay.selectedChapters.has(r.id));
+          const allTasksSelected = checkCols.length > 0 && checkCols.every((c) => cardOverlay.selectedTasks.has(c.id));
 
           const selectedChCount = cardOverlay.selectedChapters.size;
           const chSummary =
@@ -2808,7 +3068,13 @@
           const chapterOptionsHtml =
             allRows.length === 0
               ? `<div style="padding: 0.35rem; font-size: 0.72rem; color: var(--text-muted);">No chapters in database yet</div>`
-              : allRows
+              : `
+                <label class="ms-option-row select-all-row">
+                  <input type="checkbox" class="notion-check" style="width: 14px; height: 14px;" data-toggle-ms-all-chapters="true" ${allChaptersSelected ? "checked" : ""} />
+                  <span>Select All (${allRows.length})</span>
+                </label>
+              ` +
+                allRows
                   .map(
                     (r) => `
                     <label class="ms-option-row">
@@ -2822,7 +3088,13 @@
           const taskOptionsHtml =
             checkCols.length === 0
               ? `<div style="padding: 0.35rem; font-size: 0.72rem; color: var(--text-muted);">No checkbox task columns yet</div>`
-              : checkCols
+              : `
+                <label class="ms-option-row select-all-row">
+                  <input type="checkbox" class="notion-check" style="width: 14px; height: 14px;" data-toggle-ms-all-tasks="true" ${allTasksSelected ? "checked" : ""} />
+                  <span>Select All (${checkCols.length})</span>
+                </label>
+              ` +
+                checkCols
                   .map(
                     (c) => `
                     <label class="ms-option-row">
@@ -2841,7 +3113,7 @@
                   <button type="button" class="pop-close-btn" data-close-overlay="true">✕</button>
                 </div>
 
-                <!-- Multiselect Dropdown 1: Chapter Name -->
+                <!-- Multiselect Dropdown 1: Chapter Name + Select All -->
                 <div class="ms-dropdown-group">
                   <span class="ms-label">Chapter Name (Multiselect)</span>
                   <button type="button" class="ms-trigger" data-toggle-ms-menu="chapters">
@@ -2853,7 +3125,7 @@
                   </div>
                 </div>
 
-                <!-- Multiselect Dropdown 2: Task -->
+                <!-- Multiselect Dropdown 2: Task + Select All -->
                 <div class="ms-dropdown-group">
                   <span class="ms-label">Task (Multiselect)</span>
                   <button type="button" class="ms-trigger" data-toggle-ms-menu="tasks">
@@ -2877,17 +3149,18 @@
       }
 
       /* ======================================================================
-         5. ACTIVE IN-CARD STOPWATCH ENGINE
+         5. ACTIVE IN-CARD STOPWATCH ENGINE (LOGS INTO SUBJECT DATABASE)
          ====================================================================== */
       function startInCardTimer(subj) {
         const db = state.databases[subj];
+        let chapterIds = [];
         let chapterNames = [];
         let taskNames = [];
 
         if (cardOverlay && cardOverlay.subject === subj && cardOverlay.type === "track" && db) {
-          chapterNames = db.rows
-            .filter((r) => cardOverlay.selectedChapters.has(r.id))
-            .map((r) => getRowPrimaryTitle(db, r));
+          const matchedRows = db.rows.filter((r) => cardOverlay.selectedChapters.has(r.id));
+          chapterIds = matchedRows.map((r) => r.id);
+          chapterNames = matchedRows.map((r) => getRowPrimaryTitle(db, r));
           taskNames = db.columns
             .filter((c) => c.type === "checkbox" && cardOverlay.selectedTasks.has(c.id))
             .map((c) => c.name);
@@ -2900,6 +3173,7 @@
         cardOverlay = null;
         activeTimer = {
           subject: subj,
+          chapterIds,
           chapterNames,
           taskNames,
           elapsedSeconds: 0,
@@ -2913,6 +3187,10 @@
           const clockEl = document.getElementById(`inCardLiveClock-${activeTimer.subject}`);
           if (clockEl) {
             clockEl.textContent = formatHHMMSS(activeTimer.elapsedSeconds);
+          }
+          const totalEl = document.getElementById(`cardTotalTime-${activeTimer.subject}`);
+          if (totalEl) {
+            totalEl.textContent = formatHHMMSS(getSubjectDatabaseSeconds(activeTimer.subject) + activeTimer.elapsedSeconds);
           }
           updateDailyTotalHoursBadge();
         }, 1000);
@@ -2932,20 +3210,34 @@
         clearInterval(activeTimer.intervalId);
         const subj = activeTimer.subject;
         const studied = activeTimer.elapsedSeconds;
-        if (studied > 0 && state.databases[subj]) {
-          state.databases[subj].loggedSeconds = (Number(state.databases[subj].loggedSeconds) || 0) + studied;
-          if (!Array.isArray(state.studyLogs)) state.studyLogs = [];
-          state.studyLogs.push({
+        const db = state.databases[subj];
+
+        if (studied > 0 && db) {
+          if (!Array.isArray(db.sessionLogs)) db.sessionLogs = [];
+          db.sessionLogs.push({
             id: uid("log"),
             date: trackedDateStr,
-            subject: subj,
+            chapterIds: activeTimer.chapterIds || [],
             chapters: activeTimer.chapterNames || [],
             tasks: activeTimer.taskNames && activeTimer.taskNames.length > 0 ? activeTimer.taskNames : ["General Study"],
             seconds: studied
           });
+
+          // Also add studied minutes into the selected chapters' "Time (mins)" column in the database
+          const minsCol = ensureDatabaseTimeStructures(db);
+          if (activeTimer.chapterIds && activeTimer.chapterIds.length > 0 && minsCol) {
+            const addedMinsPerChapter = Math.max(1, Math.round(studied / 60 / activeTimer.chapterIds.length));
+            db.rows.forEach((row) => {
+              if (activeTimer.chapterIds.includes(row.id)) {
+                const prev = Number(row.cells[minsCol.id]) || 0;
+                row.cells[minsCol.id] = String(prev + addedMinsPerChapter);
+              }
+            });
+          }
+
           saveWorkspace();
           if (notify) {
-            showToast(`Added ${formatHHMMSS(studied)} to ${state.databases[subj].displayName || subj}`);
+            showToast(`Logged ${formatHHMMSS(studied)} into ${db.displayName || subj} database`);
           }
         }
         activeTimer = null;
@@ -2981,9 +3273,7 @@
         document.getElementById("reportAnalyticsView")?.classList.remove("view-hidden");
 
         const repDate = document.getElementById("reportDatePicker");
-        const subjDate = document.getElementById("subjectwiseDateInput");
         if (repDate) repDate.value = trackedDateStr;
-        if (subjDate && !subjDate.value) subjDate.value = trackedDateStr;
 
         renderReportCharts();
       }
@@ -3031,7 +3321,8 @@
         const totalDays = Math.max(1, Math.min(365, Number(state.challengeConfig.totalDays) || 100));
         if (summaryEl) summaryEl.textContent = `${totalDays} Days Challenge (Starts ${formatShortDisplayDate(startDate)})`;
 
-        const logs = Array.isArray(state.studyLogs) ? state.studyLogs : [];
+        // Pull study seconds per date directly from all subject databases
+        const logs = getAllDatabaseSessionLogs();
         const secondsByDate = new Map();
         logs.forEach((l) => {
           if (!l.date) return;
@@ -3070,7 +3361,7 @@
         const jumpBtn = document.getElementById("jumpToTrackingDateBtn");
         if (!modal || !body) return;
 
-        const logs = (state.studyLogs || []).filter((l) => l.date === dateIso);
+        const logs = getAllDatabaseSessionLogs().filter((l) => l.date === dateIso);
         const totalSec = logs.reduce((acc, l) => acc + (Number(l.seconds) || 0), 0);
 
         if (heading) heading.textContent = `Day ${dayNum} — Full Progress Report`;
@@ -3133,13 +3424,31 @@
       }
 
       /* ======================================================================
-         6B. REPORT BAR CHARTS (TASKWISE & SUBJECTWISE)
+         6B. REPORT BAR CHARTS (TASKWISE & SUBJECTWISE WITH DATE RANGE FILTER)
          ====================================================================== */
       function formatHoursLabel(seconds) {
         const hrs = (Number(seconds) || 0) / 3600;
         if (hrs === 0) return "0h";
         if (hrs < 0.1) return `${Math.max(1, Math.round(seconds / 60))}m`;
         return `${Number(hrs.toFixed(1))}h`;
+      }
+
+      function filterLogsByDateRange(logs, rangeMode, startVal, endVal) {
+        const refDate = new Date(`${trackedDateStr}T00:00:00`);
+        return logs.filter((log) => {
+          if (!log.date) return rangeMode === "all";
+          if (rangeMode === "all") return true;
+          if (rangeMode === "today") return log.date === trackedDateStr;
+          if (rangeMode === "custom") {
+            if (startVal && log.date < startVal) return false;
+            if (endVal && log.date > endVal) return false;
+            return true;
+          }
+          const logDate = new Date(`${log.date}T00:00:00`);
+          const diffDays = (refDate - logDate) / (1000 * 60 * 60 * 24);
+          const windowDays = rangeMode === "30d" ? 30 : 7;
+          return diffDays >= 0 && diffDays < windowDays;
+        });
       }
 
       function renderVerticalBarChart(containerId, items, xAxisCaption) {
@@ -3180,27 +3489,13 @@
       }
 
       function renderReportCharts() {
-        const logs = Array.isArray(state.studyLogs) ? state.studyLogs : [];
+        const allDbLogs = getAllDatabaseSessionLogs();
 
-        // 1. TASKWISE CHART (Date Range Filter)
-        const rangeMode = document.getElementById("taskwiseRangeSelect")?.value || "7d";
-        const refDate = new Date(`${trackedDateStr}T00:00:00`);
-        const filteredTaskLogs = logs.filter((log) => {
-          if (!log.date) return rangeMode === "all";
-          if (rangeMode === "all") return true;
-          if (rangeMode === "today") return log.date === trackedDateStr;
-          if (rangeMode === "custom") {
-            const s = document.getElementById("taskwiseStartInput")?.value;
-            const e = document.getElementById("taskwiseEndInput")?.value;
-            if (s && log.date < s) return false;
-            if (e && log.date > e) return false;
-            return true;
-          }
-          const logDate = new Date(`${log.date}T00:00:00`);
-          const diffDays = (refDate - logDate) / (1000 * 60 * 60 * 24);
-          const windowDays = rangeMode === "30d" ? 30 : 7;
-          return diffDays >= 0 && diffDays < windowDays;
-        });
+        // 1. TASKWISE CHART
+        const taskRangeMode = document.getElementById("taskwiseRangeSelect")?.value || "7d";
+        const taskStart = document.getElementById("taskwiseStartInput")?.value;
+        const taskEnd = document.getElementById("taskwiseEndInput")?.value;
+        const filteredTaskLogs = filterLogsByDateRange(allDbLogs, taskRangeMode, taskStart, taskEnd);
 
         const taskTotals = new Map();
         ["Lecture", "NCERT", "Notes", "MCQs", "Revise"].forEach((t) => taskTotals.set(t, 0));
@@ -3220,21 +3515,18 @@
         }));
         renderVerticalBarChart("taskwiseChartContainer", taskItems, "Tasks");
 
-        // 2. SUBJECTWISE CHART (Selected Date or All Time)
-        const subjMode = document.getElementById("subjectwiseDateModeSelect")?.value || "selected";
-        const targetSubjDate = document.getElementById("subjectwiseDateInput")?.value || trackedDateStr;
-        const subjectKeys = getSubjectKeys();
+        // 2. SUBJECTWISE CHART (Same Date Range Selector)
+        const subjRangeMode = document.getElementById("subjectwiseRangeSelect")?.value || "today";
+        const subjStart = document.getElementById("subjectwiseStartInput")?.value;
+        const subjEnd = document.getElementById("subjectwiseEndInput")?.value;
+        const filteredSubjLogs = filterLogsByDateRange(allDbLogs, subjRangeMode, subjStart, subjEnd);
 
+        const subjectKeys = getSubjectKeys();
         const subjItems = subjectKeys.map((subjKey) => {
           const db = state.databases[subjKey];
-          let sec = 0;
-          if (subjMode === "all") {
-            sec = Number(db.loggedSeconds) || 0;
-          } else {
-            sec = logs
-              .filter((l) => l.subject === subjKey && l.date === targetSubjDate)
-              .reduce((acc, l) => acc + (Number(l.seconds) || 0), 0);
-          }
+          const sec = filteredSubjLogs
+            .filter((l) => l.subject === subjKey)
+            .reduce((acc, l) => acc + (Number(l.seconds) || 0), 0);
           return {
             label: db.displayName || subjKey,
             seconds: sec,
@@ -3269,9 +3561,10 @@
 
         const headingEl = document.getElementById("activeDbHeading");
         const subtextEl = document.getElementById("activeDbSubtext");
+        const dbTotalSec = getSubjectDatabaseSeconds(subj);
         if (headingEl) headingEl.textContent = `${db.displayName || subj} Syllabus Database`;
         if (subtextEl) {
-          subtextEl.textContent = "Click + Add Column to add Checkbox, Text, Number, Select, or Date properties • Drag borders to resize • Drag ⋮⋮ to reorder.";
+          subtextEl.textContent = `Total logged in database: ${formatHHMMSS(dbTotalSec)} (${db.sessionLogs?.length || 0} sessions) • Drag borders to resize • Drag ⋮⋮ to reorder.`;
         }
 
         if (deleteSubjBtn) {
@@ -3294,7 +3587,6 @@
             .join("");
         }
 
-        // Build Header Row
         const headerRow = document.createElement("tr");
         db.columns.forEach((col, colIndex) => {
           const th = document.createElement("th");
@@ -3339,7 +3631,6 @@
         thead.innerHTML = "";
         thead.appendChild(headerRow);
 
-        // Filter Rows
         const q = searchQuery.trim().toLowerCase();
         const visibleRows = db.rows.filter((row) => {
           const prog = getRowProgress(db, row);
@@ -3607,6 +3898,7 @@
 
         db.columns.forEach((col) => {
           if (col.id === dayCol?.id) newCells[col.id] = nextDayVal;
+          else if (col.isStudyMinutesCol) newCells[col.id] = "0";
           else if (col.type === "date") newCells[col.id] = trackedDateStr;
           else if (col.type === "checkbox") newCells[col.id] = false;
           else if (col.type === "select") newCells[col.id] = (col.options && col.options[0]) || "Not Started";
@@ -3635,11 +3927,129 @@
       }
 
       /* ======================================================================
-         10. EVENT BINDINGS (SAFE & CLEAN)
+         10. ONE-CLICK CLOUD SYNC EXECUTION
+         ====================================================================== */
+      function buildFullSyncBundle() {
+        let examDate = "2027-05-02";
+        try {
+          examDate = localStorage.getItem(EXAM_DATE_KEY) || "2027-05-02";
+        } catch (err) {}
+        return {
+          usn: syncMeta.localUsn,
+          deviceId: syncMeta.deviceId,
+          updatedAt: new Date().toISOString(),
+          workspace: state,
+          prefs,
+          examDate
+        };
+      }
+
+      function applyFullSyncBundle(bundle, newServerUsn) {
+        if (bundle.workspace?.databases) {
+          migrateWorkspaceDatabases(bundle.workspace);
+          state = bundle.workspace;
+          saveWorkspace(false, false);
+        }
+        if (bundle.prefs) {
+          prefs = { ...prefs, ...bundle.prefs };
+          savePrefs(false);
+          applyAllPrefs();
+        }
+        if (bundle.examDate) {
+          try {
+            localStorage.setItem(EXAM_DATE_KEY, bundle.examDate);
+          } catch (err) {}
+          const examIn = document.getElementById("neetExamDateInput");
+          if (examIn) examIn.value = bundle.examDate;
+        }
+        syncMeta.localUsn = newServerUsn;
+        syncMeta.serverUsn = newServerUsn;
+        syncMeta.lastSyncedAt = new Date().toISOString();
+        saveSyncMeta();
+        updateSyncVisualIndicator("synced", "All devices up to date");
+
+        if (currentView === "gallery") showGalleryView();
+        else if (currentView === "challenge") renderChallengeBoard();
+        else if (currentView === "report") renderReportCharts();
+        else renderActiveDatabase();
+      }
+
+      async function runOneClickSmartSync() {
+        const appsScriptUrlInput = document.getElementById("appsScriptUrlInput");
+        let url = appsScriptUrlInput?.value.trim() || "";
+        if (!url) {
+          try {
+            url = localStorage.getItem(SCRIPT_URL_KEY) || "";
+          } catch (err) {}
+        }
+
+        if (!url) {
+          saveSyncMeta();
+          document.getElementById("syncModal")?.classList.add("open");
+          showToast("Paste your Google Apps Script Web App URL to enable 1-click sync.");
+          return;
+        }
+
+        try {
+          localStorage.setItem(SCRIPT_URL_KEY, url);
+          updateSyncVisualIndicator("syncing", "Syncing with Google Drive...");
+          const metaRes = await fetch(`${url}?action=meta`);
+          const metaData = await metaRes.json();
+          const remoteUsn = Number(metaData.usn) || 0;
+          const isFromOtherDevice = metaData.deviceId && metaData.deviceId !== syncMeta.deviceId;
+
+          if (remoteUsn === syncMeta.localUsn && remoteUsn > 0 && !isFromOtherDevice) {
+            syncMeta.serverUsn = remoteUsn;
+            syncMeta.lastSyncedAt = new Date().toISOString();
+            saveSyncMeta();
+            updateSyncVisualIndicator("synced", "Already up to date");
+            showToast("✅ Already synced & up to date!");
+            return;
+          }
+
+          if (remoteUsn > syncMeta.localUsn || (isFromOtherDevice && remoteUsn > syncMeta.serverUsn)) {
+            const pullRes = await fetch(url);
+            const pullData = await pullRes.json();
+            if (pullData.workspace?.databases) {
+              applyFullSyncBundle(pullData, remoteUsn);
+              showToast(`⬇ Pulled latest Cloud backup (Rev #${remoteUsn})`);
+            }
+          } else {
+            const bundle = buildFullSyncBundle();
+            const pushRes = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: "sync", bundle })
+            });
+            const pushData = await pushRes.json();
+            if (pushData.status === "success") {
+              const confirmedUsn = Number(pushData.usn) || syncMeta.localUsn;
+              syncMeta.localUsn = confirmedUsn;
+              syncMeta.serverUsn = confirmedUsn;
+              syncMeta.lastSyncedAt = pushData.syncedAt || new Date().toISOString();
+              saveSyncMeta();
+              updateSyncVisualIndicator("synced", "Saved to Cloud");
+              showToast(`⬆ Synced to Cloud (Rev #${confirmedUsn})`);
+            } else {
+              updateSyncVisualIndicator("pending", pushData.message || "Sync error");
+              showToast(`Sync warning: ${pushData.message || "Check Apps Script"}`);
+            }
+          }
+        } catch (err) {
+          updateSyncVisualIndicator("pending", "Sync failed (check connection/URL)");
+          showToast("Cloud Sync failed. Click ⋮ next to Sync to inspect URL.");
+        }
+      }
+
+      /* ======================================================================
+         11. EVENT BINDINGS
          ====================================================================== */
       document.getElementById("brandHomeBtn")?.addEventListener("click", showGalleryView);
       document.getElementById("brandTitleBtn")?.addEventListener("click", showGalleryView);
       document.getElementById("backToGalleryBtn")?.addEventListener("click", showGalleryView);
+
+      document.getElementById("quickOneClickSyncBtn")?.addEventListener("click", runOneClickSmartSync);
+      document.getElementById("ankiSmartSyncBtn")?.addEventListener("click", runOneClickSmartSync);
 
       const addSubjectModal = document.getElementById("addSubjectModal");
       const newSubjectNameInput = document.getElementById("newSubjectNameInput");
@@ -3647,7 +4057,6 @@
 
       /* Unified Event Delegation for Gallery Cards, In-Box Popovers & In-Box Timer */
       document.getElementById("subjectGalleryRow")?.addEventListener("click", (e) => {
-        // 1. "+ Add New Subject" Gallery Card
         if (e.target.closest("#openAddSubjectCardBtn")) {
           if (newSubjectNameInput) newSubjectNameInput.value = "";
           if (newSubjectNoteInput) newSubjectNoteInput.value = "";
@@ -3656,7 +4065,6 @@
           return;
         }
 
-        // 2. Close In-Card Popover
         if (e.target.closest("[data-close-overlay]")) {
           e.stopPropagation();
           cardOverlay = null;
@@ -3664,7 +4072,6 @@
           return;
         }
 
-        // 3. Toggle Multiselect Dropdown Menu (Chapter Name or Task)
         const msTrigger = e.target.closest("[data-toggle-ms-menu]");
         if (msTrigger && cardOverlay) {
           e.stopPropagation();
@@ -3674,7 +4081,6 @@
           return;
         }
 
-        // 4. Confirm "▶ Start time" inside popover -> replaces card button with live timer
         const confirmStartBtn = e.target.closest("[data-confirm-start-timer]");
         if (confirmStartBtn) {
           e.stopPropagation();
@@ -3682,7 +4088,6 @@
           return;
         }
 
-        // 5. In-Card Live Timer Controls (Pause/Resume or Stop & Save)
         const timerActBtn = e.target.closest("[data-timer-action]");
         if (timerActBtn) {
           e.stopPropagation();
@@ -3692,7 +4097,6 @@
           return;
         }
 
-        // 6. Edit Gallery Card Content ("✏️" button)
         const editCardBtn = e.target.closest("[data-open-edit-card]");
         if (editCardBtn) {
           e.stopPropagation();
@@ -3701,7 +4105,6 @@
           return;
         }
 
-        // 7. Save In-Card Content Edit
         const saveEditBtn = e.target.closest("[data-save-card-edit]");
         if (saveEditBtn) {
           e.stopPropagation();
@@ -3720,7 +4123,6 @@
           return;
         }
 
-        // 8. Change Accent Color inside Card Editor
         const editColorBtn = e.target.closest("[data-edit-card-color]");
         if (editColorBtn && cardOverlay?.type === "edit") {
           e.stopPropagation();
@@ -3733,21 +4135,24 @@
           return;
         }
 
-        // 9. Reset Logged Time inside Card Editor
         const resetTimeBtn = e.target.closest("[data-reset-card-time]");
         if (resetTimeBtn) {
           e.stopPropagation();
           const subj = resetTimeBtn.dataset.resetCardTime;
-          if (state.databases[subj]) {
-            state.databases[subj].loggedSeconds = 0;
+          const db = state.databases[subj];
+          if (db) {
+            db.sessionLogs = [];
+            const minsCol = ensureDatabaseTimeStructures(db);
+            db.rows.forEach((r) => {
+              r.cells[minsCol.id] = "0";
+            });
             saveWorkspace();
-            showToast("Reset logged time to 00:00:00");
+            showToast("Cleared database study logs to 00:00:00");
             renderGalleryCards();
           }
           return;
         }
 
-        // 10. Open Multiselect "Start time" Popover on top of Gallery Box
         const openTrackBtn = e.target.closest("[data-open-track-popover]");
         if (openTrackBtn) {
           e.stopPropagation();
@@ -3767,13 +4172,11 @@
           return;
         }
 
-        // 11. Ignore clicks inside active card overlay so it doesn't open database accidentally
         if (e.target.closest("[data-stop-propagation]")) {
           e.stopPropagation();
           return;
         }
 
-        // 12. Click anywhere else on the gallery box -> open that subject's database view
         const card = e.target.closest("[data-open-subject]");
         if (card) {
           cardOverlay = null;
@@ -3781,9 +4184,33 @@
         }
       });
 
-      /* Handle Multiselect Checkboxes inside Card Popover */
+      /* Handle Individual & "Select All" Checkboxes inside Card Popover */
       document.getElementById("subjectGalleryRow")?.addEventListener("change", (e) => {
         if (!cardOverlay || cardOverlay.type !== "track") return;
+        const db = state.databases[cardOverlay.subject];
+        if (!db) return;
+
+        if (e.target.closest("[data-toggle-ms-all-chapters]")) {
+          if (e.target.checked) {
+            cardOverlay.selectedChapters = new Set(db.rows.map((r) => r.id));
+          } else {
+            cardOverlay.selectedChapters.clear();
+          }
+          renderGalleryCards();
+          return;
+        }
+
+        if (e.target.closest("[data-toggle-ms-all-tasks]")) {
+          const checkCols = db.columns.filter((c) => c.type === "checkbox");
+          if (e.target.checked) {
+            cardOverlay.selectedTasks = new Set(checkCols.map((c) => c.id));
+          } else {
+            cardOverlay.selectedTasks.clear();
+          }
+          renderGalleryCards();
+          return;
+        }
+
         const chInput = e.target.closest("[data-toggle-ms-chapter]");
         if (chInput) {
           const id = chInput.dataset.toggleMsChapter;
@@ -3792,6 +4219,7 @@
           renderGalleryCards();
           return;
         }
+
         const taskInput = e.target.closest("[data-toggle-ms-task]");
         if (taskInput) {
           const id = taskInput.dataset.toggleMsTask;
@@ -3846,6 +4274,33 @@
       // Report View Listeners
       document.getElementById("openReportViewBtn")?.addEventListener("click", showReportView);
       document.getElementById("closeReportViewBtn")?.addEventListener("click", showGalleryView);
+
+      document.getElementById("reportDatePicker")?.addEventListener("change", (e) => {
+        if (e.target.value) {
+          trackedDateStr = e.target.value;
+          const mainPicker = document.getElementById("activeDatePicker");
+          if (mainPicker) mainPicker.value = trackedDateStr;
+          renderReportCharts();
+        }
+      });
+
+      document.getElementById("taskwiseRangeSelect")?.addEventListener("change", (e) => {
+        const customBox = document.getElementById("taskwiseCustomRangeBox");
+        if (customBox) customBox.style.display = e.target.value === "custom" ? "inline-flex" : "none";
+        renderReportCharts();
+      });
+
+      document.getElementById("taskwiseStartInput")?.addEventListener("change", renderReportCharts);
+      document.getElementById("taskwiseEndInput")?.addEventListener("change", renderReportCharts);
+
+      document.getElementById("subjectwiseRangeSelect")?.addEventListener("change", (e) => {
+        const customBox = document.getElementById("subjectwiseCustomRangeBox");
+        if (customBox) customBox.style.display = e.target.value === "custom" ? "inline-flex" : "none";
+        renderReportCharts();
+      });
+
+      document.getElementById("subjectwiseStartInput")?.addEventListener("change", renderReportCharts);
+      document.getElementById("subjectwiseEndInput")?.addEventListener("change", renderReportCharts);
 
       // Challenge Board View & Settings Listeners
       document.getElementById("openChallengeBoardBtn")?.addEventListener("click", showChallengeBoardView);
@@ -3904,17 +4359,6 @@
         dayProgressModal?.classList.remove("open");
         showGalleryView();
       });
-
-      document.getElementById("taskwiseRangeSelect")?.addEventListener("change", (e) => {
-        const customBox = document.getElementById("taskwiseCustomRangeBox");
-        if (customBox) customBox.style.display = e.target.value === "custom" ? "inline-flex" : "none";
-        renderReportCharts();
-      });
-
-      document.getElementById("taskwiseStartInput")?.addEventListener("change", renderReportCharts);
-      document.getElementById("taskwiseEndInput")?.addEventListener("change", renderReportCharts);
-      document.getElementById("subjectwiseDateModeSelect")?.addEventListener("change", renderReportCharts);
-      document.getElementById("subjectwiseDateInput")?.addEventListener("change", renderReportCharts);
 
       // Tracking Date Picker
       const activeDatePicker = document.getElementById("activeDatePicker");
@@ -3988,7 +4432,42 @@
         }
       });
 
-      // Cloud Sync (Anki USN Protocol), Export/Import & Reset
+      document.getElementById("tableBody")?.addEventListener("input", (e) => {
+        const target = e.target;
+        if (target.dataset.cellAction !== "edit-value") return;
+        const tr = target.closest("tr[data-row-id]");
+        if (!tr) return;
+        const db = state.databases[state.activeSubject];
+        const row = db.rows.find((r) => r.id === tr.dataset.rowId);
+        if (!row) return;
+        row.cells[target.dataset.colId] = target.value;
+        saveWorkspace();
+      });
+
+      document.getElementById("tableBody")?.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-row-action]");
+        if (!btn) return;
+        const tr = btn.closest("tr[data-row-id]");
+        if (!tr) return;
+        const db = state.databases[state.activeSubject];
+        const idx = db.rows.findIndex((r) => r.id === tr.dataset.rowId);
+        if (idx === -1) return;
+
+        if (btn.dataset.rowAction === "duplicate") {
+          const copy = { id: uid("row"), cells: { ...db.rows[idx].cells } };
+          db.rows.splice(idx + 1, 0, copy);
+          saveWorkspace();
+          renderActiveDatabase();
+          showToast("Duplicated row");
+        } else if (btn.dataset.rowAction === "delete") {
+          db.rows.splice(idx, 1);
+          saveWorkspace();
+          renderActiveDatabase();
+          showToast("Deleted row");
+        }
+      });
+
+      // Cloud Sync Details Modal, Force Push/Pull, Embedded Google Apps Script
       const syncModal = document.getElementById("syncModal");
       const appsScriptUrlInput = document.getElementById("appsScriptUrlInput");
       const embeddedScriptText = document.getElementById("embeddedAppsScriptText");
@@ -4092,51 +4571,6 @@ function doPost(e) {
         if (savedUrl && appsScriptUrlInput) appsScriptUrlInput.value = savedUrl;
       } catch (err) {}
 
-      function buildFullSyncBundle() {
-        let examDate = "2027-05-02";
-        try {
-          examDate = localStorage.getItem(EXAM_DATE_KEY) || "2027-05-02";
-        } catch (err) {}
-        return {
-          usn: syncMeta.localUsn,
-          deviceId: syncMeta.deviceId,
-          updatedAt: new Date().toISOString(),
-          workspace: state,
-          prefs,
-          examDate
-        };
-      }
-
-      function applyFullSyncBundle(bundle, newServerUsn) {
-        if (bundle.workspace?.databases) {
-          state = bundle.workspace;
-          if (!Array.isArray(state.studyLogs)) state.studyLogs = [];
-          saveWorkspace(false, false);
-        }
-        if (bundle.prefs) {
-          prefs = { ...prefs, ...bundle.prefs };
-          savePrefs(false);
-          applyAllPrefs();
-        }
-        if (bundle.examDate) {
-          try {
-            localStorage.setItem(EXAM_DATE_KEY, bundle.examDate);
-          } catch (err) {}
-          const examIn = document.getElementById("neetExamDateInput");
-          if (examIn) examIn.value = bundle.examDate;
-        }
-        syncMeta.localUsn = newServerUsn;
-        syncMeta.serverUsn = newServerUsn;
-        syncMeta.lastSyncedAt = new Date().toISOString();
-        saveSyncMeta();
-        setCloudUpdateBadge(false, newServerUsn);
-
-        if (currentView === "gallery") showGalleryView();
-        else if (currentView === "challenge") renderChallengeBoard();
-        else if (currentView === "report") renderReportCharts();
-        else renderActiveDatabase();
-      }
-
       document.getElementById("openSyncModalBtn")?.addEventListener("click", () => {
         saveSyncMeta();
         syncModal?.classList.add("open");
@@ -4151,60 +4585,6 @@ function doPost(e) {
         } catch (err) {}
       });
 
-      /* Anki-Protocol Smart Sync: Checks Server USN vs Local USN first */
-      document.getElementById("ankiSmartSyncBtn")?.addEventListener("click", async () => {
-        const url = appsScriptUrlInput?.value.trim();
-        if (!url) {
-          showToast("Paste your Google Apps Script Web App URL first.");
-          return;
-        }
-        try {
-          localStorage.setItem(SCRIPT_URL_KEY, url);
-          showToast("🔄 Checking cloud revision...");
-          const metaRes = await fetch(`${url}?action=meta`);
-          const metaData = await metaRes.json();
-          const remoteUsn = Number(metaData.usn) || 0;
-          const isFromOtherDevice = metaData.deviceId && metaData.deviceId !== syncMeta.deviceId;
-
-          if (remoteUsn === syncMeta.localUsn && remoteUsn > 0 && !isFromOtherDevice) {
-            syncMeta.serverUsn = remoteUsn;
-            syncMeta.lastSyncedAt = new Date().toISOString();
-            saveSyncMeta();
-            setCloudUpdateBadge(false, remoteUsn);
-            showToast("✅ Already synced & up to date!");
-            return;
-          }
-
-          if (remoteUsn > syncMeta.localUsn || (isFromOtherDevice && remoteUsn > syncMeta.serverUsn)) {
-            const pullRes = await fetch(url);
-            const pullData = await pullRes.json();
-            if (pullData.workspace?.databases) {
-              applyFullSyncBundle(pullData, remoteUsn);
-              showToast(`⬇ Synced latest data from Cloud (Rev #${remoteUsn})`);
-            }
-          } else {
-            const bundle = buildFullSyncBundle();
-            const pushRes = await fetch(url, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({ action: "sync", bundle })
-            });
-            const pushData = await pushRes.json();
-            if (pushData.status === "success") {
-              const confirmedUsn = Number(pushData.usn) || syncMeta.localUsn;
-              syncMeta.localUsn = confirmedUsn;
-              syncMeta.serverUsn = confirmedUsn;
-              syncMeta.lastSyncedAt = pushData.syncedAt || new Date().toISOString();
-              saveSyncMeta();
-              setCloudUpdateBadge(false, confirmedUsn);
-              showToast(`⬆ Saved to Cloud (Rev #${confirmedUsn}) — other devices notified!`);
-            }
-          }
-        } catch (err) {
-          showToast("Cloud Sync failed. Check Web App URL & 'Anyone' access.");
-        }
-      });
-
       document.getElementById("pushCloudBtn")?.addEventListener("click", async () => {
         const url = appsScriptUrlInput?.value.trim();
         if (!url) {
@@ -4213,9 +4593,9 @@ function doPost(e) {
         }
         try {
           localStorage.setItem(SCRIPT_URL_KEY, url);
+          updateSyncVisualIndicator("syncing", "Pushing backup to Cloud...");
           bumpLocalUsn();
           const bundle = buildFullSyncBundle();
-          showToast("Uploading full backup to Cloud...");
           const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -4228,12 +4608,14 @@ function doPost(e) {
             syncMeta.serverUsn = confirmedUsn;
             syncMeta.lastSyncedAt = data.syncedAt || new Date().toISOString();
             saveSyncMeta();
-            setCloudUpdateBadge(false, confirmedUsn);
+            updateSyncVisualIndicator("synced", "All devices up to date");
             showToast("✅ Pushed all data & settings to Cloud!");
           } else {
+            updateSyncVisualIndicator("pending", data.message || "Push warning");
             showToast(`Sync warning: ${data.message || "Check Apps Script"}`);
           }
         } catch (err) {
+          updateSyncVisualIndicator("pending", "Cloud upload failed");
           showToast("Cloud upload failed. Check Web App URL & 'Anyone' permission.");
         }
       });
@@ -4245,7 +4627,7 @@ function doPost(e) {
           return;
         }
         try {
-          showToast("Downloading latest backup from Cloud...");
+          updateSyncVisualIndicator("syncing", "Downloading from Cloud...");
           const res = await fetch(url);
           const data = await res.json();
           if (data.workspace?.databases) {
@@ -4253,45 +4635,12 @@ function doPost(e) {
             applyFullSyncBundle(data, remoteUsn);
             showToast("✅ Downloaded & applied Cloud data!");
           } else {
+            updateSyncVisualIndicator("idle", "No backup found on Drive yet");
             showToast(data.message || "No backup found on Drive yet.");
           }
         } catch (err) {
+          updateSyncVisualIndicator("pending", "Cloud download failed");
           showToast("Cloud download failed. Verify Web App URL.");
-        }
-      });
-
-      document.getElementById("tableBody")?.addEventListener("input", (e) => {
-        const target = e.target;
-        if (target.dataset.cellAction !== "edit-value") return;
-        const tr = target.closest("tr[data-row-id]");
-        if (!tr) return;
-        const db = state.databases[state.activeSubject];
-        const row = db.rows.find((r) => r.id === tr.dataset.rowId);
-        if (!row) return;
-        row.cells[target.dataset.colId] = target.value;
-        saveWorkspace();
-      });
-
-      document.getElementById("tableBody")?.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-row-action]");
-        if (!btn) return;
-        const tr = btn.closest("tr[data-row-id]");
-        if (!tr) return;
-        const db = state.databases[state.activeSubject];
-        const idx = db.rows.findIndex((r) => r.id === tr.dataset.rowId);
-        if (idx === -1) return;
-
-        if (btn.dataset.rowAction === "duplicate") {
-          const copy = { id: uid("row"), cells: { ...db.rows[idx].cells } };
-          db.rows.splice(idx + 1, 0, copy);
-          saveWorkspace();
-          renderActiveDatabase();
-          showToast("Duplicated row");
-        } else if (btn.dataset.rowAction === "delete") {
-          db.rows.splice(idx, 1);
-          saveWorkspace();
-          renderActiveDatabase();
-          showToast("Deleted row");
         }
       });
 
@@ -4530,6 +4879,7 @@ function doPost(e) {
           try {
             const parsed = JSON.parse(String(ev.target?.result || ""));
             if (parsed?.databases) {
+              migrateWorkspaceDatabases(parsed);
               state = parsed;
               saveWorkspace();
               syncModal?.classList.remove("open");
@@ -4597,8 +4947,9 @@ function doPost(e) {
       }
 
       /* ======================================================================
-         11. BOOTSTRAP APPLICATION
+         12. BOOTSTRAP APPLICATION
          ====================================================================== */
+      initPwaSupport();
       loadSyncMeta();
       loadAndApplyPrefs();
       initNeetCountdown();
