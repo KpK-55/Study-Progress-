@@ -1,8 +1,10 @@
-const CACHE_NAME = "neet-2027-workspace-v1";
+const CACHE_NAME = "neet-2027-workspace-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
