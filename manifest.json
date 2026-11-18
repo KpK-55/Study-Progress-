@@ -1,8 +1,8 @@
 {
   "id": "./index.html",
-  "name": "NEET 2027 — Universal Study Workspace",
-  "short_name": "NEET 2027",
-  "description": "Offline-first syllabus & habit tracker with customizable databases, daily checklists, study timer, and Google Drive Anki-protocol sync.",
+  "name": "TIME & TASK TRACKER",
+  "short_name": "Task Tracker",
+  "description": "Universal student study timer, customizable syllabus & habit tracker, daily checklists, and Google Drive cross-device sync.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

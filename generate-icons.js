@@ -1,41 +1,30 @@
 /**
- * Generates crisp 192x192 and 512x512 PNG icons (required for Android APK & Desktop PWA)
- * using zero external dependencies (built-in Node.js zlib + fs).
+ * Generates crisp 192x192 and 512x512 PNG icons with an hourglass-in-circle emblem
+ * for TIME & TASK TRACKER (Android APK & Desktop PWA) using built-in Node.js zlib + fs.
  */
 const fs = require("fs");
 const zlib = require("zlib");
 
-function createPngBuffer(width, height, bgRgb, fgRgb) {
+function createPngBuffer(width, height) {
   const rowSize = 1 + width * 4;
   const raw = Buffer.alloc(rowSize * height);
-
   const cornerRadius = Math.round(width * 0.22);
+  const cx = width / 2;
+  const cy = height / 2;
+  const outerRingR = width * 0.36;
+  const innerRingR = width * 0.30;
 
   function isInsideRoundedRect(x, y) {
-    const cx = Math.min(Math.max(x, cornerRadius), width - 1 - cornerRadius);
-    const cy = Math.min(Math.max(y, cornerRadius), height - 1 - cornerRadius);
-    const dx = x - cx;
-    const dy = y - cy;
+    const rx = Math.min(Math.max(x, cornerRadius), width - 1 - cornerRadius);
+    const ry = Math.min(Math.max(y, cornerRadius), height - 1 - cornerRadius);
+    const dx = x - rx;
+    const dy = y - ry;
     return dx * dx + dy * dy <= cornerRadius * cornerRadius;
   }
 
-  // Simple bold "N27" pixel glyph grid (15x7)
-  const glyph = [
-    "100010111011111",
-    "110010001000010",
-    "101010111000100",
-    "100110100001000",
-    "100010111001000"
-  ];
-  const gH = glyph.length;
-  const gW = glyph[0].length;
-  const scale = Math.floor((width * 0.62) / gW);
-  const offsetX = Math.floor((width - gW * scale) / 2);
-  const offsetY = Math.floor((height - gH * scale) / 2);
-
   for (let y = 0; y < height; y++) {
     const rowStart = y * rowSize;
-    raw[rowStart] = 0; // PNG filter: None
+    raw[rowStart] = 0;
     for (let x = 0; x < width; x++) {
       const px = rowStart + 1 + x * 4;
       if (!isInsideRoundedRect(x, y)) {
@@ -46,12 +35,24 @@ function createPngBuffer(width, height, bgRgb, fgRgb) {
         continue;
       }
 
-      const gx = Math.floor((x - offsetX) / scale);
-      const gy = Math.floor((y - offsetY) / scale);
-      const isText =
-        gx >= 0 && gx < gW && gy >= 0 && gy < gH && glyph[gy][gx] === "1";
+      const dx = x - cx;
+      const dy = y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const nx = dx / (width * 0.22);
+      const ny = dy / (height * 0.22);
 
-      const color = isText ? fgRgb : bgRgb;
+      // Blue circular frame
+      const isBlueRing = dist <= outerRingR && dist >= innerRingR;
+      // Amber hourglass silhouette inside circle
+      const inHourglassY = Math.abs(ny) <= 0.85;
+      const hourglassHalfWidth = Math.max(0.14, Math.abs(ny) * 0.88);
+      const isTopOrBottomBar = Math.abs(ny) >= 0.72 && Math.abs(ny) <= 0.86 && Math.abs(nx) <= 0.78;
+      const isHourglassBody = inHourglassY && Math.abs(nx) <= hourglassHalfWidth && Math.abs(nx) >= hourglassHalfWidth - 0.24;
+
+      let color = [255, 255, 255];
+      if (isBlueRing) color = [35, 131, 226];
+      else if (isTopOrBottomBar || isHourglassBody) color = [245, 159, 0];
+
       raw[px] = color[0];
       raw[px + 1] = color[1];
       raw[px + 2] = color[2];
@@ -80,8 +81,8 @@ function createPngBuffer(width, height, bgRgb, fgRgb) {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8; // 8-bit depth
-  ihdr[9] = 6; // RGBA
+  ihdr[8] = 8;
+  ihdr[9] = 6;
   ihdr[10] = 0;
   ihdr[11] = 0;
   ihdr[12] = 0;
@@ -97,7 +98,6 @@ function createPngBuffer(width, height, bgRgb, fgRgb) {
   ]);
 }
 
-// #2383e2 = [35, 131, 226], #ffffff = [255, 255, 255]
-fs.writeFileSync("icon-192.png", createPngBuffer(192, 192, [35, 131, 226], [255, 255, 255]));
-fs.writeFileSync("icon-512.png", createPngBuffer(512, 512, [35, 131, 226], [255, 255, 255]));
-console.log("Generated icon-192.png and icon-512.png successfully.");
+fs.writeFileSync("icon-192.png", createPngBuffer(192, 192));
+fs.writeFileSync("icon-512.png", createPngBuffer(512, 512));
+console.log("Generated TIME & TASK TRACKER icon-192.png and icon-512.png successfully.");

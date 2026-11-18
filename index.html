@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#2383e2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="NEET 2027" />
+  <meta name="apple-mobile-web-app-title" content="Time & Task Tracker" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%232383e2'/%3E%3Ctext x='96' y='118' font-size='74' font-weight='800' font-family='sans-serif' fill='white' text-anchor='middle'%3EN27%3C/text%3E%3C/svg%3E" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%232383e2'/%3E%3Ctext x='96' y='118' font-size='74' font-weight='800' font-family='sans-serif' fill='white' text-anchor='middle'%3EN27%3C/text%3E%3C/svg%3E" />
-  <title>NEET 2027 — 100-Day Study Workspace</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%232383e2'/%3E%3Ccircle cx='96' cy='96' r='64' fill='none' stroke='white' stroke-width='10'/%3E%3Cpath d='M68 58h56M68 134h56M74 58c0 22 22 30 22 38s-22 16-22 38M118 58c0 22-22 30-22 38s22 16 22 38' fill='none' stroke='%23f59f00' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%232383e2'/%3E%3Ccircle cx='96' cy='96' r='64' fill='none' stroke='white' stroke-width='10'/%3E%3Cpath d='M68 58h56M68 134h56M74 58c0 22 22 30 22 38s-22 16-22 38M118 58c0 22-22 30-22 38s22 16 22 38' fill='none' stroke='%23f59f00' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <title>TIME &amp; TASK TRACKER — Universal Study &amp; Habit Workspace</title>
   <link id="dynamicGoogleFont" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
   <style>
     :root {
@@ -105,45 +105,25 @@
     }
 
     .brand-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: var(--accent);
-      color: #ffffff;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #ffffff;
+      border: 1.5px solid var(--border-strong);
       display: grid;
       place-items: center;
-      font-weight: 800;
-      font-size: 0.85rem;
       flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
     }
 
     .brand-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
+      font-size: 1.02rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .sync-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.73rem;
-      color: var(--text-secondary);
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      padding: 0.2rem 0.6rem;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    .sync-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--success);
     }
 
     .countdown-pill {
@@ -152,11 +132,18 @@
       gap: 0.45rem;
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      padding: 0.32rem 0.85rem;
+      padding: 0.34rem 0.9rem;
       border-radius: 999px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       box-shadow: var(--shadow-sm);
       white-space: nowrap;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .countdown-pill:hover {
+      border-color: var(--accent);
+      background: var(--bg-hover);
     }
 
     .countdown-label {
@@ -177,22 +164,6 @@
       font-weight: 500;
       color: var(--text-secondary);
       font-size: 0.7rem;
-    }
-
-    .countdown-date-edit {
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font-family: inherit;
-      font-size: 0.74rem;
-      cursor: pointer;
-      padding: 0.1rem 0.2rem;
-      border-radius: 6px;
-    }
-
-    .countdown-date-edit:hover {
-      background: var(--bg-hover);
-      color: var(--text-primary);
     }
 
     .topbar-actions {
@@ -273,7 +244,7 @@
     .sync-quick-btn {
       border: none;
       border-radius: 0;
-      padding: 0.42rem 0.8rem;
+      padding: 0.42rem 0.85rem;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
@@ -285,8 +256,8 @@
       border: none;
       border-left: 1px solid rgba(128, 128, 128, 0.22);
       border-radius: 0;
-      padding: 0.42rem 0.55rem;
-      min-width: 30px;
+      padding: 0.42rem 0.52rem;
+      min-width: 28px;
       font-weight: 800;
     }
 
@@ -353,6 +324,105 @@
     @keyframes pulseSync {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.35); opacity: 0.65; }
+    }
+
+    /* Full-Screen Study Focus Timer Overlay */
+    .focus-timer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(15, 20, 28, 0.88);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+
+    .focus-timer-overlay.hidden-view {
+      display: none !important;
+    }
+
+    .focus-timer-modal {
+      width: 100%;
+      max-width: 560px;
+      background: var(--bg-elevated);
+      border: 2px solid var(--accent);
+      border-radius: 26px;
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.15rem;
+    }
+
+    .focus-subject-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.38rem 1rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.92rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .focus-details-box {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .focus-detail-row {
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+
+    .focus-detail-row span {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    .focus-big-digits {
+      font-size: clamp(3rem, 11vw, 4.75rem);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.03em;
+      color: var(--text-primary);
+      line-height: 1.05;
+      padding: 0.5rem 0;
+    }
+
+    .focus-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      width: 100%;
+      margin-top: 0.35rem;
+    }
+
+    .focus-action-btn {
+      flex: 1;
+      max-width: 210px;
+      min-height: 48px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 800;
     }
 
     /* Main Container */
@@ -463,9 +533,6 @@
     }
 
     @media (max-width: 1024px) {
-      .topbar-running-timer {
-        display: none !important;
-      }
       .topbar {
         padding: 0.55rem 0.75rem;
       }
@@ -479,14 +546,10 @@
       .brand {
         flex: 1 1 auto;
         min-width: 0;
-        gap: 0.4rem;
+        gap: 0.45rem;
       }
       .brand-title {
-        display: none;
-      }
-      .sync-pill {
-        padding: 0.16rem 0.48rem;
-        font-size: 0.68rem;
+        font-size: 0.88rem;
       }
       .topbar-actions {
         flex: 0 0 auto;
@@ -501,8 +564,8 @@
         width: 100%;
         justify-content: center;
         order: 3;
-        padding: 0.28rem 0.65rem;
-        font-size: 0.73rem;
+        padding: 0.3rem 0.65rem;
+        font-size: 0.74rem;
         gap: 0.32rem;
       }
       .subject-gallery-row {
@@ -530,16 +593,7 @@
       }
     }
 
-    @media (max-width: 420px) {
-      .sync-pill {
-        display: none;
-      }
-      .countdown-date-edit {
-        display: none;
-      }
-    }
-
-    /* Portrait Mobile & Tablet Daily Task Checklist Card (Ref: image_f2cf7d.jpg) */
+    /* Portrait Mobile & Tablet Daily Task Checklist Card */
     .portrait-task-card {
       background: var(--bg-elevated);
       border: 1.5px solid var(--border-strong);
@@ -898,53 +952,6 @@
       background: rgba(255, 255, 255, 0.36);
     }
 
-    /* Bold Top Bar Running Timer Pill (Left of Sync Button) */
-    .topbar-running-timer {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      background: var(--accent);
-      color: #ffffff;
-      border-radius: 999px;
-      padding: 0.32rem 0.75rem;
-      font-size: 0.88rem;
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-      box-shadow: var(--shadow-sm);
-      white-space: nowrap;
-    }
-
-    .topbar-running-timer .tb-timer-subj {
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      opacity: 0.92;
-      max-width: 90px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .topbar-running-timer .tb-timer-digits {
-      font-size: 0.96rem;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-    }
-
-    .topbar-running-timer button {
-      border: none;
-      background: rgba(255, 255, 255, 0.22);
-      color: #ffffff;
-      border-radius: 999px;
-      padding: 0.16rem 0.45rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .topbar-running-timer button:hover {
-      background: rgba(255, 255, 255, 0.38);
-    }
-
     /* Color-Coded Status Select Pills in Database */
     .status-select-pill {
       font-weight: 700;
@@ -982,7 +989,7 @@
       color: #6ab0f3 !important;
     }
 
-    /* Workspace Appearance Drawer (Reference Style) */
+    /* Workspace Appearance Drawer */
     .appearance-drawer-backdrop {
       position: fixed;
       inset: 0;
@@ -1100,12 +1107,12 @@
       transform: scale(1.06);
     }
 
-    /* Add Subject Dashed Card */
+    /* Add / Manage Subjects Dashed Card */
     .add-subject-card {
       width: 300px;
       height: 300px;
-      background: var(--bg-surface);
-      border: 1.5px dashed var(--border-strong);
+      background: var(--accent-soft);
+      border: 1.5px dashed var(--accent);
       border-radius: var(--radius-lg);
       padding: 1.25rem;
       display: flex;
@@ -1119,8 +1126,7 @@
     }
 
     .add-subject-card:hover {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+      background: rgba(35, 131, 226, 0.18);
       transform: translateY(-2px);
     }
 
@@ -1764,7 +1770,7 @@
       bottom: 1.25rem;
       left: 50%;
       transform: translateX(-50%) translateY(16px);
-      z-index: 80;
+      z-index: 110;
       background: #22252a;
       color: #ffffff;
       padding: 0.55rem 1.05rem;
@@ -1787,45 +1793,72 @@
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
-        <div class="brand-icon">N27</div>
-        <span class="brand-title">NEET 2027 Workspace</span>
-        <span class="sync-pill"><span class="sync-dot"></span><span id="saveStatusText">Saved locally</span></span>
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="27" stroke="#2383e2" stroke-width="5"/>
+            <path d="M20 16H44M20 48H44M23 16C23 25 32 28 32 32C32 36 23 39 23 48M41 16C41 25 32 28 32 32C32 36 41 39 41 48" stroke="#f59f00" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="brand-title">TIME &amp; TASK TRACKER</span>
       </div>
 
-      <div class="countdown-pill" title="Click date to adjust NEET 2027 exam target">
-        <span class="countdown-label">NEET 2027</span>
-        <div class="countdown-units">
-          <span><strong id="cdDays">165</strong><small>d</small></span> :
-          <span><strong id="cdHours">00</strong><small>h</small></span> :
-          <span><strong id="cdMins">00</strong><small>m</small></span> :
-          <span><strong id="cdSecs">00</strong><small>s</small></span>
-        </div>
-        <input type="date" id="examDateInput" class="countdown-date-edit" value="2027-05-02" />
-      </div>
+      <button type="button" class="countdown-pill" id="openCountdownModalBtn" title="Click to create or edit your target countdown">
+        <span id="countdownCreatePrompt" style="font-weight:800; color:var(--accent);">⏱ + Create Countdown</span>
+        <span id="countdownLiveDisplay" class="hidden-view" style="display:inline-flex; align-items:center; gap:0.45rem;">
+          <span class="countdown-label" id="cdTitleLabel">TARGET</span>
+          <span class="countdown-units">
+            <span><strong id="cdDays">0</strong><small>d</small></span> :
+            <span><strong id="cdHours">00</strong><small>h</small></span> :
+            <span><strong id="cdMins">00</strong><small>m</small></span> :
+            <span><strong id="cdSecs">00</strong><small>s</small></span>
+          </span>
+          <span style="font-size:0.72rem; color:var(--text-secondary);">✏️</span>
+        </span>
+      </button>
 
       <div class="topbar-actions">
         <button type="button" class="btn hidden-view" id="installPwaBtn">📲 Install App</button>
 
-        <div class="topbar-running-timer hidden-view" id="topbarRunningTimerPill" title="Active Study Session">
-          <span>⏱</span>
-          <span class="tb-timer-subj" id="tbTimerSubjLabel">PHYSICS</span>
-          <span class="tb-timer-digits" id="tbTimerDigitsLabel">00:00:00</span>
-          <button type="button" id="tbTimerPauseBtn" title="Pause / Resume">⏸</button>
-          <button type="button" id="tbTimerSaveBtn" title="Save Session">⏹</button>
-        </div>
-
-        <div class="sync-split-group sync-state-idle" id="syncSplitGroup" title="One-click Anki-protocol Cloud Sync">
+        <div class="sync-split-group sync-state-idle" id="syncSplitGroup" title="One-click Cloud Sync">
           <button type="button" class="btn sync-quick-btn" id="quickSyncBtn">
             <span class="sync-status-indicator"></span>
             <span id="quickSyncLabel">☁️ Sync</span>
           </button>
-          <button type="button" class="btn sync-details-btn" id="openSyncModalBtn" title="Detailed Sync Status & Script">⋮</button>
+          <button type="button" class="btn sync-details-btn" id="openSyncModalBtn" title="Sync Settings & Google Script">⋮</button>
         </div>
 
         <button type="button" class="btn" id="openSettingsBtn">⚙️ Settings</button>
       </div>
     </div>
   </header>
+
+  <!-- FULL-SCREEN STUDY FOCUS TIMER POPUP OVERLAY -->
+  <div class="focus-timer-overlay hidden-view" id="focusTimerOverlay">
+    <div class="focus-timer-modal">
+      <div class="focus-subject-pill">
+        <span class="subject-dot" id="focusTimerSubjDot" style="background: var(--accent);"></span>
+        <span id="focusTimerSubjName">SUBJECT</span>
+      </div>
+
+      <div class="focus-details-box">
+        <div class="focus-detail-row">
+          <span>Chapter(s) Studying</span>
+          <strong id="focusTimerChaptersText">All Chapters</strong>
+        </div>
+        <div class="focus-detail-row" style="border-top: 1px solid var(--border); padding-top: 0.45rem;">
+          <span>Task(s) Selected</span>
+          <strong id="focusTimerTasksText">General Study</strong>
+        </div>
+      </div>
+
+      <div class="focus-big-digits" id="focusTimerBigDigits">00:00:00</div>
+
+      <div class="focus-actions-row">
+        <button type="button" class="btn focus-action-btn" id="focusTimerPauseBtn">⏸ Pause</button>
+        <button type="button" class="btn btn-danger focus-action-btn" id="focusTimerStopBtn" style="background: var(--danger); color: #ffffff;">⏹ Stop &amp; Save</button>
+      </div>
+    </div>
+  </div>
 
   <main class="workspace">
     <!-- 1. GALLERY DASHBOARD VIEW -->
@@ -1842,9 +1875,6 @@
           </label>
           <button type="button" class="btn" id="openChallengeBoardBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">
             Challenge Board
-          </button>
-          <button type="button" class="btn" id="openRepositoryModalBtn" style="border-radius: 999px; border-color: var(--accent); color: var(--accent); padding: 0.42rem 1.05rem; font-weight: 700;" title="Show, hide, archive, or switch between all databases in your repository">
-            📚 Repository (<span id="repoVisibleCountBadge">3/3</span>)
           </button>
         </div>
 
@@ -1866,7 +1896,7 @@
       <div class="db-header-bar">
         <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
           <button type="button" class="btn" id="backToGalleryBtn">← Back to Gallery</button>
-          <h2 id="activeDbTitle" style="font-size: 1.25rem; font-weight: 800;">Physics Database</h2>
+          <h2 id="activeDbTitle" style="font-size: 1.25rem; font-weight: 800;">Database</h2>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
           <div class="filter-pills" id="dbLayoutModePills" title="Switch between Portrait Checklist and Full Table">
@@ -1877,7 +1907,7 @@
         </div>
       </div>
 
-      <!-- PORTRAIT / MOBILE DAILY CHECKLIST VIEW (Ref: image_f2cf7d.jpg) -->
+      <!-- PORTRAIT / MOBILE DAILY CHECKLIST VIEW -->
       <div id="portraitChecklistWrapper" class="hidden-view">
         <div class="portrait-task-card">
           <div class="portrait-field-row">
@@ -1968,7 +1998,7 @@
               <option value="today">Today (Selected Date)</option>
               <option value="7d" selected>Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
-              <option value="100d">All 100 Days</option>
+              <option value="100d">All Target Days</option>
               <option value="custom">Custom Date Range</option>
             </select>
             <div id="taskwiseCustomRange" class="hidden-view" style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; justify-content: center;">
@@ -1989,7 +2019,7 @@
               <option value="today" selected>Today (Selected Date)</option>
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
-              <option value="100d">All 100 Days</option>
+              <option value="100d">All Target Days</option>
               <option value="custom">Custom Date Range</option>
             </select>
             <div id="subjectwiseCustomRange" class="hidden-view" style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; justify-content: center;">
@@ -2017,31 +2047,56 @@
             <strong style="color:#d9730d;">■</strong> 3–8h &nbsp;
             <strong style="color:#0f7b6c;">■</strong> &gt;8h
           </span>
-          <button type="button" class="btn btn-icon" id="openChallengeConfigBtn" title="Configure Challenge Days">⚙️</button>
+          <button type="button" class="btn btn-icon" id="openChallengeConfigBtn" title="Configure Challenge Target Days">⚙️</button>
         </div>
       </div>
-      <div class="challenge-grid" id="challengeGridContainer"></div>
+      <div id="challengeGridContainer"></div>
     </section>
   </main>
+
+  <!-- CREATE / EDIT TARGET COUNTDOWN MODAL -->
+  <div class="modal-backdrop hidden" id="countdownModal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>⏱ Target Exam / Goal Countdown</h3>
+        <button type="button" class="btn btn-icon" data-close-modal="countdownModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label for="countdownTitleInput">Target Exam or Milestone Name</label>
+        <input type="text" id="countdownTitleInput" class="input-field" placeholder="e.g., Final Exams, NEET 2027, Semester Finals, GATE..." />
+      </div>
+      <div class="form-group">
+        <label for="examDateInput">Target Date</label>
+        <input type="date" id="examDateInput" class="input-field" />
+      </div>
+      <div style="display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 1rem;">
+        <button type="button" class="btn btn-danger" id="clearCountdownBtn">Clear</button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn" data-close-modal="countdownModal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveCountdownBtn">Save Countdown</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ADD NEW SUBJECT MODAL -->
   <div class="modal-backdrop hidden" id="addSubjectModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>➕ Add New Database to Repository</h3>
+        <h3>➕ Create New Subject / Database</h3>
         <button type="button" class="btn btn-icon" data-close-modal="addSubjectModal">✕</button>
       </div>
       <div class="form-group">
         <label for="newSubjNameInput">Subject / Database Title</label>
-        <input type="text" id="newSubjNameInput" class="input-field" placeholder="e.g., Anatomy (MBBS), Mock Tests, Coding..." />
+        <input type="text" id="newSubjNameInput" class="input-field" placeholder="e.g., Mathematics, Physics, Anatomy, Coding..." />
       </div>
       <div class="form-group">
-        <label for="newSubjGroupInput">Workspace / Category Tag</label>
-        <input type="text" id="newSubjGroupInput" class="input-field" value="NEET 2027" placeholder="e.g., NEET 2027, MBBS Year 1, Personal..." />
+        <label for="newSubjGroupInput">Workspace / Course Tag</label>
+        <input type="text" id="newSubjGroupInput" class="input-field" value="My Studies" placeholder="e.g., Semester 1, Competitive Exam, Personal..." />
       </div>
       <div class="form-group">
         <label for="newSubjNoteInput">Subtitle / Focus Note</label>
-        <input type="text" id="newSubjNoteInput" class="input-field" placeholder="e.g., Dissection, Histology & Osteology" />
+        <input type="text" id="newSubjNoteInput" class="input-field" placeholder="e.g., Core chapters, lectures & practice" />
       </div>
       <div class="form-group">
         <label>Accent Color</label>
@@ -2058,11 +2113,11 @@
   <div class="modal-backdrop hidden" id="repositoryModal">
     <div class="modal-card" style="max-width: 560px;">
       <div class="modal-header">
-        <h3>📚 Subject & Database Repository</h3>
+        <h3>📚 Subject &amp; Database Repository</h3>
         <button type="button" class="btn btn-icon" data-close-modal="repositoryModal">✕</button>
       </div>
       <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
-        Choose which subjects appear on your active Gallery Dashboard. Unchecked databases stay safely stored locally and backed up in Google Drive so you never lose past progress (e.g., keeping NEET subjects archived while studying MBBS).
+        Select which subjects appear on your active Gallery Dashboard. Unchecked databases remain safely stored locally and backed up in Google Drive so you can archive old courses without deleting them.
       </p>
       <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.75rem;">
         <select id="repoCategoryFilterSelect" class="input-field" style="min-width: 170px; font-weight: 700;">
@@ -2077,12 +2132,20 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (WORKSPACE APPEARANCE DRAWER) -->
+  <!-- SETTINGS MODAL (WORKSPACE APPEARANCE & REPOSITORY DRAWER) -->
   <div class="appearance-drawer-backdrop hidden" id="settingsModal">
     <div class="appearance-drawer-card">
       <div class="modal-header" style="margin-bottom: 0;">
-        <h3 style="display:flex; align-items:center; gap:0.45rem;">⚙️ Workspace Appearance</h3>
+        <h3 style="display:flex; align-items:center; gap:0.45rem;">⚙️ Settings</h3>
         <button type="button" class="btn btn-icon" data-close-modal="settingsModal">✕</button>
+      </div>
+
+      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.45rem;">
+        <div style="font-size: 0.78rem; font-weight: 800; color: var(--text-secondary);">SUBJECTS &amp; DATABASES</div>
+        <button type="button" class="btn btn-primary" id="openRepositoryFromSettingsBtn" style="width: 100%; justify-content: space-between;">
+          <span>📚 Manage Subject Repository</span>
+          <span id="repoVisibleCountBadge" style="background: rgba(255,255,255,0.22); padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.74rem;">0/0</span>
+        </button>
       </div>
 
       <div class="form-group" style="margin-bottom: 0;">
@@ -2218,7 +2281,7 @@
   <div class="modal-backdrop hidden" id="challengeConfigModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>⚙️ Configure Challenge Board</h3>
+        <h3>⚙️ Set Challenge Target Days</h3>
         <button type="button" class="btn btn-icon" data-close-modal="challengeConfigModal">✕</button>
       </div>
       <div class="form-group">
@@ -2226,16 +2289,19 @@
         <input type="date" id="challengeStartDateInput" class="input-field" />
       </div>
       <div class="form-group">
-        <label for="challengeTotalDaysInput">Total Challenge Days (1 – 365)</label>
+        <label for="challengeTotalDaysInput">Target Challenge Days (1 – 365)</label>
         <div style="display: flex; gap: 0.4rem;">
           <button type="button" class="btn" id="decChallengeDaysBtn">-10</button>
-          <input type="number" id="challengeTotalDaysInput" class="input-field" min="1" max="365" style="flex:1; text-align:center; font-weight:700;" />
+          <input type="number" id="challengeTotalDaysInput" class="input-field" min="1" max="365" placeholder="e.g., 30, 60, 100" style="flex:1; text-align:center; font-weight:700;" />
           <button type="button" class="btn" id="incChallengeDaysBtn">+10</button>
         </div>
       </div>
-      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
-        <button type="button" class="btn" data-close-modal="challengeConfigModal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="saveChallengeConfigBtn">Apply Changes</button>
+      <div style="display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 1rem;">
+        <button type="button" class="btn btn-danger" id="clearChallengeDaysBtn">Reset / Empty</button>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn" data-close-modal="challengeConfigModal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveChallengeConfigBtn">Apply Days</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2260,7 +2326,7 @@
       </div>
       <div class="form-group">
         <label for="quickNewChapterInput">New Chapter Name</label>
-        <input type="text" id="quickNewChapterInput" class="input-field" placeholder="e.g., Ionic Equilibrium, Rotational Motion..." />
+        <input type="text" id="quickNewChapterInput" class="input-field" placeholder="e.g., Chapter 1, Linear Algebra, Cell Biology..." />
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
         <button type="button" class="btn" data-close-modal="quickAddChapterModal">Cancel</button>
@@ -2284,16 +2350,11 @@
 
   <script>
     (function () {
-      const STORAGE_KEY = "neet_2027_notion_workspace_v4";
-      const PREFS_KEY = "neet_2027_workspace_prefs_v4";
-      const EXAM_DATE_KEY = "neet_2027_exam_date_v4";
-      const SYNC_META_KEY = "neet_2027_anki_sync_meta_v4";
+      const STORAGE_KEY = "time_task_tracker_workspace_v5";
+      const PREFS_KEY = "time_task_tracker_prefs_v5";
+      const COUNTDOWN_KEY = "time_task_tracker_countdown_v5";
+      const SYNC_META_KEY = "time_task_tracker_sync_meta_v5";
 
-      const DEFAULT_COLORS = {
-        Physics: "#2383e2",
-        Chemistry: "#d9730d",
-        Biology: "#0f7b6c"
-      };
       const SWATCH_PALETTE = ["#2383e2", "#d9730d", "#0f7b6c", "#9065b0", "#e03e3e", "#2b8a3e", "#0b7285", "#c2255c"];
 
       function uid(prefix) {
@@ -2334,7 +2395,7 @@
       }
 
       /* ======================================================================
-         1. STATE & INITIALIZATION
+         1. STATE & INITIALIZATION (CLEAN NEW-USER LANDING STATE)
          ====================================================================== */
       let state = null;
       let prefs = {
@@ -2343,6 +2404,10 @@
         fontSize: "14px",
         pageWidth: "1180px",
         accent: "#2383e2"
+      };
+      let countdownConfig = {
+        title: "",
+        targetDate: ""
       };
       let syncMeta = {
         scriptUrl: "",
@@ -2487,114 +2552,46 @@
         return allLogs;
       }
 
-      function createBlankRawDatabase(displayName, color, noteText, categoryTag) {
-        const colTopic = { id: uid("col"), name: "Chapter / Topic", type: "text", width: 240, isPrimary: true };
-        const colDate = { id: uid("col"), name: "Target Date", type: "date", width: 145 };
+      function createNewSubjectDatabase(displayName, color, noteText, categoryTag) {
+        const colDay = { id: uid("col"), name: "Day", type: "number", width: 72 };
+        const colTopic = { id: uid("col"), name: "Chapter / Topic", type: "text", width: 230, isPrimary: true };
+        const colDate = { id: uid("col"), name: "Target Date", type: "date", width: 140 };
+        const colLec = { id: uid("col"), name: "Lecture", type: "checkbox", width: 92 };
+        const colRead = { id: uid("col"), name: "Reading", type: "checkbox", width: 92 };
+        const colNotes = { id: uid("col"), name: "Notes", type: "checkbox", width: 92 };
+        const colPrac = { id: uid("col"), name: "Practice", type: "checkbox", width: 92 };
+        const colRev = { id: uid("col"), name: "Revise", type: "checkbox", width: 92 };
         const colMins = { id: uid("col"), name: "Time (mins)", type: "number", width: 96, isStudyMinutesCol: true };
+        const colStatus = {
+          id: uid("col"),
+          name: "Status",
+          type: "select",
+          width: 132,
+          options: ["Not Started", "In Progress", "Done", "High Yield"]
+        };
+
         return {
           displayName,
-          category: categoryTag || "General",
+          category: categoryTag || "My Studies",
           note: noteText || "",
           color: color || "#2383e2",
           isCustom: true,
           visibleInGallery: true,
           chapterOptions: [],
           sessionLogs: [],
-          columns: [colTopic, colDate, colMins],
+          columns: [colDay, colTopic, colDate, colLec, colRead, colNotes, colPrac, colRev, colMins, colStatus],
           rows: []
         };
       }
 
-      function createDefaultWorkspace() {
-        const today = getLocalTodayStr();
-
-        function makeDb(subj, color, noteText, sampleRows) {
-          const colDay = { id: uid("col"), name: "Day", type: "number", width: 76 };
-          const colTopic = { id: uid("col"), name: "Chapter / Topic", type: "text", width: 230, isPrimary: true };
-          const colDate = { id: uid("col"), name: "Target Date", type: "date", width: 140 };
-          const colLec = { id: uid("col"), name: "Lecture", type: "checkbox", width: 96 };
-          const colNcert = { id: uid("col"), name: "NCERT", type: "checkbox", width: 92 };
-          const colNotes = { id: uid("col"), name: "Notes", type: "checkbox", width: 92 };
-          const colMcq = { id: uid("col"), name: "MCQs", type: "checkbox", width: 92 };
-          const colRev = { id: uid("col"), name: "Revise", type: "checkbox", width: 92 };
-          const colMins = { id: uid("col"), name: "Time (mins)", type: "number", width: 96, isStudyMinutesCol: true };
-          const colStatus = {
-            id: uid("col"),
-            name: "Status",
-            type: "select",
-            width: 132,
-            options: ["Not Started", "In Progress", "Done", "High Yield"]
-          };
-
-          const columns = [colDay, colTopic, colDate, colLec, colNcert, colNotes, colMcq, colRev, colMins, colStatus];
-          const rows = sampleRows.map((r, i) => ({
-            id: uid("row"),
-            cells: {
-              [colDay.id]: String(i + 1),
-              [colTopic.id]: r.topic,
-              [colDate.id]: r.date || today,
-              [colLec.id]: Boolean(r.lec),
-              [colNcert.id]: Boolean(r.ncert),
-              [colNotes.id]: Boolean(r.notes),
-              [colMcq.id]: Boolean(r.mcq),
-              [colRev.id]: Boolean(r.rev),
-              [colMins.id]: "0",
-              [colStatus.id]: r.status || "Not Started"
-            }
-          }));
-
-          return {
-            displayName: subj,
-            category: "NEET 2027",
-            note: noteText,
-            color,
-            isCustom: false,
-            visibleInGallery: true,
-            chapterOptions: sampleRows.map((r) => r.topic),
-            sessionLogs: [],
-            columns,
-            rows
-          };
-        }
-
+      function createEmptyNewUserWorkspace() {
         return {
-          activeSubject: "Physics",
+          activeSubject: "",
           challengeConfig: {
-            startDate: today,
-            totalDays: 100
+            startDate: getLocalTodayStr(),
+            totalDays: 0
           },
-          databases: {
-            Physics: makeDb(
-              "Physics",
-              DEFAULT_COLORS.Physics,
-              "Mechanics & Electrodynamics",
-              [
-                { topic: "Units & Measurements", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-                { topic: "Motion in a Straight Line", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-                { topic: "Laws of Motion", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "High Yield" }
-              ]
-            ),
-            Chemistry: makeDb(
-              "Chemistry",
-              DEFAULT_COLORS.Chemistry,
-              "Physical, Organic & Inorganic",
-              [
-                { topic: "Some Basic Concepts of Chemistry", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-                { topic: "Structure of Atom", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-                { topic: "Chemical Bonding", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "High Yield" }
-              ]
-            ),
-            Biology: makeDb(
-              "Biology",
-              DEFAULT_COLORS.Biology,
-              "NCERT Line-by-Line & Diagrams",
-              [
-                { topic: "The Living World", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-                { topic: "Biological Classification", date: today, lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "Not Started" },
-                { topic: "Cell: The Unit of Life", date: "", lec: false, ncert: false, notes: false, mcq: false, rev: false, status: "High Yield" }
-              ]
-            )
-          }
+          databases: {}
         };
       }
 
@@ -2603,13 +2600,16 @@
          ====================================================================== */
       function migrateWorkspaceDatabases(parsed) {
         delete parsed.studyLogs;
+        if (!parsed.databases || typeof parsed.databases !== "object") {
+          parsed.databases = {};
+        }
         Object.keys(parsed.databases).forEach((k) => {
           const db = parsed.databases[k];
           if (!db.displayName) db.displayName = k;
-          if (!db.category) db.category = "NEET 2027";
+          if (!db.category) db.category = "My Studies";
           if (typeof db.visibleInGallery !== "boolean") db.visibleInGallery = true;
           if (typeof db.note !== "string") db.note = "";
-          if (!db.color) db.color = DEFAULT_COLORS[k] || "#2383e2";
+          if (!db.color) db.color = "#2383e2";
           if (!Array.isArray(db.sessionLogs)) {
             db.sessionLogs = [];
           }
@@ -2625,9 +2625,9 @@
           const raw = localStorage.getItem(STORAGE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (parsed && parsed.databases && Object.keys(parsed.databases).length > 0) {
+            if (parsed && typeof parsed === "object") {
               if (!parsed.challengeConfig) {
-                parsed.challengeConfig = { startDate: getLocalTodayStr(), totalDays: 100 };
+                parsed.challengeConfig = { startDate: getLocalTodayStr(), totalDays: 0 };
               }
               migrateWorkspaceDatabases(parsed);
               state = parsed;
@@ -2637,15 +2637,13 @@
         } catch (err) {
           console.warn("Workspace load fallback:", err);
         }
-        state = createDefaultWorkspace();
+        state = createEmptyNewUserWorkspace();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       }
 
       function saveWorkspace(markDirty = true) {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          const saveText = document.getElementById("saveStatusText");
-          if (saveText) saveText.textContent = "Saved locally";
           if (markDirty) {
             syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
             syncMeta.dirty = true;
@@ -2749,7 +2747,7 @@
       }
 
       /* ======================================================================
-         5. GALLERY VIEW & IN-CARD TIMER / MULTISELECT POPOVER
+         5. GALLERY VIEW & FULL-SCREEN FOCUS TIMER OVERLAY
          ====================================================================== */
       function validateTrackingDateIsToday() {
         const pill = document.getElementById("trackingDatePill");
@@ -2772,27 +2770,42 @@
         valEl.textContent = (totalSec / 3600).toFixed(1);
       }
 
-      function updateTopbarRunningTimerUI() {
-        const pill = document.getElementById("topbarRunningTimerPill");
-        if (!pill) return;
+      function updateFocusTimerOverlayUI() {
+        const overlay = document.getElementById("focusTimerOverlay");
+        if (!overlay) return;
         if (!activeTimer) {
-          pill.classList.add("hidden-view");
+          overlay.classList.add("hidden-view");
           return;
         }
-        pill.classList.remove("hidden-view");
+        overlay.classList.remove("hidden-view");
         const db = state?.databases?.[activeTimer.subject];
-        const subjEl = document.getElementById("tbTimerSubjLabel");
-        const digitsEl = document.getElementById("tbTimerDigitsLabel");
-        const pauseBtn = document.getElementById("tbTimerPauseBtn");
-        if (subjEl) subjEl.textContent = db?.displayName || activeTimer.subject;
+        const dotEl = document.getElementById("focusTimerSubjDot");
+        const nameEl = document.getElementById("focusTimerSubjName");
+        const chEl = document.getElementById("focusTimerChaptersText");
+        const taskEl = document.getElementById("focusTimerTasksText");
+        const digitsEl = document.getElementById("focusTimerBigDigits");
+        const pauseBtn = document.getElementById("focusTimerPauseBtn");
+
+        if (dotEl) dotEl.style.background = db?.color || "var(--accent)";
+        if (nameEl) nameEl.textContent = db?.displayName || activeTimer.subject;
+        if (chEl) {
+          chEl.textContent = activeTimer.chapterNames && activeTimer.chapterNames.length > 0
+            ? activeTimer.chapterNames.join(", ")
+            : "All Chapters";
+        }
+        if (taskEl) {
+          taskEl.textContent = activeTimer.taskNames && activeTimer.taskNames.length > 0
+            ? activeTimer.taskNames.join(", ")
+            : "General Study";
+        }
         if (digitsEl) digitsEl.textContent = formatHHMMSS(activeTimer.elapsedSeconds);
-        if (pauseBtn) pauseBtn.textContent = activeTimer.running ? "⏸" : "▶";
+        if (pauseBtn) pauseBtn.textContent = activeTimer.running ? "⏸ Pause" : "▶ Resume";
       }
 
       function renderGalleryCards() {
         validateTrackingDateIsToday();
         updateDailyTotalHoursBadge();
-        updateTopbarRunningTimerUI();
+        updateFocusTimerOverlayUI();
         const repoBadge = document.getElementById("repoVisibleCountBadge");
         if (repoBadge) {
           repoBadge.textContent = `${getSubjectKeys().length}/${getAllRepositoryKeys().length}`;
@@ -2894,17 +2907,17 @@
         if (!listEl || !catFilterEl) return;
 
         const allKeys = getAllRepositoryKeys();
-        const categories = Array.from(new Set(allKeys.map((k) => state.databases[k]?.category || "General")));
+        const categories = Array.from(new Set(allKeys.map((k) => state.databases[k]?.category || "My Studies")));
         const currentCat = catFilterEl.value || "__all__";
         catFilterEl.innerHTML = `
           <option value="__all__" ${currentCat === "__all__" ? "selected" : ""}>All Categories (${allKeys.length})</option>
           ${categories.map((cat) => `<option value="${escapeHtml(cat)}" ${currentCat === cat ? "selected" : ""}>${escapeHtml(cat)}</option>`).join("")}
         `;
 
-        const filteredKeys = allKeys.filter((k) => currentCat === "__all__" || (state.databases[k]?.category || "General") === currentCat);
+        const filteredKeys = allKeys.filter((k) => currentCat === "__all__" || (state.databases[k]?.category || "My Studies") === currentCat);
 
         if (filteredKeys.length === 0) {
-          listEl.innerHTML = `<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.84rem;">No databases in this category yet.</div>`;
+          listEl.innerHTML = `<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.84rem;">No subjects in your repository yet. Click <strong>+ New Database</strong> above to create your first subject!</div>`;
           return;
         }
 
@@ -2921,7 +2934,7 @@
                 <div style="min-width:0;">
                   <div style="font-weight:800; font-size:0.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     ${escapeHtml(db.displayName)}
-                    <span style="font-size:0.68rem; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:0.1rem 0.45rem; border-radius:999px; margin-left:0.35rem;">${escapeHtml(db.category || "General")}</span>
+                    <span style="font-size:0.68rem; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:0.1rem 0.45rem; border-radius:999px; margin-left:0.35rem;">${escapeHtml(db.category || "My Studies")}</span>
                   </div>
                   <div style="font-size:0.74rem; color:var(--text-secondary);">
                     ${uniqueCh} chapters • ${db.rows.length} rows • ${totalHrs} hrs logged
@@ -2953,7 +2966,7 @@
               </div>
               <div style="display:flex; flex-direction:column; gap:0.38rem;">
                 <input type="text" id="inlineEditTitleInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.displayName)}" placeholder="Subject title" />
-                <input type="text" id="inlineEditCategoryInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.category || "NEET 2027")}" placeholder="Category (e.g., NEET 2027, MBBS)" />
+                <input type="text" id="inlineEditCategoryInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.category || "My Studies")}" placeholder="Course / Category tag" />
                 <input type="text" id="inlineEditNoteInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.note || "")}" placeholder="Subtitle / note" />
                 <div class="swatch-row">${swatches}</div>
               </div>
@@ -2968,7 +2981,6 @@
           `;
         }
 
-        // Multiselect Track Time Popover with "Select All" (Deduplicated chapters)
         const uniqueChapterNames = getUniqueChaptersInDatabase(db);
         const checkCols = db.columns.filter((c) => c.type === "checkbox");
 
@@ -3098,8 +3110,8 @@
           const formatted = formatHHMMSS(activeTimer.elapsedSeconds);
           const digitEl = document.getElementById(`liveTimerDigits-${activeTimer.subject}`);
           if (digitEl) digitEl.textContent = formatted;
-          const tbDigits = document.getElementById("tbTimerDigitsLabel");
-          if (tbDigits) tbDigits.textContent = formatted;
+          const bigFocusDigits = document.getElementById("focusTimerBigDigits");
+          if (bigFocusDigits) bigFocusDigits.textContent = formatted;
           const totalEl = document.getElementById(`cardTotalTime-${activeTimer.subject}`);
           if (totalEl) {
             const liveAdd = activeTimer.date === trackedDateStr ? activeTimer.elapsedSeconds : 0;
@@ -3109,7 +3121,6 @@
         }, 1000);
 
         renderGalleryCards();
-        showToast(`Started timer for ${db ? db.displayName : subj}`);
       }
 
       function stopAndCommitInCardTimer(shouldRender = true) {
@@ -3153,7 +3164,7 @@
         }
 
         activeTimer = null;
-        updateTopbarRunningTimerUI();
+        updateFocusTimerOverlayUI();
         if (shouldRender) {
           renderGalleryCards();
           if (currentView === "database") renderActiveDatabase();
@@ -3507,7 +3518,6 @@
         const baseDate = document.getElementById("reportBaseDateInput")?.value || trackedDateStr;
         const allLogs = getAllDatabaseSessionLogs();
 
-        // 1. Taskwise Chart
         const twRange = document.getElementById("taskwiseRangeSelect")?.value || "7d";
         const twFrom = document.getElementById("taskwiseFromDate")?.value || "";
         const twTo = document.getElementById("taskwiseToDate")?.value || "";
@@ -3529,7 +3539,6 @@
         }));
         renderBarChart("taskwiseChartBars", "taskwiseChartLabels", taskItems, prefs.accent);
 
-        // 2. Subjectwise Chart (Matching date range selector)
         const swRange = document.getElementById("subjectwiseRangeSelect")?.value || "today";
         const swFrom = document.getElementById("subjectwiseFromDate")?.value || "";
         const swTo = document.getElementById("subjectwiseToDate")?.value || "";
@@ -3550,7 +3559,7 @@
       }
 
       /* ======================================================================
-         8. CHALLENGE BOARD (100 DAYS HEATMAP & DAY REPORT)
+         8. CHALLENGE BOARD (EMPTY BY DEFAULT UNTIL STUDENT SETS TARGET DAYS)
          ====================================================================== */
       function addDaysToIso(isoStr, daysToAdd) {
         const d = new Date(`${isoStr}T00:00:00`);
@@ -3571,7 +3580,30 @@
         const container = document.getElementById("challengeGridContainer");
         if (!container) return;
 
-        const cfg = state.challengeConfig || { startDate: getLocalTodayStr(), totalDays: 100 };
+        const cfg = state.challengeConfig || { startDate: getLocalTodayStr(), totalDays: 0 };
+        const totalDays = Number(cfg.totalDays) || 0;
+
+        if (totalDays <= 0) {
+          container.className = "";
+          container.innerHTML = `
+            <div style="background:var(--bg-surface); border:1.5px dashed var(--border-strong); border-radius:var(--radius-lg); padding:3rem 1.5rem; text-align:center; display:flex; flex-direction:column; align-items:center; gap:0.85rem;">
+              <div style="font-size:2rem;">🎯</div>
+              <div style="font-size:1.05rem; font-weight:800;">Challenge Board is Empty</div>
+              <div style="font-size:0.82rem; color:var(--text-secondary); max-width:360px;">
+                Set how many target days you want to challenge yourself (e.g., 30, 60, or 100 days) to start tracking daily study consistency.
+              </div>
+              <button type="button" class="btn btn-primary" id="emptyChallengeSetupBtn">+ Set Target Days</button>
+            </div>
+          `;
+          document.getElementById("emptyChallengeSetupBtn")?.addEventListener("click", () => {
+            document.getElementById("challengeStartDateInput").value = cfg.startDate || getLocalTodayStr();
+            document.getElementById("challengeTotalDaysInput").value = "30";
+            document.getElementById("challengeConfigModal")?.classList.remove("hidden");
+          });
+          return;
+        }
+
+        container.className = "challenge-grid";
         const allLogs = getAllDatabaseSessionLogs();
         const secByDate = new Map();
         allLogs.forEach((l) => {
@@ -3583,7 +3615,7 @@
         const isPast11PmToday = now.getHours() >= 23;
 
         let html = "";
-        for (let i = 0; i < cfg.totalDays; i++) {
+        for (let i = 0; i < totalDays; i++) {
           const dayNum = i + 1;
           const dateStr = addDaysToIso(cfg.startDate, i);
           const sec = secByDate.get(dateStr) || 0;
@@ -3637,32 +3669,37 @@
 
         bodyEl.innerHTML = `
           <div style="font-weight:800; font-size:0.95rem;">Total Studied on Day ${dayNum}: ${totalHrs.toFixed(2)} hrs</div>
-          ${subjCards}
+          ${subjCards || `<div style="color:var(--text-muted);">No subjects added yet.</div>`}
         `;
         document.getElementById("dayReportModal")?.classList.remove("hidden");
       }
 
       /* ======================================================================
-         9. NEET 2027 COUNTDOWN
+         9. CUSTOM TARGET COUNTDOWN (CREATE / EDIT / CLEAR)
          ====================================================================== */
-      function initNeetCountdown() {
-        const dateInput = document.getElementById("examDateInput");
-        if (!dateInput) return;
-        const savedExam = localStorage.getItem(EXAM_DATE_KEY);
-        if (savedExam) dateInput.value = savedExam;
+      function initTargetCountdown() {
+        try {
+          const saved = localStorage.getItem(COUNTDOWN_KEY);
+          if (saved) countdownConfig = { ...countdownConfig, ...JSON.parse(saved) };
+        } catch (err) {}
 
-        dateInput.addEventListener("change", () => {
-          if (dateInput.value) {
-            localStorage.setItem(EXAM_DATE_KEY, dateInput.value);
-            syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
-            syncMeta.dirty = true;
-            saveSyncMeta();
-            updateSyncButtonVisuals();
+        function renderCountdownPill() {
+          const promptEl = document.getElementById("countdownCreatePrompt");
+          const liveEl = document.getElementById("countdownLiveDisplay");
+          const titleEl = document.getElementById("cdTitleLabel");
+          if (!promptEl || !liveEl) return;
+
+          if (!countdownConfig.targetDate) {
+            promptEl.classList.remove("hidden-view");
+            liveEl.classList.add("hidden-view");
+            return;
           }
-        });
 
-        function tickCountdown() {
-          const target = new Date(`${dateInput.value || "2027-05-02"}T14:00:00`);
+          promptEl.classList.add("hidden-view");
+          liveEl.classList.remove("hidden-view");
+          if (titleEl) titleEl.textContent = countdownConfig.title || "TARGET";
+
+          const target = new Date(`${countdownConfig.targetDate}T09:00:00`);
           const diff = Math.max(0, target - new Date());
           const d = Math.floor(diff / 86400000);
           const h = Math.floor((diff % 86400000) / 3600000);
@@ -3678,8 +3715,41 @@
           if (mEl) mEl.textContent = String(m).padStart(2, "0");
           if (sEl) sEl.textContent = String(s).padStart(2, "0");
         }
-        tickCountdown();
-        setInterval(tickCountdown, 1000);
+
+        renderCountdownPill();
+        setInterval(renderCountdownPill, 1000);
+
+        document.getElementById("openCountdownModalBtn")?.addEventListener("click", () => {
+          document.getElementById("countdownTitleInput").value = countdownConfig.title || "";
+          document.getElementById("examDateInput").value = countdownConfig.targetDate || "";
+          document.getElementById("countdownModal")?.classList.remove("hidden");
+        });
+
+        document.getElementById("saveCountdownBtn")?.addEventListener("click", () => {
+          const title = document.getElementById("countdownTitleInput")?.value.trim() || "TARGET";
+          const targetDate = document.getElementById("examDateInput")?.value || "";
+          if (!targetDate) {
+            showToast("Select a target date");
+            return;
+          }
+          countdownConfig = { title, targetDate };
+          localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
+          syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
+          syncMeta.dirty = true;
+          saveSyncMeta();
+          updateSyncButtonVisuals();
+          renderCountdownPill();
+          document.getElementById("countdownModal")?.classList.add("hidden");
+          showToast(`Countdown set for ${title}`);
+        });
+
+        document.getElementById("clearCountdownBtn")?.addEventListener("click", () => {
+          countdownConfig = { title: "", targetDate: "" };
+          localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
+          renderCountdownPill();
+          document.getElementById("countdownModal")?.classList.add("hidden");
+          showToast("Cleared countdown");
+        });
       }
 
       /* ======================================================================
@@ -3722,7 +3792,7 @@
         }
         if (overrideState === "error") {
           group.classList.add("sync-state-error");
-          label.textContent = "☁️ Sync Error";
+          label.textContent = "☁️ Sync";
           if (detailStatus) detailStatus.textContent = "Sync failed — check Web App URL";
           return;
         }
@@ -3734,18 +3804,18 @@
         }
         if (syncMeta.remoteNewer) {
           group.classList.add("sync-state-remote-newer");
-          label.textContent = "☁️ Pull Update";
+          label.textContent = "☁️ Sync";
           if (detailStatus) detailStatus.textContent = "Newer data available on another device!";
           return;
         }
         if (syncMeta.dirty) {
           group.classList.add("sync-state-dirty");
-          label.textContent = "☁️ Unsynced";
+          label.textContent = "☁️ Sync";
           if (detailStatus) detailStatus.textContent = "Local edits waiting to push to cloud";
           return;
         }
         group.classList.add("sync-state-synced");
-        label.textContent = "☁️ Synced";
+        label.textContent = "☁️ Sync";
         if (detailStatus) detailStatus.textContent = "Up to date across devices";
       }
 
@@ -3775,7 +3845,7 @@
             deviceId: syncMeta.deviceId,
             workspace: state,
             prefs,
-            examDate: document.getElementById("examDateInput")?.value || "2027-05-02"
+            countdown: countdownConfig
           }
         };
         const res = await fetch(syncMeta.scriptUrl, {
@@ -3815,10 +3885,9 @@
           prefs = { ...prefs, ...data.prefs };
           saveAndApplyPrefs(false);
         }
-        if (data.examDate) {
-          localStorage.setItem(EXAM_DATE_KEY, data.examDate);
-          const examEl = document.getElementById("examDateInput");
-          if (examEl) examEl.value = data.examDate;
+        if (data.countdown) {
+          countdownConfig = { ...countdownConfig, ...data.countdown };
+          localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
         }
 
         syncMeta.localUsn = Number(data.usn) || syncMeta.localUsn;
@@ -3888,7 +3957,6 @@
          12. EVENT LISTENERS & BOOTSTRAP
          ====================================================================== */
       function bindAllEvents() {
-        // Tracking Date Picker (Always initializes to device's real today date on refresh)
         const activeDatePicker = document.getElementById("activeDatePicker");
         if (activeDatePicker) {
           trackedDateStr = getLocalTodayStr();
@@ -3902,7 +3970,6 @@
           });
         }
 
-        // Auto-advance Tracking Date if app stays open past midnight
         let lastKnownTodayStr = getLocalTodayStr();
         setInterval(() => {
           const nowToday = getLocalTodayStr();
@@ -3916,7 +3983,6 @@
           }
         }, 30000);
 
-        // View Switch Buttons
         document.getElementById("openReportViewBtn")?.addEventListener("click", () => {
           const repDate = document.getElementById("reportBaseDateInput");
           if (repDate) repDate.value = trackedDateStr;
@@ -3928,7 +3994,7 @@
         document.getElementById("backToGalleryBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
 
         document.getElementById("resetReportLogsBtn")?.addEventListener("click", () => {
-          getSubjectKeys().forEach((k) => {
+          getAllRepositoryKeys().forEach((k) => {
             const db = state.databases[k];
             if (!db) return;
             db.sessionLogs = [];
@@ -3946,16 +4012,8 @@
         // Gallery Card Interactions
         document.getElementById("subjectGalleryRow")?.addEventListener("click", (e) => {
           if (e.target.closest("#openAddSubjectCard")) {
-            selectedNewSubjColor = SWATCH_PALETTE[getSubjectKeys().length % SWATCH_PALETTE.length];
-            const swatchWrap = document.getElementById("newSubjColorSwatches");
-            if (swatchWrap) {
-              swatchWrap.innerHTML = SWATCH_PALETTE.map((c) => `
-                <button type="button" class="swatch-btn ${c === selectedNewSubjColor ? "active" : ""}" style="background:${c};" data-new-subj-color="${c}"></button>
-              `).join("");
-            }
-            document.getElementById("newSubjNameInput").value = "";
-            document.getElementById("newSubjNoteInput").value = "";
-            document.getElementById("addSubjectModal")?.classList.remove("hidden");
+            renderRepositoryModal();
+            document.getElementById("repositoryModal")?.classList.remove("hidden");
             return;
           }
 
@@ -4082,10 +4140,6 @@
           if (delSubjBtn) {
             e.stopPropagation();
             const subj = delSubjBtn.dataset.deleteSubject;
-            if (getAllRepositoryKeys().length <= 1) {
-              showToast("At least 1 database must remain in repository");
-              return;
-            }
             if (activeTimer && activeTimer.subject === subj) {
               clearInterval(activeTimer.intervalId);
               activeTimer = null;
@@ -4107,6 +4161,17 @@
           if (cardEl && !cardOverlay) {
             openSubjectDatabase(cardEl.dataset.openSubject);
           }
+        });
+
+        // Full-Screen Focus Timer Overlay Buttons
+        document.getElementById("focusTimerPauseBtn")?.addEventListener("click", () => {
+          if (!activeTimer) return;
+          activeTimer.running = !activeTimer.running;
+          renderGalleryCards();
+        });
+
+        document.getElementById("focusTimerStopBtn")?.addEventListener("click", () => {
+          stopAndCommitInCardTimer(true);
         });
 
         // Multiselect Checkboxes inside Gallery Popover (including Select All)
@@ -4155,22 +4220,23 @@
 
         document.getElementById("confirmCreateSubjectBtn")?.addEventListener("click", () => {
           const rawName = document.getElementById("newSubjNameInput")?.value.trim();
-          const category = document.getElementById("newSubjGroupInput")?.value.trim() || "General";
+          const category = document.getElementById("newSubjGroupInput")?.value.trim() || "My Studies";
           const note = document.getElementById("newSubjNoteInput")?.value.trim();
           if (!rawName) {
             showToast("Enter a subject or database name");
             return;
           }
           const key = uid("subj");
-          state.databases[key] = createBlankRawDatabase(rawName, selectedNewSubjColor, note, category);
+          state.databases[key] = createNewSubjectDatabase(rawName, selectedNewSubjColor, note, category);
           saveWorkspace();
           document.getElementById("addSubjectModal")?.classList.add("hidden");
           renderGalleryCards();
-          showToast(`Created "${rawName}" in ${category}`);
+          showToast(`Created "${rawName}"`);
         });
 
-        // Subject / Database Repository Manager Modal
-        document.getElementById("openRepositoryModalBtn")?.addEventListener("click", () => {
+        // Subject / Database Repository Manager Modal (Accessed via Settings or Add/Manage Card)
+        document.getElementById("openRepositoryFromSettingsBtn")?.addEventListener("click", () => {
+          document.getElementById("settingsModal")?.classList.add("hidden");
           renderRepositoryModal();
           document.getElementById("repositoryModal")?.classList.remove("hidden");
         });
@@ -4223,10 +4289,6 @@
           const delBtn = e.target.closest("[data-repo-delete-db]");
           if (delBtn) {
             const k = delBtn.dataset.repoDeleteDb;
-            if (getAllRepositoryKeys().length <= 1) {
-              showToast("At least 1 database must remain in repository");
-              return;
-            }
             if (activeTimer && activeTimer.subject === k) {
               clearInterval(activeTimer.intervalId);
               activeTimer = null;
@@ -4239,6 +4301,7 @@
           }
         });
 
+        // Portrait Checklist Interactions
         document.getElementById("portraitChapterSelect")?.addEventListener("change", (e) => {
           portraitSelectedChapter = e.target.value;
           renderActiveDatabase();
@@ -4355,7 +4418,6 @@
             const logSeconds = matchingLogs.reduce((s, l) => s + (Number(l.seconds) || 0), 0);
             const totalSeconds = Math.max(logSeconds, totalRowMins * 60);
 
-            // Unique completed task checkboxes across all consecutive days for this chapter
             let completedTasks = 0;
             checkCols.forEach((col) => {
               if (matchingRows.some((r) => Boolean(r.cells[col.id]))) completedTasks += 1;
@@ -4702,30 +4764,38 @@
 
         // Challenge Board Config & Day Report Click
         document.getElementById("openChallengeConfigBtn")?.addEventListener("click", () => {
-          const cfg = state.challengeConfig || { startDate: getLocalTodayStr(), totalDays: 100 };
-          document.getElementById("challengeStartDateInput").value = cfg.startDate;
-          document.getElementById("challengeTotalDaysInput").value = cfg.totalDays;
+          const cfg = state.challengeConfig || { startDate: getLocalTodayStr(), totalDays: 0 };
+          document.getElementById("challengeStartDateInput").value = cfg.startDate || getLocalTodayStr();
+          document.getElementById("challengeTotalDaysInput").value = cfg.totalDays > 0 ? cfg.totalDays : 30;
           document.getElementById("challengeConfigModal")?.classList.remove("hidden");
         });
 
         document.getElementById("decChallengeDaysBtn")?.addEventListener("click", () => {
           const inp = document.getElementById("challengeTotalDaysInput");
-          inp.value = Math.max(1, (Number(inp.value) || 100) - 10);
+          inp.value = Math.max(1, (Number(inp.value) || 30) - 10);
         });
 
         document.getElementById("incChallengeDaysBtn")?.addEventListener("click", () => {
           const inp = document.getElementById("challengeTotalDaysInput");
-          inp.value = Math.min(365, (Number(inp.value) || 100) + 10);
+          inp.value = Math.min(365, (Number(inp.value) || 30) + 10);
         });
 
         document.getElementById("saveChallengeConfigBtn")?.addEventListener("click", () => {
           const startDate = document.getElementById("challengeStartDateInput")?.value || getLocalTodayStr();
-          const totalDays = Math.min(365, Math.max(1, Number(document.getElementById("challengeTotalDaysInput")?.value) || 100));
+          const totalDays = Math.min(365, Math.max(1, Number(document.getElementById("challengeTotalDaysInput")?.value) || 30));
           state.challengeConfig = { startDate, totalDays };
           saveWorkspace();
           document.getElementById("challengeConfigModal")?.classList.add("hidden");
           renderChallengeBoard();
-          showToast(`Updated Challenge Board (${totalDays} days)`);
+          showToast(`Set Challenge Board for ${totalDays} target days`);
+        });
+
+        document.getElementById("clearChallengeDaysBtn")?.addEventListener("click", () => {
+          state.challengeConfig = { startDate: getLocalTodayStr(), totalDays: 0 };
+          saveWorkspace();
+          document.getElementById("challengeConfigModal")?.classList.add("hidden");
+          renderChallengeBoard();
+          showToast("Challenge Board reset to empty");
         });
 
         document.getElementById("challengeGridContainer")?.addEventListener("click", (e) => {
@@ -4734,8 +4804,12 @@
           openChallengeDayReport(Number(cell.dataset.challengeDay), cell.dataset.challengeDate);
         });
 
-        // Settings Modal (Workspace Appearance Drawer)
+        // Settings Modal (Workspace Appearance & Repository Drawer)
         function syncAppearanceDrawerSelections() {
+          const repoBadge = document.getElementById("repoVisibleCountBadge");
+          if (repoBadge) {
+            repoBadge.textContent = `${getSubjectKeys().length}/${getAllRepositoryKeys().length}`;
+          }
           document.querySelectorAll("#fontFamilyCardGrid .font-preview-card").forEach((card) =>
             card.classList.toggle("active", card.dataset.fontChoice === prefs.fontFamily)
           );
@@ -4806,17 +4880,6 @@
           syncAppearanceDrawerSelections();
         });
 
-        // Topbar Running Timer Controls
-        document.getElementById("tbTimerPauseBtn")?.addEventListener("click", () => {
-          if (!activeTimer) return;
-          activeTimer.running = !activeTimer.running;
-          renderGalleryCards();
-        });
-
-        document.getElementById("tbTimerSaveBtn")?.addEventListener("click", () => {
-          stopAndCommitInCardTimer(true);
-        });
-
         // One-Click Cloud Sync & Details Modal
         document.getElementById("quickSyncBtn")?.addEventListener("click", executeSmartSync);
         document.getElementById("openSyncModalBtn")?.addEventListener("click", () => {
@@ -4842,7 +4905,7 @@
         });
 
         document.getElementById("copyGasScriptBtn")?.addEventListener("click", () => {
-          const gasCode = `const SYNC_FILE_NAME = "NEET_2027_Workspace_Backup.json";
+          const gasCode = `const SYNC_FILE_NAME = "Time_Task_Tracker_Backup.json";
 function getOrCreateSyncFile() {
   const files = DriveApp.getFilesByName(SYNC_FILE_NAME);
   if (files.hasNext()) return files.next();
@@ -4864,7 +4927,7 @@ function doPost(e) {
   const file = getOrCreateSyncFile();
   const existing = JSON.parse(file.getBlob().getDataAsString() || "{}");
   const nextUsn = Math.max(Number(bundle.usn) || 1, (Number(existing.usn) || 0) + 1);
-  const record = { status: "success", usn: nextUsn, deviceId: bundle.deviceId, syncedAt: new Date().toISOString(), workspace: bundle.workspace, prefs: bundle.prefs, examDate: bundle.examDate };
+  const record = { status: "success", usn: nextUsn, deviceId: bundle.deviceId, syncedAt: new Date().toISOString(), workspace: bundle.workspace, prefs: bundle.prefs, countdown: bundle.countdown };
   file.setContent(JSON.stringify(record, null, 2));
   return createJsonOutput({ status: "success", usn: nextUsn, syncedAt: record.syncedAt });
 }`;
@@ -4879,10 +4942,10 @@ function doPost(e) {
 
         // Export / Import JSON
         document.getElementById("exportJsonBtn")?.addEventListener("click", () => {
-          const blob = new Blob([JSON.stringify({ workspace: state, prefs }, null, 2)], { type: "application/json" });
+          const blob = new Blob([JSON.stringify({ workspace: state, prefs, countdown: countdownConfig }, null, 2)], { type: "application/json" });
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = `neet_2027_backup_${getLocalTodayStr()}.json`;
+          a.download = `time_task_tracker_backup_${getLocalTodayStr()}.json`;
           a.click();
         });
 
@@ -4905,6 +4968,10 @@ function doPost(e) {
                 if (parsed.prefs) {
                   prefs = { ...prefs, ...parsed.prefs };
                   saveAndApplyPrefs();
+                }
+                if (parsed.countdown) {
+                  countdownConfig = { ...countdownConfig, ...parsed.countdown };
+                  localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
                 }
                 switchWorkspaceView(currentView);
                 showToast("Imported backup successfully");
@@ -4934,7 +5001,7 @@ function doPost(e) {
         loadAndApplyPrefs();
         loadSyncMeta();
         loadWorkspace();
-        initNeetCountdown();
+        initTargetCountdown();
         initEmbeddedPwa();
         bindAllEvents();
         renderGalleryCards();

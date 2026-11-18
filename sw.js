@@ -1,4 +1,4 @@
-const CACHE_NAME = "neet-2027-workspace-v2";
+const CACHE_NAME = "time-task-tracker-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -24,7 +24,6 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Always bypass cache for Google Apps Script Cloud Sync calls
   if (event.request.url.includes("script.google.com") || event.request.url.includes("script.googleusercontent.com")) {
     return;
   }
