@@ -25,10 +25,10 @@
 ---
 
 HOW TO DOWNLOAD THIS APP ?
-Go to release section
-click on tag
-open Tag 
-scroll to the bottom
+Go to release section -
+click on tag -
+open Tag -
+scroll to the bottom -
 Under asset you'll find apk file
 
 ## ☁️ Cloud Sync Setup Guide (Google Drive Backup & Cross-Device Sync)
