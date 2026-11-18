@@ -7,6 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="NEET 2027" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%232383e2'/%3E%3Ctext x='96' y='118' font-size='74' font-weight='800' font-family='sans-serif' fill='white' text-anchor='middle'%3EN27%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%232383e2'/%3E%3Ctext x='96' y='118' font-size='74' font-weight='800' font-family='sans-serif' fill='white' text-anchor='middle'%3EN27%3C/text%3E%3C/svg%3E" />
   <title>NEET 2027 — 100-Day Study Workspace</title>
   <link id="dynamicGoogleFont" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
   <style>
@@ -460,13 +463,47 @@
     }
 
     @media (max-width: 1024px) {
+      .topbar-running-timer {
+        display: none !important;
+      }
+      .topbar {
+        padding: 0.55rem 0.75rem;
+      }
       .topbar-inner {
-        grid-template-columns: 1fr auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.45rem;
+      }
+      .brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 0.4rem;
+      }
+      .brand-title {
+        display: none;
+      }
+      .sync-pill {
+        padding: 0.16rem 0.48rem;
+        font-size: 0.68rem;
+      }
+      .topbar-actions {
+        flex: 0 0 auto;
+        gap: 0.35rem;
+      }
+      .topbar-actions .btn {
+        padding: 0.36rem 0.6rem;
+        font-size: 0.76rem;
+        min-height: 32px;
       }
       .countdown-pill {
-        grid-column: 1 / -1;
-        justify-self: center;
+        width: 100%;
+        justify-content: center;
         order: 3;
+        padding: 0.28rem 0.65rem;
+        font-size: 0.73rem;
+        gap: 0.32rem;
       }
       .subject-gallery-row {
         grid-template-columns: 1fr;
@@ -475,19 +512,180 @@
       .subject-gallery-card,
       .add-subject-card {
         width: 100% !important;
-        min-height: 290px;
+        min-height: 285px;
         height: auto !important;
+      }
+      .challenge-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.55rem;
+      }
+      .challenge-header > div {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .challenge-header h2 {
+        font-size: 1.15rem !important;
+        white-space: nowrap;
       }
     }
 
+    @media (max-width: 420px) {
+      .sync-pill {
+        display: none;
+      }
+      .countdown-date-edit {
+        display: none;
+      }
+    }
+
+    /* Portrait Mobile & Tablet Daily Task Checklist Card (Ref: image_f2cf7d.jpg) */
+    .portrait-task-card {
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1rem;
+      box-shadow: var(--shadow-sm);
+      max-width: 540px;
+      margin: 0 auto 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+    }
+
+    .portrait-field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+    }
+
+    .portrait-field-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      white-space: nowrap;
+      min-width: 112px;
+    }
+
+    .portrait-field-control {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .portrait-field-control .input-field {
+      width: 100%;
+      min-height: 38px;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+
+    .portrait-plus-btn {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      border: 1.5px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .portrait-plus-btn:hover {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .portrait-task-list-box {
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .portrait-task-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      margin-bottom: 0.15rem;
+    }
+
+    .portrait-task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.68rem 0.85rem;
+      border-radius: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .portrait-task-item.is-checked {
+      background: var(--success-bg);
+      border-color: rgba(15, 123, 108, 0.35);
+    }
+
+    .portrait-task-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    .portrait-task-bullet {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .portrait-task-checkbox {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .portrait-status-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    /* Subject Gallery Card (300x300px) */
     .subject-gallery-card {
       position: relative;
       width: 300px;
       height: 300px;
       background: var(--bg-elevated);
-      border: 1.5px solid rgba(35, 131, 226, 0.35);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1rem 1.1rem;
+      padding: 1.05rem 1.1rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -497,21 +695,21 @@
     }
 
     .subject-gallery-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
       border-color: var(--accent);
     }
 
     .subject-gallery-card.is-timer-running {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-md);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     .gallery-card-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.45rem;
+      gap: 0.5rem;
     }
 
     .gallery-card-title-wrap {
@@ -522,8 +720,8 @@
     }
 
     .subject-dot {
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -531,56 +729,50 @@
     .gallery-card-title {
       font-size: 0.96rem;
       font-weight: 800;
-      letter-spacing: 0.02em;
       text-transform: uppercase;
+      letter-spacing: 0.02em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .gallery-card-top-right {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       flex-shrink: 0;
     }
 
     .card-edit-pencil {
       border: none;
       background: transparent;
-      color: var(--text-secondary);
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      display: grid;
-      place-items: center;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
+      padding: 0.15rem 0.28rem;
+      border-radius: 6px;
+      opacity: 0.72;
     }
 
     .card-edit-pencil:hover {
+      opacity: 1;
       background: var(--bg-hover);
-      color: var(--text-primary);
     }
 
     .ch-count-badge {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: var(--text-secondary);
       background: var(--bg-surface);
       border: 1px solid var(--border);
+      padding: 0.15rem 0.5rem;
       border-radius: 999px;
-      padding: 0.14rem 0.5rem;
     }
 
-    /* Circular Progress Ring */
     .ring-wrap {
       position: relative;
       width: 96px;
       height: 96px;
-      margin: 0.1rem auto;
-      display: grid;
-      place-items: center;
+      margin: 0 auto;
     }
 
     .ring-svg {
@@ -609,17 +801,16 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
     }
 
     .ring-pct {
       font-size: 1.25rem;
-      font-weight: 800;
-      line-height: 1.1;
+      font-weight: 900;
+      line-height: 1.05;
     }
 
     .ring-sub {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       font-weight: 600;
       color: var(--text-secondary);
     }
@@ -1457,6 +1648,33 @@
       color: #1a1a1a;
     }
 
+    .challenge-cell.level-failed-cross {
+      position: relative;
+      background: #fde2e4;
+      color: #9b1c26;
+    }
+
+    .challenge-cell.level-failed-cross::before,
+    .challenge-cell.level-failed-cross::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      width: 80%;
+      height: 2.5px;
+      background: rgba(224, 62, 62, 0.72);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .challenge-cell.level-failed-cross::before {
+      transform: translateY(-50%) rotate(32deg);
+    }
+
+    .challenge-cell.level-failed-cross::after {
+      transform: translateY(-50%) rotate(-32deg);
+    }
+
     .challenge-day-num {
       font-size: 0.92rem;
       font-weight: 800;
@@ -1625,6 +1843,9 @@
           <button type="button" class="btn" id="openChallengeBoardBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">
             Challenge Board
           </button>
+          <button type="button" class="btn" id="openRepositoryModalBtn" style="border-radius: 999px; border-color: var(--accent); color: var(--accent); padding: 0.42rem 1.05rem; font-weight: 700;" title="Show, hide, archive, or switch between all databases in your repository">
+            📚 Repository (<span id="repoVisibleCountBadge">3/3</span>)
+          </button>
         </div>
 
         <div class="total-hours-badge" title="Total hours studied across all subjects on selected Tracking Date">
@@ -1647,57 +1868,99 @@
           <button type="button" class="btn" id="backToGalleryBtn">← Back to Gallery</button>
           <h2 id="activeDbTitle" style="font-size: 1.25rem; font-weight: 800;">Physics Database</h2>
         </div>
-        <div class="db-subject-tabs" id="dbSubjectTabs"></div>
-      </div>
-
-      <div class="db-toolbar">
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
-          <div class="filter-pills" id="rowFilterPills">
-            <button type="button" class="filter-pill active" data-filter="all">All</button>
-            <button type="button" class="filter-pill" data-filter="incomplete">Incomplete</button>
-            <button type="button" class="filter-pill" data-filter="completed">Completed</button>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="filter-pills" id="dbLayoutModePills" title="Switch between Portrait Checklist and Full Table">
+            <button type="button" class="filter-pill" data-db-layout="checklist">✓ Daily Checklist</button>
+            <button type="button" class="filter-pill" data-db-layout="table">⊞ Full Table</button>
           </div>
-          <select id="dbChapterFilterSelect" class="input-field" style="min-width: 170px; font-weight: 600;" title="Filter rows by chapter">
-            <option value="__all__">All Chapters</option>
-          </select>
-          <button type="button" class="btn" id="openChapterReportBtn" title="View days taken, total time, and progress for selected chapter">
-            📊 Chapter Report
-          </button>
-          <input type="search" id="rowSearchInput" class="input-field" placeholder="Search chapter or topic..." />
-        </div>
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;">
-          <button type="button" class="btn" id="addColumnBtn">+ Add Column</button>
-          <button type="button" class="btn btn-primary" id="addRowBtn">+ New Row</button>
+          <div class="db-subject-tabs" id="dbSubjectTabs"></div>
         </div>
       </div>
 
-      <div class="table-wrapper">
-        <table class="notion-table">
-          <thead id="tableHead"></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
+      <!-- PORTRAIT / MOBILE DAILY CHECKLIST VIEW (Ref: image_f2cf7d.jpg) -->
+      <div id="portraitChecklistWrapper" class="hidden-view">
+        <div class="portrait-task-card">
+          <div class="portrait-field-row">
+            <label class="portrait-field-label" for="portraitTaskDateInput">📅 Today Date</label>
+            <div class="portrait-field-control">
+              <input type="date" id="portraitTaskDateInput" class="input-field" />
+            </div>
+          </div>
+
+          <div class="portrait-field-row">
+            <label class="portrait-field-label" for="portraitChapterSelect">✓ Chapter</label>
+            <div class="portrait-field-control">
+              <select id="portraitChapterSelect" class="input-field"></select>
+              <button type="button" class="portrait-plus-btn" id="portraitQuickAddChapterBtn" title="Add new chapter">+</button>
+            </div>
+          </div>
+
+          <div class="portrait-task-list-box">
+            <div class="portrait-task-list-header">
+              <span>Task List</span>
+              <span id="portraitChecklistProgressLabel">0 / 0 done</span>
+            </div>
+            <div id="portraitTaskItemsContainer" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+          </div>
+
+          <div class="portrait-status-footer">
+            <span>Status: <select id="portraitRowStatusSelect" class="input-field status-select-pill" style="min-height:30px; padding:0.15rem 0.55rem;"></select></span>
+            <button type="button" class="btn" id="portraitAddTaskColBtn" style="min-height:30px; padding:0.2rem 0.6rem; font-size:0.75rem;">+ Add Task</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="desktopDatabaseTableWrapper">
+        <div class="db-toolbar">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
+            <div class="filter-pills" id="rowFilterPills">
+              <button type="button" class="filter-pill active" data-filter="all">All</button>
+              <button type="button" class="filter-pill" data-filter="incomplete">Incomplete</button>
+              <button type="button" class="filter-pill" data-filter="completed">Completed</button>
+            </div>
+            <select id="dbChapterFilterSelect" class="input-field" style="min-width: 170px; font-weight: 600;" title="Filter rows by chapter">
+              <option value="__all__">All Chapters</option>
+            </select>
+            <button type="button" class="btn" id="openChapterReportBtn" title="View days taken, total time, and progress for selected chapter">
+              📊 Chapter Report
+            </button>
+            <input type="search" id="rowSearchInput" class="input-field" placeholder="Search chapter or topic..." />
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;">
+            <button type="button" class="btn" id="addColumnBtn">+ Add Column</button>
+            <button type="button" class="btn btn-primary" id="addRowBtn">+ New Row</button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="notion-table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
     <!-- 3. REPORT ANALYTICS VIEW -->
     <section id="reportAnalyticsView" class="hidden-view">
       <div class="report-header">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
           <button type="button" class="btn" id="closeReportViewBtn">✕ Close Report</button>
-          <span class="report-title">REPORT</span>
+          <h2 class="report-title">REPORT</h2>
         </div>
         <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;">
-          <div class="date-selector-pill">
-            <span>📅 Base Date:</span>
-            <input type="date" id="reportBaseDateInput" class="input-field" style="min-height: 26px; padding: 0.15rem 0.4rem;" />
-          </div>
-          <button type="button" class="btn btn-danger" id="resetReportLogsBtn" title="Clear all recorded session logs to start fresh">
+          <button type="button" class="btn btn-danger" id="resetReportLogsBtn" title="Clear all study time logs so charts start fresh">
             🗑 Reset Report Logs
           </button>
+          <label class="date-selector-pill">
+            <span>📅 Base Date:</span>
+            <input type="date" id="reportBaseDateInput" class="input-field" style="min-height: 26px; padding: 0.15rem 0.4rem;" />
+          </label>
         </div>
       </div>
 
       <div class="report-grid">
+        <!-- Taskwise Chart -->
         <div class="report-card">
           <div class="report-card-head">
             <h3>TASKWISE</h3>
@@ -1708,7 +1971,7 @@
               <option value="100d">All 100 Days</option>
               <option value="custom">Custom Date Range</option>
             </select>
-            <div id="taskwiseCustomRange" class="hidden-view" style="display: flex; gap: 0.4rem; align-items: center;">
+            <div id="taskwiseCustomRange" class="hidden-view" style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; justify-content: center;">
               <input type="date" id="taskwiseFromDate" class="input-field" />
               <span>to</span>
               <input type="date" id="taskwiseToDate" class="input-field" />
@@ -1718,6 +1981,7 @@
           <div class="chart-labels-row" id="taskwiseChartLabels"></div>
         </div>
 
+        <!-- Subjectwise Chart -->
         <div class="report-card">
           <div class="report-card-head">
             <h3>SUBJECTWISE</h3>
@@ -1728,7 +1992,7 @@
               <option value="100d">All 100 Days</option>
               <option value="custom">Custom Date Range</option>
             </select>
-            <div id="subjectwiseCustomRange" class="hidden-view" style="display: flex; gap: 0.4rem; align-items: center;">
+            <div id="subjectwiseCustomRange" class="hidden-view" style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; justify-content: center;">
               <input type="date" id="subjectwiseFromDate" class="input-field" />
               <span>to</span>
               <input type="date" id="subjectwiseToDate" class="input-field" />
@@ -1764,16 +2028,20 @@
   <div class="modal-backdrop hidden" id="addSubjectModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>➕ Add New Subject Box</h3>
+        <h3>➕ Add New Database to Repository</h3>
         <button type="button" class="btn btn-icon" data-close-modal="addSubjectModal">✕</button>
       </div>
       <div class="form-group">
-        <label for="newSubjNameInput">Subject Name</label>
-        <input type="text" id="newSubjNameInput" class="input-field" placeholder="e.g., Mock Tests, Organic Revision..." />
+        <label for="newSubjNameInput">Subject / Database Title</label>
+        <input type="text" id="newSubjNameInput" class="input-field" placeholder="e.g., Anatomy (MBBS), Mock Tests, Coding..." />
+      </div>
+      <div class="form-group">
+        <label for="newSubjGroupInput">Workspace / Category Tag</label>
+        <input type="text" id="newSubjGroupInput" class="input-field" value="NEET 2027" placeholder="e.g., NEET 2027, MBBS Year 1, Personal..." />
       </div>
       <div class="form-group">
         <label for="newSubjNoteInput">Subtitle / Focus Note</label>
-        <input type="text" id="newSubjNoteInput" class="input-field" placeholder="e.g., Full Syllabus & Error Log" />
+        <input type="text" id="newSubjNoteInput" class="input-field" placeholder="e.g., Dissection, Histology & Osteology" />
       </div>
       <div class="form-group">
         <label>Accent Color</label>
@@ -1781,8 +2049,31 @@
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
         <button type="button" class="btn" data-close-modal="addSubjectModal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="confirmCreateSubjectBtn">Create Subject</button>
+        <button type="button" class="btn btn-primary" id="confirmCreateSubjectBtn">Create Database</button>
       </div>
+    </div>
+  </div>
+
+  <!-- SUBJECT / DATABASE REPOSITORY MANAGER MODAL -->
+  <div class="modal-backdrop hidden" id="repositoryModal">
+    <div class="modal-card" style="max-width: 560px;">
+      <div class="modal-header">
+        <h3>📚 Subject & Database Repository</h3>
+        <button type="button" class="btn btn-icon" data-close-modal="repositoryModal">✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+        Choose which subjects appear on your active Gallery Dashboard. Unchecked databases stay safely stored locally and backed up in Google Drive so you never lose past progress (e.g., keeping NEET subjects archived while studying MBBS).
+      </p>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <select id="repoCategoryFilterSelect" class="input-field" style="min-width: 170px; font-weight: 700;">
+          <option value="__all__">All Categories</option>
+        </select>
+        <div style="display: flex; gap: 0.4rem;">
+          <button type="button" class="btn" id="repoShowAllBtn" style="min-height: 32px; padding: 0.25rem 0.65rem; font-size: 0.76rem;">Show All</button>
+          <button type="button" class="btn btn-primary" id="repoNewDbBtn" style="min-height: 32px; padding: 0.25rem 0.75rem; font-size: 0.76rem;">+ New Database</button>
+        </div>
+      </div>
+      <div id="repositoryListContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 340px; overflow-y: auto;"></div>
     </div>
   </div>
 
@@ -2064,6 +2355,9 @@
       };
 
       let currentView = "gallery";
+      let dbLayoutMode = window.innerWidth <= 1024 ? "checklist" : "table";
+      let portraitSelectedDate = getLocalTodayStr();
+      let portraitSelectedChapter = "";
       let trackedDateStr = getLocalTodayStr();
       let rowFilter = "all";
       let chapterFilter = "__all__";
@@ -2074,8 +2368,12 @@
       let pendingChapterTargetRowId = null;
       let selectedNewSubjColor = "#2383e2";
 
-      function getSubjectKeys() {
+      function getAllRepositoryKeys() {
         return Object.keys(state?.databases || {});
+      }
+
+      function getSubjectKeys() {
+        return getAllRepositoryKeys().filter((k) => state.databases[k]?.visibleInGallery !== false);
       }
 
       function normalizeChapterKey(name) {
@@ -2177,7 +2475,7 @@
 
       function getAllDatabaseSessionLogs() {
         const allLogs = [];
-        getSubjectKeys().forEach((subjKey) => {
+        getAllRepositoryKeys().forEach((subjKey) => {
           const db = state.databases[subjKey];
           reconcileSubjectSessionLogs(db);
           if (Array.isArray(db.sessionLogs)) {
@@ -2189,15 +2487,17 @@
         return allLogs;
       }
 
-      function createBlankRawDatabase(displayName, color, noteText) {
+      function createBlankRawDatabase(displayName, color, noteText, categoryTag) {
         const colTopic = { id: uid("col"), name: "Chapter / Topic", type: "text", width: 240, isPrimary: true };
         const colDate = { id: uid("col"), name: "Target Date", type: "date", width: 145 };
         const colMins = { id: uid("col"), name: "Time (mins)", type: "number", width: 96, isStudyMinutesCol: true };
         return {
           displayName,
+          category: categoryTag || "General",
           note: noteText || "",
           color: color || "#2383e2",
           isCustom: true,
+          visibleInGallery: true,
           chapterOptions: [],
           sessionLogs: [],
           columns: [colTopic, colDate, colMins],
@@ -2245,9 +2545,11 @@
 
           return {
             displayName: subj,
+            category: "NEET 2027",
             note: noteText,
             color,
             isCustom: false,
+            visibleInGallery: true,
             chapterOptions: sampleRows.map((r) => r.topic),
             sessionLogs: [],
             columns,
@@ -2304,6 +2606,8 @@
         Object.keys(parsed.databases).forEach((k) => {
           const db = parsed.databases[k];
           if (!db.displayName) db.displayName = k;
+          if (!db.category) db.category = "NEET 2027";
+          if (typeof db.visibleInGallery !== "boolean") db.visibleInGallery = true;
           if (typeof db.note !== "string") db.note = "";
           if (!db.color) db.color = DEFAULT_COLORS[k] || "#2383e2";
           if (!Array.isArray(db.sessionLogs)) {
@@ -2489,6 +2793,10 @@
         validateTrackingDateIsToday();
         updateDailyTotalHoursBadge();
         updateTopbarRunningTimerUI();
+        const repoBadge = document.getElementById("repoVisibleCountBadge");
+        if (repoBadge) {
+          repoBadge.textContent = `${getSubjectKeys().length}/${getAllRepositoryKeys().length}`;
+        }
         const rowContainer = document.getElementById("subjectGalleryRow");
         if (!rowContainer) return;
 
@@ -2570,14 +2878,63 @@
         const addCardHtml = `
           <div class="add-subject-card" id="openAddSubjectCard">
             <div class="add-plus-circle">+</div>
-            <div style="font-weight: 800; font-size: 0.95rem; color: var(--accent);">Add New Subject</div>
-            <div style="font-size: 0.76rem; color: var(--text-secondary); max-width: 210px;">
-              Form a new gallery box with a blank editable database inside
+            <div style="font-weight: 800; font-size: 0.95rem; color: var(--accent);">Add / Manage Subjects</div>
+            <div style="font-size: 0.76rem; color: var(--text-secondary); max-width: 220px;">
+              Create a new database or select subjects from your repository
             </div>
           </div>
         `;
 
         rowContainer.innerHTML = cardsHtml + addCardHtml;
+      }
+
+      function renderRepositoryModal() {
+        const listEl = document.getElementById("repositoryListContainer");
+        const catFilterEl = document.getElementById("repoCategoryFilterSelect");
+        if (!listEl || !catFilterEl) return;
+
+        const allKeys = getAllRepositoryKeys();
+        const categories = Array.from(new Set(allKeys.map((k) => state.databases[k]?.category || "General")));
+        const currentCat = catFilterEl.value || "__all__";
+        catFilterEl.innerHTML = `
+          <option value="__all__" ${currentCat === "__all__" ? "selected" : ""}>All Categories (${allKeys.length})</option>
+          ${categories.map((cat) => `<option value="${escapeHtml(cat)}" ${currentCat === cat ? "selected" : ""}>${escapeHtml(cat)}</option>`).join("")}
+        `;
+
+        const filteredKeys = allKeys.filter((k) => currentCat === "__all__" || (state.databases[k]?.category || "General") === currentCat);
+
+        if (filteredKeys.length === 0) {
+          listEl.innerHTML = `<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.84rem;">No databases in this category yet.</div>`;
+          return;
+        }
+
+        listEl.innerHTML = filteredKeys.map((k) => {
+          const db = state.databases[k];
+          const isVisible = db.visibleInGallery !== false;
+          const uniqueCh = getUniqueChaptersInDatabase(db).length;
+          const totalHrs = (getSubjectDatabaseSeconds(k, null) / 3600).toFixed(1);
+          return `
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.65rem; padding:0.65rem 0.8rem; border-radius:10px; background:var(--bg-surface); border:1px solid ${isVisible ? "var(--accent)" : "var(--border)"};">
+              <label style="display:flex; align-items:center; gap:0.65rem; flex:1; min-width:0; cursor:pointer;">
+                <input type="checkbox" class="notion-checkbox" data-repo-toggle-visible="${escapeHtml(k)}" ${isVisible ? "checked" : ""} />
+                <span class="subject-dot" style="background:${escapeHtml(db.color)};"></span>
+                <div style="min-width:0;">
+                  <div style="font-weight:800; font-size:0.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    ${escapeHtml(db.displayName)}
+                    <span style="font-size:0.68rem; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:0.1rem 0.45rem; border-radius:999px; margin-left:0.35rem;">${escapeHtml(db.category || "General")}</span>
+                  </div>
+                  <div style="font-size:0.74rem; color:var(--text-secondary);">
+                    ${uniqueCh} chapters • ${db.rows.length} rows • ${totalHrs} hrs logged
+                  </div>
+                </div>
+              </label>
+              <div style="display:flex; align-items:center; gap:0.35rem; flex-shrink:0;">
+                <button type="button" class="btn" data-repo-open-db="${escapeHtml(k)}" style="min-height:30px; padding:0.2rem 0.55rem; font-size:0.74rem;">Open</button>
+                <button type="button" class="btn btn-icon btn-danger" data-repo-delete-db="${escapeHtml(k)}" title="Permanently delete this database" style="min-height:30px; min-width:30px; padding:0.2rem;">🗑</button>
+              </div>
+            </div>
+          `;
+        }).join("");
       }
 
       function buildCardOverlayHtml(subj, db) {
@@ -2594,14 +2951,18 @@
                 <span class="overlay-title">✏️ Edit ${escapeHtml(db.displayName)}</span>
                 <button type="button" class="overlay-close-btn" data-close-card-overlay="true">✕</button>
               </div>
-              <div style="display:flex; flex-direction:column; gap:0.45rem;">
-                <input type="text" id="inlineEditTitleInput" class="input-field" value="${escapeHtml(db.displayName)}" placeholder="Subject title" />
-                <input type="text" id="inlineEditNoteInput" class="input-field" value="${escapeHtml(db.note || "")}" placeholder="Subtitle / note" />
+              <div style="display:flex; flex-direction:column; gap:0.38rem;">
+                <input type="text" id="inlineEditTitleInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.displayName)}" placeholder="Subject title" />
+                <input type="text" id="inlineEditCategoryInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.category || "NEET 2027")}" placeholder="Category (e.g., NEET 2027, MBBS)" />
+                <input type="text" id="inlineEditNoteInput" class="input-field" style="min-height:30px;" value="${escapeHtml(db.note || "")}" placeholder="Subtitle / note" />
                 <div class="swatch-row">${swatches}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; gap:0.4rem;">
-                ${db.isCustom ? `<button type="button" class="btn btn-danger" data-delete-subject="${escapeHtml(subj)}" style="padding:0.25rem 0.55rem; font-size:0.74rem;">Delete</button>` : `<span></span>`}
-                <button type="button" class="btn btn-primary" data-save-card-edit="${escapeHtml(subj)}" style="padding:0.25rem 0.75rem; font-size:0.76rem;">Save</button>
+              <div style="display:flex; justify-content:space-between; gap:0.35rem;">
+                <div style="display:flex; gap:0.3rem;">
+                  <button type="button" class="btn" data-hide-subject="${escapeHtml(subj)}" title="Hide from dashboard (keeps data in Repository & Cloud)" style="padding:0.22rem 0.5rem; min-height:28px; font-size:0.72rem;">Hide</button>
+                  <button type="button" class="btn btn-danger" data-delete-subject="${escapeHtml(subj)}" style="padding:0.22rem 0.5rem; min-height:28px; font-size:0.72rem;">Delete</button>
+                </div>
+                <button type="button" class="btn btn-primary" data-save-card-edit="${escapeHtml(subj)}" style="padding:0.22rem 0.7rem; min-height:28px; font-size:0.74rem;">Save</button>
               </div>
             </div>
           `;
@@ -2818,8 +3179,111 @@
       function openSubjectDatabase(subjKey) {
         if (!state.databases[subjKey]) return;
         state.activeSubject = subjKey;
+        portraitSelectedDate = trackedDateStr || getLocalTodayStr();
+        const db = state.databases[subjKey];
+        const chapters = ensureSubjectChapterOptions(db);
+        const todayMatchRow = db.rows.find((r) => isRowScheduledForDate(db, r, portraitSelectedDate));
+        if (todayMatchRow) {
+          portraitSelectedChapter = getRowPrimaryTitle(db, todayMatchRow);
+        } else if (chapters.length > 0 && !chapters.some((c) => normalizeChapterKey(c) === normalizeChapterKey(portraitSelectedChapter))) {
+          portraitSelectedChapter = chapters[0];
+        }
         saveWorkspace(false);
         switchWorkspaceView("database");
+      }
+
+      function getOrCreateRowForDateAndChapter(db, dateStr, chapterName) {
+        const primaryCol = db.columns.find((c) => c.isPrimary) || db.columns.find((c) => c.type === "text") || db.columns[0];
+        const dateCol = db.columns.find((c) => c.type === "date");
+        const normTarget = normalizeChapterKey(chapterName);
+
+        let row = db.rows.find((r) => {
+          const chMatch = primaryCol ? normalizeChapterKey(r.cells[primaryCol.id]) === normTarget : true;
+          const dateMatch = dateCol ? r.cells[dateCol.id] === dateStr : true;
+          return chMatch && dateMatch;
+        });
+
+        if (!row && chapterName) {
+          const cells = {};
+          db.columns.forEach((c) => {
+            if (c.id === primaryCol?.id) cells[c.id] = chapterName;
+            else if (c.id === dateCol?.id) cells[c.id] = dateStr;
+            else if (c.type === "checkbox") cells[c.id] = false;
+            else if (c.type === "select") cells[c.id] = (c.options && c.options[0]) || "Not Started";
+            else if (c.isStudyMinutesCol) cells[c.id] = "0";
+            else cells[c.id] = "";
+          });
+          row = { id: uid("row"), cells };
+          db.rows.push(row);
+          saveWorkspace();
+        }
+        return row;
+      }
+
+      function renderPortraitDailyChecklist(db) {
+        const dateInp = document.getElementById("portraitTaskDateInput");
+        const chSelect = document.getElementById("portraitChapterSelect");
+        const itemsBox = document.getElementById("portraitTaskItemsContainer");
+        const progLabel = document.getElementById("portraitChecklistProgressLabel");
+        const statusSel = document.getElementById("portraitRowStatusSelect");
+        if (!dateInp || !chSelect || !itemsBox) return;
+
+        dateInp.value = portraitSelectedDate;
+        const chapterList = ensureSubjectChapterOptions(db);
+
+        if (chapterList.length === 0) {
+          chSelect.innerHTML = `<option value="">Click + to add chapter...</option>`;
+          itemsBox.innerHTML = `<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.84rem;">Tap <strong>+</strong> beside Chapter to create your first chapter for ${escapeHtml(db.displayName)}.</div>`;
+          if (progLabel) progLabel.textContent = "0 / 0 done";
+          return;
+        }
+
+        if (!portraitSelectedChapter || !chapterList.some((c) => normalizeChapterKey(c) === normalizeChapterKey(portraitSelectedChapter))) {
+          portraitSelectedChapter = chapterList[0];
+        }
+
+        chSelect.innerHTML = chapterList.map((ch) =>
+          `<option value="${escapeHtml(ch)}" ${normalizeChapterKey(ch) === normalizeChapterKey(portraitSelectedChapter) ? "selected" : ""}>${escapeHtml(ch)}</option>`
+        ).join("");
+
+        const row = getOrCreateRowForDateAndChapter(db, portraitSelectedDate, portraitSelectedChapter);
+        const checkCols = db.columns.filter((c) => c.type === "checkbox");
+
+        if (checkCols.length === 0) {
+          itemsBox.innerHTML = `<div style="padding:0.85rem; text-align:center; color:var(--text-muted); font-size:0.82rem;">No task checkboxes in this subject yet. Tap <strong>+ Add Task</strong> below.</div>`;
+        } else {
+          itemsBox.innerHTML = checkCols.map((col) => {
+            const isChecked = Boolean(row?.cells?.[col.id]);
+            return `
+              <label class="portrait-task-item ${isChecked ? "is-checked" : ""}">
+                <span class="portrait-task-item-left">
+                  <span class="portrait-task-bullet" style="background:${escapeHtml(db.color || "var(--accent)")};"></span>
+                  <span>${escapeHtml(col.name)}</span>
+                </span>
+                <input type="checkbox" class="portrait-task-checkbox" data-portrait-check-col="${escapeHtml(col.id)}" data-portrait-row-id="${escapeHtml(row?.id || "")}" ${isChecked ? "checked" : ""} />
+              </label>
+            `;
+          }).join("");
+        }
+
+        const doneCount = checkCols.filter((c) => Boolean(row?.cells?.[c.id])).length;
+        if (progLabel) progLabel.textContent = `${doneCount} / ${checkCols.length} done`;
+
+        const statusCol = db.columns.find((c) => c.type === "select");
+        if (statusSel && statusCol && row) {
+          const currentStatus = row.cells[statusCol.id] || "Not Started";
+          const norm = currentStatus.toLowerCase();
+          statusSel.className = "input-field status-select-pill " + (
+            norm.includes("progress") ? "status-in-progress" :
+            (norm.includes("done") || norm.includes("complete")) ? "status-done" :
+            (norm.includes("high") || norm.includes("urgent")) ? "status-high-yield" : "status-not-started"
+          );
+          statusSel.dataset.portraitStatusCol = statusCol.id;
+          statusSel.dataset.portraitStatusRow = row.id;
+          statusSel.innerHTML = (statusCol.options || ["Not Started", "In Progress", "Done", "High Yield"]).map((opt) =>
+            `<option value="${escapeHtml(opt)}" ${currentStatus === opt ? "selected" : ""}>${escapeHtml(opt)}</option>`
+          ).join("");
+        }
       }
 
       function renderActiveDatabase() {
@@ -2831,7 +3295,35 @@
         if (!db) return;
 
         const titleEl = document.getElementById("activeDbTitle");
-        if (titleEl) titleEl.textContent = `${db.displayName || state.activeSubject} Database`;
+        if (titleEl) titleEl.textContent = `${db.displayName || state.activeSubject}`;
+
+        document.querySelectorAll("#dbLayoutModePills .filter-pill").forEach((btn) =>
+          btn.classList.toggle("active", btn.dataset.dbLayout === dbLayoutMode)
+        );
+        const checklistWrap = document.getElementById("portraitChecklistWrapper");
+        const tableWrap = document.getElementById("desktopDatabaseTableWrapper");
+        if (checklistWrap && tableWrap) {
+          checklistWrap.classList.toggle("hidden-view", dbLayoutMode !== "checklist");
+          tableWrap.classList.toggle("hidden-view", dbLayoutMode !== "table");
+        }
+
+        const tabsEl = document.getElementById("dbSubjectTabs");
+        if (tabsEl) {
+          tabsEl.innerHTML = keys.map((k) => {
+            const item = state.databases[k];
+            return `
+              <button type="button" class="db-tab ${k === state.activeSubject ? "active" : ""}" data-switch-db-tab="${escapeHtml(k)}">
+                <span class="subject-dot" style="background:${escapeHtml(item.color)};"></span>
+                <span>${escapeHtml(item.displayName || k)}</span>
+              </button>
+            `;
+          }).join("");
+        }
+
+        if (dbLayoutMode === "checklist") {
+          renderPortraitDailyChecklist(db);
+          return;
+        }
 
         ensureSubjectChapterOptions(db);
         const chapterFilterSelect = document.getElementById("dbChapterFilterSelect");
@@ -2846,19 +3338,6 @@
               <option value="${escapeHtml(ch)}" ${normalizeChapterKey(chapterFilter) === normalizeChapterKey(ch) ? "selected" : ""}>${escapeHtml(ch)}</option>
             `).join("")}
           `;
-        }
-
-        const tabsEl = document.getElementById("dbSubjectTabs");
-        if (tabsEl) {
-          tabsEl.innerHTML = keys.map((k) => {
-            const item = state.databases[k];
-            return `
-              <button type="button" class="db-tab ${k === state.activeSubject ? "active" : ""}" data-switch-db-tab="${escapeHtml(k)}">
-                <span class="subject-dot" style="background:${escapeHtml(item.color)};"></span>
-                <span>${escapeHtml(item.displayName || k)}</span>
-              </button>
-            `;
-          }).join("");
         }
 
         const thead = document.getElementById("tableHead");
@@ -3099,14 +3578,22 @@
           if (l.date) secByDate.set(l.date, (secByDate.get(l.date) || 0) + (Number(l.seconds) || 0));
         });
 
+        const now = new Date();
+        const todayStr = getLocalTodayStr();
+        const isPast11PmToday = now.getHours() >= 23;
+
         let html = "";
         for (let i = 0; i < cfg.totalDays; i++) {
           const dayNum = i + 1;
           const dateStr = addDaysToIso(cfg.startDate, i);
           const sec = secByDate.get(dateStr) || 0;
           const hrs = sec / 3600;
+          const isDayClosed = dateStr < todayStr || (dateStr === todayStr && isPast11PmToday);
+
           let levelClass = "";
-          if (sec > 0) {
+          if (isDayClosed && hrs < 1) {
+            levelClass = "level-failed-cross";
+          } else if (sec > 0) {
             if (hrs < 3) levelClass = "level-low";
             else if (hrs <= 8) levelClass = "level-mid";
             else levelClass = "level-high";
@@ -3374,28 +3861,11 @@
          11. PWA MANIFEST & SERVICE WORKER FOR GITHUB PAGES
          ====================================================================== */
       function initEmbeddedPwa() {
-        try {
-          const manifestObj = {
-            name: "NEET 2027 — 100-Day Study Workspace",
-            short_name: "NEET 2027",
-            start_url: "./",
-            display: "standalone",
-            background_color: "#ffffff",
-            theme_color: "#2383e2",
-            icons: [
-              {
-                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%232383e2'/%3E%3Ctext x='96' y='118' font-size='76' font-weight='bold' font-family='sans-serif' fill='white' text-anchor='middle'%3EN27%3C/text%3E%3C/svg%3E",
-                sizes: "192x192",
-                type: "image/svg+xml"
-              }
-            ]
-          };
-          const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
-          const link = document.createElement("link");
-          link.rel = "manifest";
-          link.href = URL.createObjectURL(manifestBlob);
-          document.head.appendChild(link);
-        } catch (err) {}
+        if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+          navigator.serviceWorker.register("./sw.js").catch((err) => {
+            console.warn("Service worker registration skipped:", err);
+          });
+        }
 
         let deferredPrompt = null;
         const installBtn = document.getElementById("installPwaBtn");
@@ -3581,8 +4051,10 @@
             const db = state.databases[subj];
             if (db) {
               const newTitle = document.getElementById("inlineEditTitleInput")?.value.trim();
+              const newCat = document.getElementById("inlineEditCategoryInput")?.value.trim();
               const newNote = document.getElementById("inlineEditNoteInput")?.value.trim();
               if (newTitle) db.displayName = newTitle;
+              if (newCat) db.category = newCat;
               db.note = newNote ?? "";
               saveWorkspace();
             }
@@ -3592,15 +4064,37 @@
             return;
           }
 
+          const hideSubjBtn = e.target.closest("[data-hide-subject]");
+          if (hideSubjBtn) {
+            e.stopPropagation();
+            const subj = hideSubjBtn.dataset.hideSubject;
+            if (state.databases[subj]) {
+              state.databases[subj].visibleInGallery = false;
+            }
+            cardOverlay = null;
+            saveWorkspace();
+            renderGalleryCards();
+            showToast("Hidden from dashboard — safely kept in Repository & Cloud");
+            return;
+          }
+
           const delSubjBtn = e.target.closest("[data-delete-subject]");
           if (delSubjBtn) {
             e.stopPropagation();
             const subj = delSubjBtn.dataset.deleteSubject;
+            if (getAllRepositoryKeys().length <= 1) {
+              showToast("At least 1 database must remain in repository");
+              return;
+            }
+            if (activeTimer && activeTimer.subject === subj) {
+              clearInterval(activeTimer.intervalId);
+              activeTimer = null;
+            }
             delete state.databases[subj];
             cardOverlay = null;
             saveWorkspace();
             renderGalleryCards();
-            showToast("Deleted subject box");
+            showToast("Deleted database");
             return;
           }
 
@@ -3661,20 +4155,150 @@
 
         document.getElementById("confirmCreateSubjectBtn")?.addEventListener("click", () => {
           const rawName = document.getElementById("newSubjNameInput")?.value.trim();
+          const category = document.getElementById("newSubjGroupInput")?.value.trim() || "General";
           const note = document.getElementById("newSubjNoteInput")?.value.trim();
           if (!rawName) {
-            showToast("Enter a subject name");
+            showToast("Enter a subject or database name");
             return;
           }
           const key = uid("subj");
-          state.databases[key] = createBlankRawDatabase(rawName, selectedNewSubjColor, note);
+          state.databases[key] = createBlankRawDatabase(rawName, selectedNewSubjColor, note, category);
           saveWorkspace();
           document.getElementById("addSubjectModal")?.classList.add("hidden");
           renderGalleryCards();
-          showToast(`Created "${rawName}" with blank database`);
+          showToast(`Created "${rawName}" in ${category}`);
         });
 
-        // Database View Tabs, Filters, Rows & Columns
+        // Subject / Database Repository Manager Modal
+        document.getElementById("openRepositoryModalBtn")?.addEventListener("click", () => {
+          renderRepositoryModal();
+          document.getElementById("repositoryModal")?.classList.remove("hidden");
+        });
+
+        document.getElementById("repoCategoryFilterSelect")?.addEventListener("change", renderRepositoryModal);
+
+        document.getElementById("repoShowAllBtn")?.addEventListener("click", () => {
+          getAllRepositoryKeys().forEach((k) => {
+            state.databases[k].visibleInGallery = true;
+          });
+          saveWorkspace();
+          renderRepositoryModal();
+          renderGalleryCards();
+          showToast("Showing all repository databases on dashboard");
+        });
+
+        document.getElementById("repoNewDbBtn")?.addEventListener("click", () => {
+          document.getElementById("repositoryModal")?.classList.add("hidden");
+          selectedNewSubjColor = SWATCH_PALETTE[getAllRepositoryKeys().length % SWATCH_PALETTE.length];
+          const swatchWrap = document.getElementById("newSubjColorSwatches");
+          if (swatchWrap) {
+            swatchWrap.innerHTML = SWATCH_PALETTE.map((c) => `
+              <button type="button" class="swatch-btn ${c === selectedNewSubjColor ? "active" : ""}" style="background:${c};" data-new-subj-color="${c}"></button>
+            `).join("");
+          }
+          document.getElementById("newSubjNameInput").value = "";
+          document.getElementById("newSubjNoteInput").value = "";
+          document.getElementById("addSubjectModal")?.classList.remove("hidden");
+        });
+
+        document.getElementById("repositoryListContainer")?.addEventListener("change", (e) => {
+          const cb = e.target.closest("[data-repo-toggle-visible]");
+          if (!cb) return;
+          const k = cb.dataset.repoToggleVisible;
+          if (!state.databases[k]) return;
+          state.databases[k].visibleInGallery = cb.checked;
+          saveWorkspace();
+          renderRepositoryModal();
+          renderGalleryCards();
+        });
+
+        document.getElementById("repositoryListContainer")?.addEventListener("click", (e) => {
+          const openBtn = e.target.closest("[data-repo-open-db]");
+          if (openBtn) {
+            const k = openBtn.dataset.repoOpenDb;
+            document.getElementById("repositoryModal")?.classList.add("hidden");
+            openSubjectDatabase(k);
+            return;
+          }
+          const delBtn = e.target.closest("[data-repo-delete-db]");
+          if (delBtn) {
+            const k = delBtn.dataset.repoDeleteDb;
+            if (getAllRepositoryKeys().length <= 1) {
+              showToast("At least 1 database must remain in repository");
+              return;
+            }
+            if (activeTimer && activeTimer.subject === k) {
+              clearInterval(activeTimer.intervalId);
+              activeTimer = null;
+            }
+            delete state.databases[k];
+            saveWorkspace();
+            renderRepositoryModal();
+            renderGalleryCards();
+            showToast("Deleted database from repository");
+          }
+        });
+
+        document.getElementById("portraitChapterSelect")?.addEventListener("change", (e) => {
+          portraitSelectedChapter = e.target.value;
+          renderActiveDatabase();
+        });
+
+        document.getElementById("portraitQuickAddChapterBtn")?.addEventListener("click", () => {
+          pendingChapterTargetRowId = "__portrait__";
+          const inp = document.getElementById("quickNewChapterInput");
+          if (inp) inp.value = "";
+          document.getElementById("quickAddChapterModal")?.classList.remove("hidden");
+          setTimeout(() => inp?.focus(), 50);
+        });
+
+        document.getElementById("portraitTaskItemsContainer")?.addEventListener("change", (e) => {
+          const cb = e.target.closest("[data-portrait-check-col]");
+          if (!cb) return;
+          const db = state.databases[state.activeSubject];
+          if (!db) return;
+          const row = db.rows.find((r) => r.id === cb.dataset.portraitRowId);
+          if (!row) return;
+          row.cells[cb.dataset.portraitCheckCol] = cb.checked;
+          saveWorkspace();
+          renderActiveDatabase();
+        });
+
+        document.getElementById("portraitRowStatusSelect")?.addEventListener("change", (e) => {
+          const sel = e.target;
+          const db = state.databases[state.activeSubject];
+          if (!db) return;
+          const row = db.rows.find((r) => r.id === sel.dataset.portraitStatusRow);
+          if (!row) return;
+          row.cells[sel.dataset.portraitStatusCol] = sel.value;
+          saveWorkspace();
+          renderActiveDatabase();
+        });
+
+        document.getElementById("portraitAddTaskColBtn")?.addEventListener("click", () => {
+          editingColId = null;
+          document.getElementById("columnModalTitle").textContent = "Add Daily Task Checkbox";
+          document.getElementById("colNameInput").value = "";
+          document.getElementById("colTypeSelect").value = "checkbox";
+          document.getElementById("colOptionsGroup")?.classList.add("hidden-view");
+          document.getElementById("deleteColumnBtn")?.classList.add("hidden-view");
+          document.getElementById("columnModal")?.classList.remove("hidden");
+        });
+
+        document.getElementById("dbLayoutModePills")?.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-db-layout]");
+          if (!btn) return;
+          dbLayoutMode = btn.dataset.dbLayout;
+          renderActiveDatabase();
+        });
+
+        document.getElementById("portraitTaskDateInput")?.addEventListener("change", (e) => {
+          if (e.target.value) {
+            portraitSelectedDate = e.target.value;
+            renderActiveDatabase();
+          }
+        });
+
         document.getElementById("dbSubjectTabs")?.addEventListener("click", (e) => {
           const tab = e.target.closest("[data-switch-db-tab]");
           if (tab) {
@@ -3813,7 +4437,10 @@
           if (!list.some((c) => normalizeChapterKey(c) === normalizeChapterKey(newCh))) {
             list.push(newCh);
           }
-          if (pendingChapterTargetRowId) {
+          if (pendingChapterTargetRowId === "__portrait__") {
+            portraitSelectedChapter = newCh;
+            getOrCreateRowForDateAndChapter(db, portraitSelectedDate, newCh);
+          } else if (pendingChapterTargetRowId) {
             const row = db.rows.find((r) => r.id === pendingChapterTargetRowId);
             const primaryCol = db.columns.find((c) => c.isPrimary) || db.columns[0];
             if (row && primaryCol) row.cells[primaryCol.id] = newCh;
