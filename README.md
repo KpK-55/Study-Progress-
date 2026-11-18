@@ -24,6 +24,13 @@
 
 ---
 
+HOW TO DOWNLOAD THIS APP ?
+Go to release section
+click on tag
+open Tag 
+scroll to the bottom
+Under asset you'll find apk file
+
 ## ☁️ Cloud Sync Setup Guide (Google Drive Backup & Cross-Device Sync)
 
 Your study data is stored privately inside **your own Google Drive**—no third-party account or subscription is needed. Follow these steps once to link your PC and phone:
