@@ -30,7 +30,7 @@ jobs:
       - name: Assemble Web Bundle & Capacitor Android Project
         run: |
           mkdir -p www
-          cp index.html manifest.json sw.js www/
+          cp index.html manifest.json sw.js firebase-client.js www/
           mkdir -p www/icons
           cp icons/icon-192.png icons/icon-512.png www/icons/
           npm init -y
