@@ -30,7 +30,9 @@ jobs:
       - name: Assemble Web Bundle & Capacitor Android Project
         run: |
           mkdir -p www
-          cp index.html manifest.json sw.js icon-192.png icon-512.png www/
+          cp index.html manifest.json sw.js www/
+          mkdir -p www/icons
+          cp icons/icon-192.png icons/icon-512.png www/icons/
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "Time and Task Tracker" "com.timetasktracker.app" --web-dir=www
