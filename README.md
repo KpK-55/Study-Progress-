@@ -19,7 +19,7 @@
 * **Mobile & Tablet Daily Checklist Mode:** Automatically switches to a clean, tap-friendly daily checklist in portrait view so you can tick off today's tasks without horizontal scrolling.
 * **Taskwise & Subjectwise Visual Reports:** Click **Show Report** to analyze how your study hours are distributed across tasks and subjects over Today, 7 Days, 30 Days, or a custom date range.
 * **Custom Target Countdown & Challenge Board:** Set a live countdown to your exam date in the top bar and customize a multi-day consistency heatmap (**Challenge Board**) with daily color-coded hour goals.
-* **Anki-Protocol Cross-Device Cloud Sync:** Connect your personal Google Apps Script URL once under **Sync (`⋮`)** to back up and sync all databases, timers, themes, and settings seamlessly between your Android app and PC browser.
+* **Google Drive backup (legacy):** The current release still supports the original Google Apps Script endpoint. Firebase Firestore primary sync is planned for the next cloud-integration phase and is not yet active in this build.
 * **Fully Customizable Appearance:** Switch between Light/Dark mode, 6 typography styles, text sizes, page widths, and accent colors in **Settings**.
 
 ---
@@ -31,7 +31,9 @@ open Tag -
 scroll to the bottom -
 Under asset you'll find apk file
 
-## ☁️ Cloud Sync Setup Guide (Google Drive Backup & Cross-Device Sync)
+## ☁️ Legacy Google Drive Backup Setup
+
+This release retains the previous Google Apps Script backup flow while the Firebase Firestore integration is being prepared. Do not treat the legacy whole-workspace sync as conflict-safe multi-device synchronization.
 
 Your study data is stored privately inside **your own Google Drive**—no third-party account or subscription is needed. Follow these steps once to link your PC and phone:
 

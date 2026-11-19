@@ -732,7 +732,7 @@
     }
 
     /* Subject Gallery Card (300x300px) */
-    .subject-gallery-card {
+    .subject-gallery-card { position: relative; overflow: visible;
       position: relative;
       width: 300px;
       height: 300px;
@@ -748,6 +748,7 @@
       transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
     }
 
+    .subject-gallery-card.is-overlay-open { z-index: 180; }
     .subject-gallery-card:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
@@ -1148,7 +1149,7 @@
     .in-card-overlay {
       position: absolute;
       inset: 0;
-      z-index: 20;
+      z-index: 210;
       background: var(--bg-elevated);
       border-radius: var(--radius-lg);
       padding: 0.85rem 0.95rem;
@@ -1226,8 +1227,8 @@
       top: calc(100% + 4px);
       left: 0;
       right: 0;
-      z-index: 30;
-      max-height: 150px;
+      z-index: 220;
+      max-height: 220px;
       overflow-y: auto;
       background: var(--bg-elevated);
       border: 1.5px solid var(--accent);
@@ -1827,6 +1828,7 @@
           <button type="button" class="btn sync-details-btn" id="openSyncModalBtn" title="Sync Settings & Google Script">⋮</button>
         </div>
 
+        <button type="button" class="btn" id="undoActionBtn" title="Undo last saved change" disabled>↶ Undo</button>
         <button type="button" class="btn" id="openSettingsBtn">⚙️ Settings</button>
       </div>
     </div>
@@ -1857,6 +1859,10 @@
         <button type="button" class="btn focus-action-btn" id="focusTimerPauseBtn">⏸ Pause</button>
         <button type="button" class="btn btn-danger focus-action-btn" id="focusTimerStopBtn" style="background: var(--danger); color: #ffffff;">⏹ Stop &amp; Save</button>
       </div>
+      <div class="focus-actions-row" style="margin-top:0;">
+        <button type="button" class="btn" id="focusTimerDiscardBtn">Discard time</button>
+        <button type="button" class="btn" id="focusTimerCloseBtn">Close timer</button>
+      </div>
     </div>
   </div>
 
@@ -1864,6 +1870,7 @@
     <!-- 1. GALLERY DASHBOARD VIEW -->
     <section id="galleryHomeView">
       <div class="gallery-header-bar">
+        <button type="button" class="btn" id="openManualTimeBtn">＋ Manual time</button>
         <div class="gallery-header-left">
           <button type="button" class="btn" id="openReportViewBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">
             Show Report
@@ -1930,6 +1937,7 @@
               <span>Task List</span>
               <span id="portraitChecklistProgressLabel">0 / 0 done</span>
             </div>
+            <div id="portraitDailyTaskAssign" style="display:flex;flex-wrap:wrap;gap:.35rem;padding:.55rem;border-bottom:1px solid var(--border);"></div>
             <div id="portraitTaskItemsContainer" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
           </div>
 
@@ -2250,7 +2258,7 @@
   <div class="modal-backdrop hidden" id="syncDetailsModal">
     <div class="modal-card" style="max-width: 520px;">
       <div class="modal-header">
-        <h3>☁️ Anki-Protocol Cross-Device Sync</h3>
+        <h3>☁️ Cloud Sync & Backup</h3>
         <button type="button" class="btn btn-icon" data-close-modal="syncDetailsModal">✕</button>
       </div>
       <div class="form-group">
@@ -2303,6 +2311,21 @@
           <button type="button" class="btn btn-primary" id="saveChallengeConfigBtn">Apply Days</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- MANUAL STUDY TIME ENTRY -->
+  <div class="modal-backdrop hidden" id="manualTimeModal">
+    <div class="modal-card" style="max-width:420px;">
+      <div class="modal-header"><h3>＋ Add study time</h3><button type="button" class="btn btn-icon" data-close-modal="manualTimeModal">✕</button></div>
+      <div class="form-group"><label for="manualTimeSubject">Subject</label><select id="manualTimeSubject" class="input-field"></select></div>
+      <div class="form-group"><label for="manualTimeChapters">Chapter(s) — comma separated</label><input id="manualTimeChapters" class="input-field" placeholder="Chapter 1, Chapter 2" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+        <div class="form-group"><label for="manualTimeHours">Hours</label><input id="manualTimeHours" type="number" min="0" max="24" value="0" class="input-field" /></div>
+        <div class="form-group"><label for="manualTimeMinutes">Minutes</label><input id="manualTimeMinutes" type="number" min="0" max="59" value="30" class="input-field" /></div>
+      </div>
+      <div class="form-group"><label for="manualTimeTasks">Task description (optional)</label><input id="manualTimeTasks" class="input-field" placeholder="Reading, Practice, Revision..." /></div>
+      <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:.8rem;"><button type="button" class="btn" data-close-modal="manualTimeModal">Cancel</button><button type="button" class="btn btn-primary" id="saveManualTimeBtn">Save time</button></div>
     </div>
   </div>
 
@@ -2377,6 +2400,33 @@
         return `${y}-${m}-${d}`;
       }
 
+      const ACTIVE_TIMER_KEY = "time_task_tracker_active_timer_v1";
+      function getTimerElapsedSeconds(timer = activeTimer) {
+        if (!timer) return 0;
+        const base = Math.max(0, Number(timer.accumulatedSeconds ?? timer.elapsedSeconds) || 0);
+        return Math.floor((base + (timer.running && timer.startedAt ? (Date.now() - timer.startedAt) / 1000 : 0)));
+      }
+      function persistActiveTimer() {
+        try {
+          if (activeTimer) {
+            const snapshot = { ...activeTimer, elapsedSeconds: getTimerElapsedSeconds(), accumulatedSeconds: getTimerElapsedSeconds(), startedAt: activeTimer.running ? Date.now() : null };
+            localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(snapshot));
+          } else localStorage.removeItem(ACTIVE_TIMER_KEY);
+        } catch (e) {}
+      }
+      function refreshActiveTimerDisplay() {
+        if (!activeTimer) return;
+        activeTimer.elapsedSeconds = getTimerElapsedSeconds();
+        const formatted = formatHHMMSS(getTimerElapsedSeconds(activeTimer));
+        const mini = document.getElementById(`liveTimerDigits-${activeTimer.subject}`);
+        if (mini) mini.textContent = formatted;
+        const big = document.getElementById("focusTimerBigDigits");
+        if (big) big.textContent = formatted;
+        const total = document.getElementById(`cardTotalTime-${activeTimer.subject}`);
+        if (total) total.textContent = formatHHMMSS(getSubjectDatabaseSeconds(activeTimer.subject, trackedDateStr) + (activeTimer.date === trackedDateStr ? getTimerElapsedSeconds(activeTimer) : 0));
+        updateDailyTotalHoursBadge();
+      }
+
       function formatHHMMSS(totalSeconds) {
         const sec = Math.max(0, Math.floor(Number(totalSeconds) || 0));
         const h = String(Math.floor(sec / 3600)).padStart(2, "0");
@@ -2428,6 +2478,8 @@
       let chapterFilter = "__all__";
       let searchQuery = "";
       let activeTimer = null;
+      let undoStack = [];
+      let isApplyingUndo = false;
       let cardOverlay = null;
       let editingColId = null;
       let pendingChapterTargetRowId = null;
@@ -2641,8 +2693,16 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       }
 
+      function updateUndoButton() {
+        const btn = document.getElementById("undoActionBtn");
+        if (btn) { btn.disabled = undoStack.length === 0; btn.title = undoStack.length ? `Undo last change (${undoStack.length} available)` : "Nothing to undo"; }
+      }
       function saveWorkspace(markDirty = true) {
         try {
+          if (markDirty && !isApplyingUndo) {
+            const previous = localStorage.getItem(STORAGE_KEY);
+            if (previous) { undoStack.push(previous); if (undoStack.length > 20) undoStack.shift(); updateUndoButton(); }
+          }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
           if (markDirty) {
             syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
@@ -2653,6 +2713,19 @@
         } catch (err) {
           console.warn("Save failed:", err);
         }
+      }
+
+      function undoLastAction() {
+        const previous = undoStack.pop(); if (!previous) return;
+        try {
+          isApplyingUndo = true;
+          state = JSON.parse(previous);
+          migrateWorkspaceDatabases(state);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1; syncMeta.dirty = true; saveSyncMeta(); updateSyncButtonVisuals();
+          switchWorkspaceView(currentView); updateUndoButton(); showToast("Last saved change undone");
+        } catch (e) { showToast("Could not undo this change"); }
+        finally { isApplyingUndo = false; }
       }
 
       function loadAndApplyPrefs() {
@@ -2732,9 +2805,12 @@
         let done = 0;
         let total = 0;
         matchingRows.forEach((r) => {
-          checkCols.forEach((c) => {
+          const assigned = Array.isArray(r.dailyTaskIds) ? r.dailyTaskIds : [];
+          assigned.forEach((colId) => {
+            const col = checkCols.find(c => c.id === colId);
+            if (!col) return;
             total += 1;
-            if (r.cells[c.id]) done += 1;
+            if (r.cells[col.id]) done += 1;
           });
         });
         const uniqueChapters = getUniqueChaptersInDatabase(db);
@@ -2765,7 +2841,7 @@
           .filter((l) => l.date === trackedDateStr)
           .reduce((sum, l) => sum + (Number(l.seconds) || 0), 0);
         if (activeTimer && activeTimer.date === trackedDateStr) {
-          totalSec += activeTimer.elapsedSeconds;
+          totalSec += getTimerElapsedSeconds(activeTimer);
         }
         valEl.textContent = (totalSec / 3600).toFixed(1);
       }
@@ -2798,7 +2874,7 @@
             ? activeTimer.taskNames.join(", ")
             : "General Study";
         }
-        if (digitsEl) digitsEl.textContent = formatHHMMSS(activeTimer.elapsedSeconds);
+        if (digitsEl) digitsEl.textContent = formatHHMMSS(getTimerElapsedSeconds(activeTimer));
         if (pauseBtn) pauseBtn.textContent = activeTimer.running ? "⏸ Pause" : "▶ Resume";
       }
 
@@ -2823,7 +2899,7 @@
           const dashOffset = circumference - (stats.pct / 100) * circumference;
           const isRunningThis = activeTimer && activeTimer.subject === subj;
           const overlayHtml = buildCardOverlayHtml(subj, db);
-          const totalDbSeconds = getSubjectDatabaseSeconds(subj, trackedDateStr) + (isRunningThis && activeTimer.date === trackedDateStr ? activeTimer.elapsedSeconds : 0);
+          const totalDbSeconds = getSubjectDatabaseSeconds(subj, trackedDateStr) + (isRunningThis && activeTimer.date === trackedDateStr ? getTimerElapsedSeconds(activeTimer) : 0);
 
           let middleStatusLine = escapeHtml(db.note || `${stats.done}/${stats.total} tasks done today`);
           let middleClass = "gallery-card-middle-status";
@@ -2837,7 +2913,7 @@
           const bottomControlsHtml = isRunningThis
             ? `
               <div class="card-running-timer-bar" data-stop-propagation="true">
-                <span id="liveTimerDigits-${escapeHtml(subj)}">${formatHHMMSS(activeTimer.elapsedSeconds)}</span>
+                <span id="liveTimerDigits-${escapeHtml(subj)}">${formatHHMMSS(getTimerElapsedSeconds(activeTimer))}</span>
                 <div class="timer-mini-controls">
                   <button type="button" class="timer-mini-btn" data-toggle-pause="${escapeHtml(subj)}">${activeTimer.running ? "⏸" : "▶"}</button>
                   <button type="button" class="timer-mini-btn" data-finish-timer="${escapeHtml(subj)}">⏹ Save</button>
@@ -2851,7 +2927,7 @@
             `;
 
           return `
-            <div class="subject-gallery-card ${isRunningThis ? "is-timer-running" : ""}" data-open-subject="${escapeHtml(subj)}">
+            <div class="subject-gallery-card ${isRunningThis ? "is-timer-running" : ""} ${cardOverlay?.subject === subj ? "is-overlay-open" : ""}" data-open-subject="${escapeHtml(subj)}">
               ${overlayHtml}
               <div class="gallery-card-top">
                 <div class="gallery-card-title-wrap">
@@ -3062,113 +3138,90 @@
 
       function startInCardTimer(subj) {
         const todayStr = getLocalTodayStr();
-        if (trackedDateStr !== todayStr) {
-          validateTrackingDateIsToday();
-          showToast(`⚠️ Select today's date (${todayStr}) in Tracking Date before starting timer!`);
-          return;
-        }
-
+        if (trackedDateStr !== todayStr) { validateTrackingDateIsToday(); showToast(`⚠️ Select today's date (${todayStr}) before starting timer!`); return; }
         const db = state.databases[subj];
-        let chapterIds = [];
-        let chapterNames = [];
-        let taskNames = [];
-
+        let chapterIds = [], chapterNames = [], taskNames = [];
         if (cardOverlay && cardOverlay.subject === subj && cardOverlay.type === "track" && db) {
           chapterNames = Array.from(cardOverlay.selectedChapters);
-          const selectedNorms = new Set(chapterNames.map((n) => normalizeChapterKey(n)));
-          const todayMatchingRows = db.rows.filter(
-            (r) => selectedNorms.has(normalizeChapterKey(getRowPrimaryTitle(db, r))) && isRowScheduledForDate(db, r, todayStr)
-          );
-          const fallbackRows = todayMatchingRows.length > 0
-            ? todayMatchingRows
-            : db.rows.filter((r) => selectedNorms.has(normalizeChapterKey(getRowPrimaryTitle(db, r))));
-          chapterIds = fallbackRows.map((r) => r.id);
-          taskNames = db.columns
-            .filter((c) => c.type === "checkbox" && cardOverlay.selectedTasks.has(c.id))
-            .map((c) => c.name);
+          const selectedNorms = new Set(chapterNames.map(normalizeChapterKey));
+          chapterIds = chapterNames.map(ch => db.rows.find(r => selectedNorms.has(normalizeChapterKey(getRowPrimaryTitle(db,r))) && normalizeChapterKey(getRowPrimaryTitle(db,r)) === normalizeChapterKey(ch))?.id).filter(Boolean);
+          taskNames = db.columns.filter(c => c.type === "checkbox" && cardOverlay.selectedTasks.has(c.id)).map(c => c.name);
         }
-
-        if (activeTimer) {
-          stopAndCommitInCardTimer(false);
-        }
-
+        if (activeTimer) stopAndCommitInCardTimer(false);
+        const now = Date.now();
+        activeTimer = { id: uid("session"), subject: subj, date: todayStr, chapterIds, chapterNames, taskNames, elapsedSeconds: 0, accumulatedSeconds: 0, startedAt: now, running: true, intervalId: null };
         cardOverlay = null;
-        activeTimer = {
-          subject: subj,
-          date: todayStr,
-          chapterIds,
-          chapterNames,
-          taskNames,
-          elapsedSeconds: 0,
-          running: true,
-          intervalId: null
-        };
-
-        activeTimer.intervalId = setInterval(() => {
-          if (!activeTimer || !activeTimer.running) return;
-          activeTimer.elapsedSeconds += 1;
-          const formatted = formatHHMMSS(activeTimer.elapsedSeconds);
-          const digitEl = document.getElementById(`liveTimerDigits-${activeTimer.subject}`);
-          if (digitEl) digitEl.textContent = formatted;
-          const bigFocusDigits = document.getElementById("focusTimerBigDigits");
-          if (bigFocusDigits) bigFocusDigits.textContent = formatted;
-          const totalEl = document.getElementById(`cardTotalTime-${activeTimer.subject}`);
-          if (totalEl) {
-            const liveAdd = activeTimer.date === trackedDateStr ? activeTimer.elapsedSeconds : 0;
-            totalEl.textContent = formatHHMMSS(getSubjectDatabaseSeconds(activeTimer.subject, trackedDateStr) + liveAdd);
-          }
-          updateDailyTotalHoursBadge();
-        }, 1000);
-
+        persistActiveTimer();
+        activeTimer.lastPersistAt = Date.now();
+        activeTimer.intervalId = setInterval(() => { if (!activeTimer) return; refreshActiveTimerDisplay(); if (Date.now() - (activeTimer.lastPersistAt || 0) >= 5000) { persistActiveTimer(); activeTimer.lastPersistAt = Date.now(); } }, 500);
         renderGalleryCards();
       }
 
       function stopAndCommitInCardTimer(shouldRender = true) {
         if (!activeTimer) return;
         clearInterval(activeTimer.intervalId);
-        const subj = activeTimer.subject;
-        const studied = activeTimer.elapsedSeconds;
-        const sessionDate = activeTimer.date || getLocalTodayStr();
+        const timer = activeTimer;
+        const subj = timer.subject, studied = getTimerElapsedSeconds(timer), sessionDate = timer.date || getLocalTodayStr();
         const db = state.databases[subj];
-
         if (studied > 0 && db) {
           if (!Array.isArray(db.sessionLogs)) db.sessionLogs = [];
-          db.sessionLogs.push({
-            id: uid("log"),
-            date: sessionDate,
-            chapterIds: activeTimer.chapterIds || [],
-            chapters: activeTimer.chapterNames || [],
-            tasks: activeTimer.taskNames && activeTimer.taskNames.length > 0 ? activeTimer.taskNames : ["General Study"],
-            seconds: studied
-          });
-
-          const minsCol = ensureDatabaseTimeStructures(db);
-          const addedMins = Math.max(1, Math.round(studied / 60));
-          if (activeTimer.chapterIds && activeTimer.chapterIds.length > 0) {
-            const perChapterMins = Math.max(1, Math.round(addedMins / activeTimer.chapterIds.length));
-            activeTimer.chapterIds.forEach((rowId) => {
-              const row = db.rows.find((r) => r.id === rowId);
-              if (row) {
-                const prev = Number(row.cells[minsCol.id]) || 0;
-                row.cells[minsCol.id] = String(prev + perChapterMins);
-              }
+          const ids = timer.chapterIds || [], names = timer.chapterNames || [];
+          const base = ids.length ? Math.floor(studied / ids.length) : studied;
+          let remainder = ids.length ? studied % ids.length : 0;
+          if (ids.length) {
+            ids.forEach((rowId, i) => {
+              const seconds = base + (i < remainder ? 1 : 0);
+              db.sessionLogs.push({ id: uid("log"), sessionId: timer.id, date: sessionDate, chapterIds: [rowId], chapters: [names[i] || "Chapter"], tasks: timer.taskNames?.length ? timer.taskNames : ["General Study"], seconds });
             });
-          } else if (db.rows.length > 0) {
-            const firstRow = db.rows[0];
-            const prev = Number(firstRow.cells[minsCol.id]) || 0;
-            firstRow.cells[minsCol.id] = String(prev + addedMins);
+          } else {
+            db.sessionLogs.push({ id: uid("log"), sessionId: timer.id, date: sessionDate, chapterIds: [], chapters: [], tasks: timer.taskNames?.length ? timer.taskNames : ["General Study"], seconds: studied });
           }
-
+          const minsCol = ensureDatabaseTimeStructures(db);
+          ids.forEach((rowId, i) => {
+            const row = db.rows.find(r => r.id === rowId);
+            if (row) row.cells[minsCol.id] = String((Number(row.cells[minsCol.id]) || 0) + Math.round((base + (i < remainder ? 1 : 0)) / 60));
+          });
           saveWorkspace();
-          showToast(`Logged ${formatHHMMSS(studied)} into ${db.displayName} database`);
+          showToast(`Logged ${formatHHMMSS(studied)} across ${Math.max(1, ids.length)} chapter(s)`);
         }
-
         activeTimer = null;
+        try { localStorage.removeItem(ACTIVE_TIMER_KEY); } catch(e) {}
         updateFocusTimerOverlayUI();
-        if (shouldRender) {
-          renderGalleryCards();
-          if (currentView === "database") renderActiveDatabase();
-        }
+        if (shouldRender) { renderGalleryCards(); if (currentView === "database") renderActiveDatabase(); }
+      }
+
+      function discardActiveTimer() {
+        if (!activeTimer) return;
+        clearInterval(activeTimer.intervalId);
+        activeTimer = null;
+        try { localStorage.removeItem(ACTIVE_TIMER_KEY); } catch(e) {}
+        updateFocusTimerOverlayUI(); renderGalleryCards();
+        showToast("Timer discarded — no study time was saved");
+      }
+
+      function openManualTimeEntry() {
+        const select = document.getElementById("manualTimeSubject");
+        if (!select) return;
+        select.innerHTML = getAllRepositoryKeys().map(k => `<option value="${escapeHtml(k)}">${escapeHtml(state.databases[k].displayName || k)}</option>`).join("");
+        document.getElementById("manualTimeChapters").value = "";
+        document.getElementById("manualTimeHours").value = "0";
+        document.getElementById("manualTimeMinutes").value = "30";
+        document.getElementById("manualTimeTasks").value = "";
+        document.getElementById("manualTimeModal")?.classList.remove("hidden");
+      }
+      function saveManualTimeEntry() {
+        const subj = document.getElementById("manualTimeSubject")?.value;
+        const db = state.databases[subj]; if (!db) return;
+        const h = Math.max(0, Number(document.getElementById("manualTimeHours")?.value) || 0);
+        const m = Math.max(0, Number(document.getElementById("manualTimeMinutes")?.value) || 0);
+        const seconds = Math.round(h * 3600 + m * 60); if (!seconds) return showToast("Enter a duration greater than zero");
+        const chapters = (document.getElementById("manualTimeChapters")?.value || "").split(",").map(x => x.trim()).filter(Boolean);
+        const rows = chapters.map(ch => db.rows.find(r => normalizeChapterKey(getRowPrimaryTitle(db,r)) === normalizeChapterKey(ch))).filter(Boolean);
+        if (!Array.isArray(db.sessionLogs)) db.sessionLogs = [];
+        const base = rows.length ? Math.floor(seconds / rows.length) : seconds; let rem = rows.length ? seconds % rows.length : 0;
+        if (rows.length) rows.forEach((row,i) => db.sessionLogs.push({ id:uid("log"), sessionId:uid("manual"), date:getLocalTodayStr(), chapterIds:[row.id], chapters:[getRowPrimaryTitle(db,row)], tasks:[document.getElementById("manualTimeTasks")?.value.trim() || "Manual entry"], seconds:base+(i<rem?1:0), source:"manual" }));
+        else db.sessionLogs.push({ id:uid("log"), sessionId:uid("manual"), date:getLocalTodayStr(), chapterIds:[], chapters, tasks:[document.getElementById("manualTimeTasks")?.value.trim() || "Manual entry"], seconds, source:"manual" });
+        saveWorkspace(); document.getElementById("manualTimeModal")?.classList.add("hidden"); renderGalleryCards(); showToast(`Added ${formatHHMMSS(seconds)} manually`);
       }
 
       /* ======================================================================
@@ -3224,7 +3277,7 @@
             else if (c.isStudyMinutesCol) cells[c.id] = "0";
             else cells[c.id] = "";
           });
-          row = { id: uid("row"), cells };
+          row = { id: uid("row"), cells, dailyTaskIds: [] };
           db.rows.push(row);
           saveWorkspace();
         }
@@ -3259,11 +3312,15 @@
 
         const row = getOrCreateRowForDateAndChapter(db, portraitSelectedDate, portraitSelectedChapter);
         const checkCols = db.columns.filter((c) => c.type === "checkbox");
+        const assignBox = document.getElementById("portraitDailyTaskAssign");
+        if (row && !Array.isArray(row.dailyTaskIds)) row.dailyTaskIds = [];
+        if (assignBox) assignBox.innerHTML = checkCols.length ? `<span style="width:100%;font-size:.72rem;color:var(--text-secondary);font-weight:800;">TODAY'S TASKS — choose what you plan to do</span>` + checkCols.map(c => `<label class="multiselect-option" style="padding:.2rem .35rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-daily-task-assign="${escapeHtml(c.id)}" ${row?.dailyTaskIds?.includes(c.id) ? "checked" : ""}><span>${escapeHtml(c.name)}</span></label>`).join("") : "";
+        const todaysCols = checkCols.filter(c => (row?.dailyTaskIds || []).includes(c.id));
 
         if (checkCols.length === 0) {
           itemsBox.innerHTML = `<div style="padding:0.85rem; text-align:center; color:var(--text-muted); font-size:0.82rem;">No task checkboxes in this subject yet. Tap <strong>+ Add Task</strong> below.</div>`;
         } else {
-          itemsBox.innerHTML = checkCols.map((col) => {
+          itemsBox.innerHTML = todaysCols.length ? todaysCols.map((col) => {
             const isChecked = Boolean(row?.cells?.[col.id]);
             return `
               <label class="portrait-task-item ${isChecked ? "is-checked" : ""}">
@@ -3274,11 +3331,11 @@
                 <input type="checkbox" class="portrait-task-checkbox" data-portrait-check-col="${escapeHtml(col.id)}" data-portrait-row-id="${escapeHtml(row?.id || "")}" ${isChecked ? "checked" : ""} />
               </label>
             `;
-          }).join("");
+          }).join("") : `<div style="padding:.7rem;text-align:center;color:var(--text-muted);font-size:.8rem;">No tasks assigned for this chapter today. Select tasks above.</div>`;
         }
 
-        const doneCount = checkCols.filter((c) => Boolean(row?.cells?.[c.id])).length;
-        if (progLabel) progLabel.textContent = `${doneCount} / ${checkCols.length} done`;
+        const doneCount = todaysCols.filter((c) => Boolean(row?.cells?.[c.id])).length;
+        if (progLabel) progLabel.textContent = `${doneCount} / ${todaysCols.length} done`;
 
         const statusCol = db.columns.find((c) => c.type === "select");
         if (statusSel && statusCol && row) {
@@ -3667,9 +3724,20 @@
           `;
         }).join("");
 
+        const chapterTotals = new Map();
+        allLogs.forEach(log => (log.chapters || []).forEach(ch => chapterTotals.set(`${log.subject || ""}::${ch}`, (chapterTotals.get(`${log.subject || ""}::${ch}`) || 0) + (Number(log.seconds) || 0))));
+        const chapterRows = Array.from(chapterTotals.entries()).sort((a,b)=>b[1]-a[1]).map(([key,sec]) => { const [subj,ch] = key.split("::"); return `<div style="display:flex;justify-content:space-between;gap:.6rem;padding:.45rem .55rem;border-bottom:1px solid var(--border);"><span>${escapeHtml(state.databases[subj]?.displayName || subj)} · ${escapeHtml(ch)}</span><strong>${formatHHMMSS(sec)}</strong></div>`; }).join("");
+        const peak = Math.max(1, ...getSubjectKeys().map(k => allLogs.filter(l=>l.subject===k).reduce((sum,l)=>sum+(Number(l.seconds)||0),0)));
+        const subjectBars = getSubjectKeys().map(k => { const sec=allLogs.filter(l=>l.subject===k).reduce((sum,l)=>sum+(Number(l.seconds)||0),0); if(!sec) return ""; return `<div style="display:grid;grid-template-columns:100px 1fr 72px;gap:.5rem;align-items:center;font-size:.78rem;"><span>${escapeHtml(state.databases[k].displayName||k)}</span><div style="height:9px;background:var(--bg-hover);border-radius:9px;overflow:hidden;"><div style="height:100%;width:${Math.round(sec/peak*100)}%;background:${escapeHtml(state.databases[k].color||"var(--accent)")};"></div></div><strong>${(sec/3600).toFixed(2)}h</strong></div>`; }).join("");
         bodyEl.innerHTML = `
-          <div style="font-weight:800; font-size:0.95rem;">Total Studied on Day ${dayNum}: ${totalHrs.toFixed(2)} hrs</div>
-          ${subjCards || `<div style="color:var(--text-muted);">No subjects added yet.</div>`}
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;">
+            <div class="report-stat-card"><small>Total time</small><strong>${totalHrs.toFixed(2)}h</strong></div>
+            <div class="report-stat-card"><small>Sessions</small><strong>${allLogs.length}</strong></div>
+            <div class="report-stat-card"><small>Subjects</small><strong>${new Set(allLogs.map(l=>l.subject)).size}</strong></div>
+          </div>
+          <h4 style="margin:.35rem 0 0;">Subject distribution</h4>${subjectBars || `<div style="color:var(--text-muted);">No recorded activity.</div>`}
+          <h4 style="margin:.35rem 0 0;">Chapter activity</h4>${chapterRows || `<div style="color:var(--text-muted);">No chapter-level records for this day.</div>`}
+          <h4 style="margin:.35rem 0 0;">Daily checklist</h4>${subjCards || `<div style="color:var(--text-muted);">No subjects added yet.</div>`}
         `;
         document.getElementById("dayReportModal")?.classList.remove("hidden");
       }
@@ -3746,6 +3814,7 @@
         document.getElementById("clearCountdownBtn")?.addEventListener("click", () => {
           countdownConfig = { title: "", targetDate: "" };
           localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
+          syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1; syncMeta.dirty = true; saveSyncMeta(); updateSyncButtonVisuals();
           renderCountdownPill();
           document.getElementById("countdownModal")?.classList.add("hidden");
           showToast("Cleared countdown");
@@ -3983,6 +4052,8 @@
           }
         }, 30000);
 
+        document.getElementById("undoActionBtn")?.addEventListener("click", undoLastAction);
+
         document.getElementById("openReportViewBtn")?.addEventListener("click", () => {
           const repDate = document.getElementById("reportBaseDateInput");
           if (repDate) repDate.value = trackedDateStr;
@@ -4081,8 +4152,9 @@
           const pauseBtn = e.target.closest("[data-toggle-pause]");
           if (pauseBtn && activeTimer) {
             e.stopPropagation();
-            activeTimer.running = !activeTimer.running;
-            renderGalleryCards();
+            if (activeTimer.running) { activeTimer.accumulatedSeconds = getTimerElapsedSeconds(activeTimer); activeTimer.running = false; activeTimer.startedAt = null; }
+            else { activeTimer.running = true; activeTimer.startedAt = Date.now(); }
+            persistActiveTimer(); renderGalleryCards();
             return;
           }
 
@@ -4166,13 +4238,18 @@
         // Full-Screen Focus Timer Overlay Buttons
         document.getElementById("focusTimerPauseBtn")?.addEventListener("click", () => {
           if (!activeTimer) return;
-          activeTimer.running = !activeTimer.running;
-          renderGalleryCards();
+          if (activeTimer.running) { activeTimer.accumulatedSeconds = getTimerElapsedSeconds(activeTimer); activeTimer.running = false; activeTimer.startedAt = null; }
+          else { activeTimer.running = true; activeTimer.startedAt = Date.now(); }
+          persistActiveTimer(); renderGalleryCards();
         });
 
         document.getElementById("focusTimerStopBtn")?.addEventListener("click", () => {
           stopAndCommitInCardTimer(true);
         });
+        document.getElementById("focusTimerDiscardBtn")?.addEventListener("click", () => { if (confirm("Discard this timer session without saving?")) discardActiveTimer(); });
+        document.getElementById("focusTimerCloseBtn")?.addEventListener("click", () => { document.getElementById("focusTimerOverlay")?.classList.add("hidden-view"); });
+        document.getElementById("openManualTimeBtn")?.addEventListener("click", openManualTimeEntry);
+        document.getElementById("saveManualTimeBtn")?.addEventListener("click", saveManualTimeEntry);
 
         // Multiselect Checkboxes inside Gallery Popover (including Select All)
         document.getElementById("subjectGalleryRow")?.addEventListener("change", (e) => {
@@ -4313,6 +4390,16 @@
           if (inp) inp.value = "";
           document.getElementById("quickAddChapterModal")?.classList.remove("hidden");
           setTimeout(() => inp?.focus(), 50);
+        });
+
+        document.getElementById("portraitDailyTaskAssign")?.addEventListener("change", (e) => {
+          const cb = e.target.closest("[data-daily-task-assign]"); if (!cb) return;
+          const db = state.databases[state.activeSubject]; if (!db) return;
+          const row = getOrCreateRowForDateAndChapter(db, portraitSelectedDate, portraitSelectedChapter);
+          const colId = cb.dataset.dailyTaskAssign; if (!Array.isArray(row.dailyTaskIds)) row.dailyTaskIds = [];
+          if (cb.checked && !row.dailyTaskIds.includes(colId)) row.dailyTaskIds.push(colId);
+          if (!cb.checked) row.dailyTaskIds = row.dailyTaskIds.filter(id => id !== colId);
+          saveWorkspace(); renderActiveDatabase();
         });
 
         document.getElementById("portraitTaskItemsContainer")?.addEventListener("change", (e) => {
@@ -4997,10 +5084,28 @@ function doPost(e) {
         });
       }
 
+      function restoreActiveTimer() {
+        try {
+          const raw = localStorage.getItem(ACTIVE_TIMER_KEY); if (!raw) return;
+          const saved = JSON.parse(raw); if (!saved || !state?.databases?.[saved.subject]) return;
+          activeTimer = { ...saved, intervalId: null };
+          if (activeTimer.running) activeTimer.startedAt = Number(saved.startedAt) || Date.now();
+          activeTimer.lastPersistAt = Date.now();
+          activeTimer.intervalId = setInterval(() => { if (activeTimer) { refreshActiveTimerDisplay(); if (Date.now() - (activeTimer.lastPersistAt || 0) >= 5000) { persistActiveTimer(); activeTimer.lastPersistAt = Date.now(); } } }, 500);
+          showToast("Recovered your active timer session");
+        } catch(e) { console.warn("Timer recovery skipped", e); }
+      }
+
+      document.addEventListener("visibilitychange", () => { if (!document.hidden && activeTimer) { refreshActiveTimerDisplay(); persistActiveTimer(); } });
+      window.addEventListener("pagehide", persistActiveTimer);
+
       function bootstrap() {
         loadAndApplyPrefs();
         loadSyncMeta();
         loadWorkspace();
+        try { if (localStorage.getItem(STORAGE_KEY)) undoStack = []; } catch(e) {}
+        updateUndoButton();
+        restoreActiveTimer();
         initTargetCountdown();
         initEmbeddedPwa();
         bindAllEvents();
