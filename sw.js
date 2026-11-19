@@ -1,7 +1,8 @@
-const CACHE_NAME = "time-task-tracker-v4";
+const CACHE_NAME = "time-task-tracker-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./firebase-client.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png"

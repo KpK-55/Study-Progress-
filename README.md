@@ -19,7 +19,7 @@
 * **Mobile & Tablet Daily Checklist Mode:** Automatically switches to a clean, tap-friendly daily checklist in portrait view so you can tick off today's tasks without horizontal scrolling.
 * **Taskwise & Subjectwise Visual Reports:** Click **Show Report** to analyze how your study hours are distributed across tasks and subjects over Today, 7 Days, 30 Days, or a custom date range.
 * **Custom Target Countdown & Challenge Board:** Set a live countdown to your exam date in the top bar and customize a multi-day consistency heatmap (**Challenge Board**) with daily color-coded hour goals.
-* **Google Drive backup (legacy):** The current release still supports the original Google Apps Script endpoint. Firebase Firestore primary sync is planned for the next cloud-integration phase and is not yet active in this build.
+* **Firebase cloud sync:** Google sign-in and private Firestore storage under each account. Safe sync pauses when a newer cloud version is detected instead of silently overwriting it.
 * **Fully Customizable Appearance:** Switch between Light/Dark mode, 6 typography styles, text sizes, page widths, and accent colors in **Settings**.
 
 ---
@@ -31,29 +31,22 @@ open Tag -
 scroll to the bottom -
 Under asset you'll find apk file
 
-## ☁️ Legacy Google Drive Backup Setup
+## ☁️ Firebase Cloud Sync
 
-This release retains the previous Google Apps Script backup flow while the Firebase Firestore integration is being prepared. Do not treat the legacy whole-workspace sync as conflict-safe multi-device synchronization.
+1. Open the app and click the **☁️ Sync** button.
+2. Choose **Continue with Google** and sign in with the Google account you want to use on all devices.
+3. On the first device, use **Safe Sync** to upload its local workspace if the Firebase account has no existing cloud copy.
+4. On another device, sign in with the same Google account. If Firebase already contains data, choose **Use Cloud Copy** to restore it to the new device.
+5. Future workspace, appearance preference, and countdown changes are automatically synced while online and signed in. You can also open Sync and press **Safe Sync** manually.
 
-Your study data is stored privately inside **your own Google Drive**—no third-party account or subscription is needed. Follow these steps once to link your PC and phone:
+### Conflict protection
 
-### Step 1: Create Your Free Google Drive Sync Endpoint
-1. Open the app, click **`⋮`** next to the **☁️ Sync** button in the top-right bar, and click **📋 Copy Google Script**.
-2. Go to [script.google.com](https://script.google.com) on your browser and click **New project**.
-3. Delete any placeholder code in the editor, paste the copied script, and click **Save** (`Ctrl + S`).
-4. Click **Deploy** (top right) → **New deployment**.
-5. Click the gear icon (`⚙️`) next to *Select type* and choose **Web app**.
-6. Set **Execute as** to **Me**, and set **Who has access** to **Anyone**.
-7. Click **Deploy**, authorize permissions when prompted (*Advanced → Go to project*), and copy the **Web app URL** (`https://script.google.com/macros/s/.../exec`).
+If a cloud update is newer than the last version this device synchronized, Safe Sync pauses. Choose **Use Cloud Copy** to replace this device with the cloud version, or **Replace Cloud with This Device** only after confirming that the local device contains the version you want to keep. Export a JSON backup before a manual replacement if unsure.
 
-### Step 2: Connect Your Devices
-1. In **TIME & TASK TRACKER** (on both your PC browser/PWA and your Android APK), click **`⋮`** beside **☁️ Sync**.
-2. Paste your **Web app URL** into the input box and click **🔄 Smart Sync Now (Auto-Merge)**.
-3. A backup file named `Time_Task_Tracker_Backup.json` is automatically created in your Google Drive.
+### Current scope
 
-### Step 3: Everyday One-Click Syncing & Status Colors
-After the initial setup, simply click the **☁️ Sync** button anytime to back up or pull updates:
-* **🟢 Green (`☁️ Sync`):** Your device is completely up to date with Google Drive.
-* **🟡 Amber (`☁️ Syncing...`):** Sync is actively transferring your databases, timers, and settings.
-* **🔴 Red (`☁️ Sync`):** Either you have new local edits waiting to be backed up, or another device pushed newer progress to the cloud—just tap **☁️ Sync** once to merge and turn it green!
-* **Manual Override (`⋮`):** Need to overwrite one device from another? Open **`⋮`** and use **⬆ Push Local to Cloud** or **⬇ Pull Cloud to Device**.
+Firebase currently synchronizes the workspace, preferences, and countdown as separate documents. This first Firebase integration does not yet provide record-level merging, automatic Google Drive snapshots, or Exam Prep. Those are planned follow-up work. The JSON Export/Import controls remain available as a manual backup route.
+
+### Firestore security
+
+Keep the Firestore rules restricted to authenticated users whose UID matches the `{userId}` path. Never use public read/write rules. The Firebase web configuration in `firebase-client.js` is client configuration; never commit a service-account private key to GitHub.

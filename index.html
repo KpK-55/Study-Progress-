@@ -1789,6 +1789,7 @@
       transform: translateX(-50%) translateY(0);
     }
   </style>
+  <script type="module" src="./firebase-client.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -1820,12 +1821,12 @@
       <div class="topbar-actions">
         <button type="button" class="btn hidden-view" id="installPwaBtn">📲 Install App</button>
 
-        <div class="sync-split-group sync-state-idle" id="syncSplitGroup" title="One-click Cloud Sync">
+        <div class="sync-split-group sync-state-idle" id="syncSplitGroup" title="Firebase Cloud Sync">
           <button type="button" class="btn sync-quick-btn" id="quickSyncBtn">
             <span class="sync-status-indicator"></span>
             <span id="quickSyncLabel">☁️ Sync</span>
           </button>
-          <button type="button" class="btn sync-details-btn" id="openSyncModalBtn" title="Sync Settings & Google Script">⋮</button>
+          <button type="button" class="btn sync-details-btn" id="openSyncModalBtn" title="Firebase Sync & Backup Settings">⋮</button>
         </div>
 
         <button type="button" class="btn" id="undoActionBtn" title="Undo last saved change" disabled>↶ Undo</button>
@@ -2254,29 +2255,33 @@
     </div>
   </div>
 
-  <!-- CLOUD SYNC DETAILS MODAL -->
+  <!-- FIREBASE SYNC & BACKUP MODAL -->
   <div class="modal-backdrop hidden" id="syncDetailsModal">
-    <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-card" style="max-width: 540px;">
       <div class="modal-header">
         <h3>☁️ Cloud Sync & Backup</h3>
         <button type="button" class="btn btn-icon" data-close-modal="syncDetailsModal">✕</button>
       </div>
-      <div class="form-group">
-        <label for="gasWebAppUrlInput">Google Apps Script Web App URL</label>
-        <input type="url" id="gasWebAppUrlInput" class="input-field" placeholder="https://script.google.com/macros/s/.../exec" />
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;margin-bottom:.85rem;">
+        <div style="font-weight:800;margin-bottom:.25rem;">Firebase account</div>
+        <div id="firebaseAuthStatus" style="font-size:.82rem;color:var(--text-secondary);">Checking Firebase connection…</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem;">
+          <button type="button" class="btn btn-primary" id="firebaseSignInBtn">Continue with Google</button>
+          <button type="button" class="btn hidden-view" id="firebaseSignOutBtn">Sign out</button>
+        </div>
       </div>
-      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.65rem 0.8rem; font-size: 0.78rem; margin-bottom: 0.85rem;">
-        <div><strong>Sync Status:</strong> <span id="syncDetailStatusLabel">Ready</span></div>
-        <div style="color: var(--text-secondary); margin-top: 0.2rem;">Local USN: <strong id="localUsnVal">1</strong> • Cloud USN: <strong id="cloudUsnVal">—</strong> • Last Synced: <strong id="lastSyncedTimeVal">Never</strong></div>
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;margin-bottom:.85rem;font-size:.8rem;">
+        <div><strong>Sync status:</strong> <span id="firebaseSyncStatus">Not connected</span></div>
+        <div style="color:var(--text-secondary);margin-top:.25rem;">Your data is stored under your authenticated Firebase account. If another device has newer data, the app will ask before replacing anything.</div>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.85rem;">
-        <button type="button" class="btn btn-primary" id="smartSyncModalBtn" style="grid-column: 1 / -1;">🔄 Smart Sync Now (Auto-Merge)</button>
-        <button type="button" class="btn" id="forcePushModalBtn">⬆ Push Local to Cloud</button>
-        <button type="button" class="btn" id="forcePullModalBtn">⬇ Pull Cloud to Device</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem;">
+        <button type="button" class="btn btn-primary" id="firebaseSyncNowBtn" disabled>🔄 Safe Sync</button>
+        <button type="button" class="btn" id="firebasePullBtn" disabled>⬇ Use Cloud Copy</button>
+        <button type="button" class="btn" id="firebaseForcePushBtn" disabled style="grid-column:1/-1;">⬆ Replace Cloud with This Device</button>
       </div>
-      <div style="border-top: 1px solid var(--border); padding-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.45rem; justify-content: space-between;">
-        <button type="button" class="btn" id="copyGasScriptBtn">📋 Copy Google Script</button>
-        <div style="display: flex; gap: 0.4rem;">
+      <div style="border-top:1px solid var(--border);padding-top:.75rem;display:flex;flex-wrap:wrap;gap:.45rem;justify-content:space-between;">
+        <span style="font-size:.75rem;color:var(--text-secondary);align-self:center;">Google Drive backup will be configured separately.</span>
+        <div style="display:flex;gap:.4rem;">
           <button type="button" class="btn" id="exportJsonBtn">Export JSON</button>
           <button type="button" class="btn" id="importJsonBtn">Import JSON</button>
           <input type="file" id="importJsonFileInput" accept=".json" style="display:none;" />
@@ -2442,6 +2447,29 @@
         el.classList.add("show");
         clearTimeout(el._timer);
         el._timer = setTimeout(() => el.classList.remove("show"), 2800);
+      }
+
+      let firebaseAutoSyncTimer = null;
+      function queueFirebaseAutoSync() {
+        if (!window.firebaseBridge?.getUser()) return;
+        clearTimeout(firebaseAutoSyncTimer);
+        firebaseAutoSyncTimer = setTimeout(async () => {
+          try {
+            const result = await window.firebaseBridge.safeSync({ workspace: state, prefs, countdown: countdownConfig });
+            if (result?.conflict) {
+              const status = document.getElementById("firebaseSyncStatus");
+              if (status) status.textContent = "Cloud changes detected. Open Sync to review before replacing anything.";
+              return;
+            }
+            syncMeta.dirty = false;
+            syncMeta.lastSyncedAt = new Date().toISOString();
+            saveSyncMeta();
+          } catch (err) {
+            console.warn("Firebase background sync paused:", err);
+            const status = document.getElementById("firebaseSyncStatus");
+            if (status) status.textContent = "Offline or sync failed. Your changes remain saved on this device.";
+          }
+        }, 1800);
       }
 
       /* ======================================================================
@@ -2704,6 +2732,7 @@
             if (previous) { undoStack.push(previous); if (undoStack.length > 20) undoStack.shift(); updateUndoButton(); }
           }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          if (markDirty) queueFirebaseAutoSync();
           if (markDirty) {
             syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
             syncMeta.dirty = true;
@@ -2741,6 +2770,7 @@
           localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
         } catch (err) {}
         applyPrefsToDocument();
+        if (markDirty) queueFirebaseAutoSync();
         if (markDirty) {
           syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
           syncMeta.dirty = true;
@@ -3802,6 +3832,7 @@
           }
           countdownConfig = { title, targetDate };
           localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
+          queueFirebaseAutoSync();
           syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
           syncMeta.dirty = true;
           saveSyncMeta();
@@ -3814,6 +3845,7 @@
         document.getElementById("clearCountdownBtn")?.addEventListener("click", () => {
           countdownConfig = { title: "", targetDate: "" };
           localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
+          queueFirebaseAutoSync();
           syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1; syncMeta.dirty = true; saveSyncMeta(); updateSyncButtonVisuals();
           renderCountdownPill();
           document.getElementById("countdownModal")?.classList.add("hidden");
@@ -4967,28 +4999,72 @@
           syncAppearanceDrawerSelections();
         });
 
-        // One-Click Cloud Sync & Details Modal
-        document.getElementById("quickSyncBtn")?.addEventListener("click", executeSmartSync);
-        document.getElementById("openSyncModalBtn")?.addEventListener("click", () => {
-          document.getElementById("gasWebAppUrlInput").value = syncMeta.scriptUrl || "";
-          updateSyncButtonVisuals();
-          document.getElementById("syncDetailsModal")?.classList.remove("hidden");
+        // Firebase authentication and conflict-aware cloud sync
+        const openFirebaseSync = () => document.getElementById("syncDetailsModal")?.classList.remove("hidden");
+        document.getElementById("quickSyncBtn")?.addEventListener("click", openFirebaseSync);
+        document.getElementById("openSyncModalBtn")?.addEventListener("click", openFirebaseSync);
+        document.getElementById("firebaseSignInBtn")?.addEventListener("click", async () => {
+          try { await window.firebaseBridge?.signIn(); }
+          catch (err) { showToast("Google sign-in failed: " + (err.message || err)); }
         });
-
-        document.getElementById("gasWebAppUrlInput")?.addEventListener("change", (e) => {
-          syncMeta.scriptUrl = e.target.value.trim();
-          saveSyncMeta();
-          updateSyncButtonVisuals();
+        document.getElementById("firebaseSignOutBtn")?.addEventListener("click", async () => {
+          try { await window.firebaseBridge?.signOut(); showToast("Signed out of Firebase"); }
+          catch (err) { showToast("Sign-out failed: " + err.message); }
         });
-
-        document.getElementById("smartSyncModalBtn")?.addEventListener("click", executeSmartSync);
-        document.getElementById("forcePushModalBtn")?.addEventListener("click", async () => {
-          if (!syncMeta.scriptUrl) return showToast("Enter Web App URL first");
-          try { await pushWorkspaceToCloud(); } catch (err) { updateSyncButtonVisuals("error"); showToast(err.message); }
+        document.getElementById("firebaseSyncNowBtn")?.addEventListener("click", async () => {
+          try {
+            if (!window.firebaseBridge?.getUser()) return showToast("Sign in with Google first");
+            const result = await window.firebaseBridge.safeSync({ workspace: state, prefs, countdown: countdownConfig });
+            if (result.conflict) {
+              document.getElementById("firebaseSyncStatus").textContent = "A newer cloud copy exists. Choose Use Cloud Copy or Replace Cloud.";
+              showToast("Sync paused to protect newer cloud changes");
+            } else {
+              syncMeta.dirty = false; syncMeta.lastSyncedAt = new Date().toISOString(); saveSyncMeta();
+              document.getElementById("firebaseSyncStatus").textContent = "Synced successfully · " + new Date().toLocaleString();
+              showToast("Firebase sync completed");
+            }
+          } catch (err) { document.getElementById("firebaseSyncStatus").textContent = err.message; showToast("Firebase sync failed: " + err.message); }
         });
-        document.getElementById("forcePullModalBtn")?.addEventListener("click", async () => {
-          if (!syncMeta.scriptUrl) return showToast("Enter Web App URL first");
-          try { await pullWorkspaceFromCloud(); } catch (err) { updateSyncButtonVisuals("error"); showToast(err.message); }
+        document.getElementById("firebasePullBtn")?.addEventListener("click", async () => {
+          if (!confirm("Replace this device's workspace, preferences and countdown with the cloud copy? Export a backup first if unsure.")) return;
+          try {
+            const bundle = await window.firebaseBridge?.pullBundle();
+            if (!bundle) return showToast("No cloud backup was found");
+            state = bundle.workspace || state; prefs = { ...prefs, ...(bundle.prefs || {}) };
+            countdownConfig = { ...countdownConfig, ...(bundle.countdown || {}) };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+            localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
+            applyPrefsToDocument(); initTargetCountdown(); switchWorkspaceView(currentView);
+            syncMeta.dirty = false; saveSyncMeta();
+            document.getElementById("firebaseSyncStatus").textContent = "Cloud copy restored";
+            showToast("Cloud data restored to this device");
+          } catch (err) { showToast("Cloud restore failed: " + err.message); }
+        });
+        document.getElementById("firebaseForcePushBtn")?.addEventListener("click", async () => {
+          if (!confirm("This will replace the Firebase cloud copy with this device's data. Continue only if this device has the version you want to keep.")) return;
+          try {
+            await window.firebaseBridge?.forcePush({ workspace: state, prefs, countdown: countdownConfig });
+            syncMeta.dirty = false; syncMeta.lastSyncedAt = new Date().toISOString(); saveSyncMeta();
+            document.getElementById("firebaseSyncStatus").textContent = "This device replaced the cloud copy";
+            showToast("This device was uploaded to Firebase");
+          } catch (err) { showToast("Upload failed: " + err.message); }
+        });
+        window.addEventListener("firebase-auth-changed", (event) => {
+          const user = event.detail?.user;
+          const status = document.getElementById("firebaseAuthStatus");
+          const signIn = document.getElementById("firebaseSignInBtn");
+          const signOut = document.getElementById("firebaseSignOutBtn");
+          const controls = ["firebaseSyncNowBtn", "firebasePullBtn", "firebaseForcePushBtn"];
+          if (user) {
+            if (status) status.textContent = `Signed in as ${user.displayName || user.email || "Google account"}`;
+            if (signIn) signIn.classList.add("hidden-view"); if (signOut) signOut.classList.remove("hidden-view");
+            controls.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
+          } else {
+            if (status) status.textContent = "Not signed in. Sign in to sync across devices.";
+            if (signIn) signIn.classList.remove("hidden-view"); if (signOut) signOut.classList.add("hidden-view");
+            controls.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
+          }
         });
 
         document.getElementById("copyGasScriptBtn")?.addEventListener("click", () => {

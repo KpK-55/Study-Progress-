@@ -22,3 +22,13 @@
 ## Validation
 - Inline JavaScript syntax checked with `node --check`.
 - APK/PWA runtime testing on Android and desktop has not yet been performed.
+
+
+## Firebase integration batch 2
+- Added Firebase Web SDK 13.4.0 client module and Google popup authentication.
+- Added Firestore user-scoped documents under `users/{uid}/appData/` for workspace, preferences, countdown, and sync metadata.
+- Added transactional sync-version gate: normal sync pauses if cloud metadata is newer than the version last acknowledged by this device; explicit restore and explicit replace actions are separate.
+- Added background sync after local workspace, appearance, and countdown changes when a user is signed in and online.
+- Replaced legacy Apps Script sync controls with Firebase sign-in, safe sync, restore cloud copy, and explicit replace cloud controls. JSON import/export remains available.
+- Updated PWA cache version and Android build workflow to include `firebase-client.js`.
+- Google Drive automated backup and Exam Prep remain outstanding; this batch must not be described as the complete requested upgrade.
