@@ -24,21 +24,18 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Generate PNG App Icons
-        run: node generate-icons.js
-
       - name: Assemble Web Bundle & Capacitor Android Project
         run: |
           mkdir -p www
-          cp index.html manifest.json sw.js firebase-client.js www/
+          cp index.html manifest.json sw.js firebase-client.js firebase-config.js favicon.ico www/
           mkdir -p www/icons
-          cp icons/icon-192.png icons/icon-512.png www/icons/
+          cp icons/icon-192.png icons/icon-512.png icons/favicon-32.png icons/favicon-48.png icons/apple-touch-icon.png www/icons/
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "Time and Task Tracker" "com.timetasktracker.app" --web-dir=www
           npx cap add android
-          mkdir -p android/app/src/main/res/drawable
-          cp icon-512.png android/app/src/main/res/drawable/ic_launcher.png
+          # Apply the supplied logo to Android launcher icons at all densities.
+          cp -R android-icons/* android/app/src/main/res/
           cat << 'EOF' >> android/app/build.gradle
 
           dependencies {

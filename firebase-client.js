@@ -1,4 +1,5 @@
 // Firebase client for the GitHub Pages / Capacitor standalone app.
+import { firebaseConfig } from "./firebase-config.js";
 // The web config is public client configuration; Firestore Security Rules protect user data.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 import {
@@ -8,15 +9,10 @@ import {
   getFirestore, doc, getDoc, setDoc, serverTimestamp, runTransaction
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCPb-yGycsJwz0lML04WPzyg_NbdN6TW8",
-  authDomain: "time-and-task-tracker.firebaseapp.com",
-  projectId: "time-and-task-tracker",
-  storageBucket: "time-and-task-tracker.firebasestorage.app",
-  messagingSenderId: "251824598441",
-  appId: "1:251824598441:web:64dd8fff5897b7502228b8",
-  measurementId: "G-9Q9HZ3HZHJ"
-};
+if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "PASTE_EXACT_API_KEY_HERE") {
+  throw new Error("Firebase setup incomplete: paste the exact Web API key into firebase-config.js.");
+}
+
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);

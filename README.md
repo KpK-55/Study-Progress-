@@ -50,3 +50,4 @@ Firebase currently synchronizes the workspace, preferences, and countdown as sep
 ### Firestore security
 
 Keep the Firestore rules restricted to authenticated users whose UID matches the `{userId}` path. Never use public read/write rules. The Firebase web configuration in `firebase-client.js` is client configuration; never commit a service-account private key to GitHub.
+\n\n## App branding and Firebase configuration\n- Replace `icons/source-logo.png` with the approved master logo only if branding changes.\n- `icons/icon-192.png`, `icons/icon-512.png`, and `icons/apple-touch-icon.png` are the web/PWA icons.\n- `android-icons/` contains density-specific Android launcher icons.\n- Paste the exact Firebase Web App API key into `firebase-config.js`; see `FIREBASE_SETUP.md`.\n
