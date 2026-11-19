@@ -1,4 +1,4 @@
-const CACHE_NAME = "time-task-tracker-v7";
+const CACHE_NAME = "time-task-tracker-v8";
 const APP_SHELL = [
   "./",
   "./index.html",

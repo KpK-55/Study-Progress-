@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#2383e2" />
+  <meta name="theme-color" content="#17191b" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Time & Task Tracker" />
@@ -1790,6 +1790,58 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* Refined charcoal dark theme: high-contrast surfaces, cool borders, blue/yellow accents. */
+    body.dark {
+      --accent: #318bff;
+      --accent-soft: rgba(49,139,255,.16);
+      --bg-page: #17191b;
+      --bg-surface: #202326;
+      --bg-elevated: #25282c;
+      --bg-hover: #2c3136;
+      --border: #353a40;
+      --border-strong: #48515b;
+      --text-primary: #f3f6fa;
+      --text-secondary: #aeb7c2;
+      --text-muted: #7d8996;
+      --success: #25b889;
+      --success-bg: #15372f;
+      --danger: #ff6b67;
+      --danger-bg: #3b2224;
+      --warning: #ffbf3c;
+      --warning-bg: #3b301b;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.24);
+      --shadow-md: 0 12px 30px rgba(0,0,0,.34);
+      --shadow-lg: 0 22px 55px rgba(0,0,0,.48);
+    }
+    body.dark .topbar { background: rgba(23,25,27,.96); border-bottom-color:#30363d; backdrop-filter: blur(14px); }
+    body.dark .subject-gallery-card, body.dark .modal-card, body.dark .focus-timer-modal,
+    body.dark .challenge-cell, body.dark .report-card, body.dark .database-panel {
+      background: #222629; border-color:#353b42; box-shadow: 0 8px 22px rgba(0,0,0,.22);
+    }
+    body.dark .subject-gallery-card:hover { border-color:#46515d; transform:translateY(-1px); }
+    body.dark .countdown-pill { background:#202428; border-color:#3b424a; box-shadow:inset 0 1px rgba(255,255,255,.035),0 4px 14px rgba(0,0,0,.22); }
+    body.dark .countdown-label { color:#3d96ff; }
+    body.dark .countdown-units { color:#f6f8fb; }
+    body.dark .countdown-units span small { color:#aeb7c2; }
+    body.dark .btn, body.dark .input-field, body.dark select, body.dark textarea {
+      background:#202428; color:#eef3f8; border-color:#3a424a;
+    }
+    body.dark .btn:hover { background:#2b3239; border-color:#56616d; }
+    body.dark .btn-primary { background:#1769c2; border-color:#287fdb; color:#fff; }
+    body.dark .btn-primary:hover { background:#237bd8; }
+    body.dark input::placeholder, body.dark textarea::placeholder { color:#778391; }
+    body.dark .multiselect-menu, body.dark .in-card-overlay { background:#202428; border-color:#414a54; box-shadow:0 16px 34px rgba(0,0,0,.5); }
+    body.dark .multiselect-option:hover, body.dark .portrait-task-item:hover { background:#2a3138; }
+    body.dark .portrait-task-item, body.dark .table-wrap, body.dark table { border-color:#353d45; }
+    body.dark th { background:#252b31; color:#c7d0da; }
+    body.dark td { border-color:#30373e; }
+    body.dark .sync-split-group.sync-state-synced { border-color:#1d8768; }
+    body.dark .sync-split-group.sync-state-dirty { border-color:#bd8721; }
+    body.dark .sync-split-group.sync-state-error, body.dark .sync-split-group.sync-state-remote-newer { border-color:#b94c4c; }
+    body.dark .brand-icon { background:#fff; border-color:#d7e0ea; }
+    body.dark .focus-big-digits { color:#f6f9fc; text-shadow:0 0 28px rgba(49,139,255,.16); }
+    body.dark .modal-backdrop { background:rgba(0,0,0,.72); }
   </style>
   <script type="module" src="./firebase-client.js"></script>
 </head>
@@ -1880,9 +1932,8 @@
             <input type="date" id="activeDatePicker" class="input-field" style="min-height: 26px; padding: 0.15rem 0.4rem;" />
             <span class="date-error-badge" id="trackingDateErrorMark" title="Tracking Date does not match today's local date">⚠️ Not Today</span>
           </label>
-          <button type="button" class="btn" id="openChallengeBoardBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">
-            Challenge Board
-          </button>
+          <button type="button" class="btn" id="openChallengeBoardBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">Challenge Board</button>
+          <button type="button" class="btn" id="openExamPrepBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">Exam Prep</button>
         </div>
 
         <div class="total-hours-badge" title="Total hours studied across all subjects on selected Tracking Date">
@@ -2060,7 +2111,22 @@
       </div>
       <div id="challengeGridContainer"></div>
     </section>
+
+    <section id="examPrepView" class="hidden-view">
+      <div class="challenge-header"><div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;"><button type="button" class="btn" id="closeExamPrepBtn">← Back to Gallery</button><h2 style="font-size:1.35rem;font-weight:900;">EXAM PREP</h2></div><button type="button" class="btn btn-primary" id="newExamPlanBtn">＋ New exam plan</button></div>
+      <p style="color:var(--text-secondary);font-size:.84rem;margin:.4rem 0 1rem;">Plan exams independently using subjects and chapters from your existing databases. Actual time is calculated from manual study logs linked to an exam plan.</p>
+      <div id="examPlansList" class="subject-gallery-row"></div>
+    </section>
   </main>
+
+  <div class="modal-backdrop hidden" id="examPlanModal"><div class="modal-card" style="max-width:560px;"><div class="modal-header"><h3>Create exam plan</h3><button type="button" class="btn btn-icon" data-close-modal="examPlanModal">✕</button></div>
+    <div class="form-group"><label for="examPlanName">Exam name</label><input id="examPlanName" class="input-field" placeholder="e.g. Weekly Test 01"></div>
+    <div class="form-group"><label for="examPlanDate">Exam date</label><input id="examPlanDate" type="date" class="input-field"></div>
+    <div class="form-group"><label>Subjects</label><div id="examPlanSubjects" style="display:flex;flex-wrap:wrap;gap:.4rem;"></div></div>
+    <div class="form-group"><label>Chapters</label><div id="examPlanChapters" style="display:flex;flex-wrap:wrap;gap:.4rem;max-height:180px;overflow:auto;padding:.5rem;border:1px solid var(--border);border-radius:9px;"></div></div>
+    <div class="form-group"><label for="examPlanHours">Allocated preparation time (hours)</label><input id="examPlanHours" type="number" min="0.25" step="0.25" value="4" class="input-field"></div>
+    <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:.8rem;"><button type="button" class="btn" data-close-modal="examPlanModal">Cancel</button><button type="button" class="btn btn-primary" id="saveExamPlanBtn">Save exam plan</button></div>
+  </div></div>
 
   <!-- CREATE / EDIT TARGET COUNTDOWN MODAL -->
   <div class="modal-backdrop hidden" id="countdownModal">
@@ -2278,8 +2344,17 @@
         <button type="button" class="btn" id="firebasePullBtn" disabled>⬇ Use Cloud Copy</button>
         <button type="button" class="btn" id="firebaseForcePushBtn" disabled style="grid-column:1/-1;">⬆ Replace Cloud with This Device</button>
       </div>
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;margin-bottom:.85rem;">
+        <div style="font-weight:800;margin-bottom:.25rem;">Google Drive backup</div>
+        <div id="driveBackupStatus" style="font-size:.78rem;color:var(--text-secondary);margin-bottom:.6rem;">Authorize Drive access once to enable private app-created backups.</div>
+        <div style="display:flex;gap:.45rem;flex-wrap:wrap;">
+          <button type="button" class="btn" id="authorizeDriveBtn">Authorize Google Drive</button>
+          <button type="button" class="btn btn-primary" id="backupDriveNowBtn">Backup now</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--text-secondary);margin-top:.45rem;">Backups are created in a dedicated “Time & Task Tracker Backups” folder. Automatic backup runs at most once per day after a successful Firebase sync.</div>
+      </div>
       <div style="border-top:1px solid var(--border);padding-top:.75rem;display:flex;flex-wrap:wrap;gap:.45rem;justify-content:space-between;">
-        <span style="font-size:.75rem;color:var(--text-secondary);align-self:center;">Google Drive backup will be configured separately.</span>
+        <span style="font-size:.75rem;color:var(--text-secondary);align-self:center;">JSON export/import remains available as an additional local backup.</span>
         <div style="display:flex;gap:.4rem;">
           <button type="button" class="btn" id="exportJsonBtn">Export JSON</button>
           <button type="button" class="btn" id="importJsonBtn">Import JSON</button>
@@ -2322,13 +2397,15 @@
   <div class="modal-backdrop hidden" id="manualTimeModal">
     <div class="modal-card" style="max-width:420px;">
       <div class="modal-header"><h3>＋ Add study time</h3><button type="button" class="btn btn-icon" data-close-modal="manualTimeModal">✕</button></div>
-      <div class="form-group"><label for="manualTimeSubject">Subject</label><select id="manualTimeSubject" class="input-field"></select></div>
-      <div class="form-group"><label for="manualTimeChapters">Chapter(s) — comma separated</label><input id="manualTimeChapters" class="input-field" placeholder="Chapter 1, Chapter 2" /></div>
+      <div class="form-group"><label for="manualTimeSubject">Subject database</label><select id="manualTimeSubject" class="input-field"></select></div>
+      <div class="form-group"><label>Chapter(s) — select one or more</label><div id="manualTimeChapterOptions" class="multiselect-menu" style="position:static;display:flex;flex-wrap:wrap;gap:.35rem;max-height:150px;overflow:auto;padding:.55rem;border:1px solid var(--border);border-radius:10px;"></div></div>
+      <div class="form-group"><label>Tasks assigned for the selected chapter(s) today</label><div id="manualTimeTaskOptions" style="display:flex;flex-wrap:wrap;gap:.35rem;max-height:130px;overflow:auto;padding:.55rem;border:1px solid var(--border);border-radius:10px;"><span class="text-muted">Choose a subject and chapter first.</span></div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
         <div class="form-group"><label for="manualTimeHours">Hours</label><input id="manualTimeHours" type="number" min="0" max="24" value="0" class="input-field" /></div>
         <div class="form-group"><label for="manualTimeMinutes">Minutes</label><input id="manualTimeMinutes" type="number" min="0" max="59" value="30" class="input-field" /></div>
       </div>
-      <div class="form-group"><label for="manualTimeTasks">Task description (optional)</label><input id="manualTimeTasks" class="input-field" placeholder="Reading, Practice, Revision..." /></div>
+      <div class="form-group"><label for="manualTimeDate">Study date</label><input id="manualTimeDate" type="date" class="input-field" /></div>
+      <div class="form-group"><label for="manualTimeExam">Link to exam plan (optional)</label><select id="manualTimeExam" class="input-field"><option value="">No exam plan</option></select></div>
       <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:.8rem;"><button type="button" class="btn" data-close-modal="manualTimeModal">Cancel</button><button type="button" class="btn btn-primary" id="saveManualTimeBtn">Save time</button></div>
     </div>
   </div>
@@ -2449,6 +2526,18 @@
       }
 
       let firebaseAutoSyncTimer = null;
+      const DRIVE_BACKUP_STAMP_KEY = "time_task_tracker_drive_backup_stamp_v1";
+      async function runDriveBackup(force = false) {
+        if (!window.firebaseBridge?.getUser()) throw new Error("Sign in with Google first.");
+        if (!window.firebaseBridge?.hasDriveAccess?.()) throw new Error("Authorize Google Drive access first.");
+        const last = Number(localStorage.getItem(DRIVE_BACKUP_STAMP_KEY) || 0);
+        if (!force && Date.now() - last < 24 * 60 * 60 * 1000) return { skipped: true };
+        const result = await window.firebaseBridge.backupToDrive({ workspace: state, prefs, countdown: countdownConfig });
+        localStorage.setItem(DRIVE_BACKUP_STAMP_KEY, String(Date.now()));
+        const status = document.getElementById("driveBackupStatus");
+        if (status) status.textContent = `Last backup: ${new Date().toLocaleString()} · ${result.name || "Saved to Google Drive"}`;
+        return result;
+      }
       function queueFirebaseAutoSync() {
         if (!window.firebaseBridge?.getUser()) return;
         clearTimeout(firebaseAutoSyncTimer);
@@ -2456,14 +2545,17 @@
           try {
             const result = await window.firebaseBridge.safeSync({ workspace: state, prefs, countdown: countdownConfig });
             if (result?.conflict) {
+              syncMeta.remoteNewer = true; syncMeta.dirty = true; saveSyncMeta(); updateSyncButtonVisuals();
               const status = document.getElementById("firebaseSyncStatus");
-              if (status) status.textContent = "Cloud changes detected. Open Sync to review before replacing anything.";
+              if (status) status.textContent = "Cloud changes detected. Open Sync details and choose Use Cloud Copy or review before replacing anything.";
               return;
             }
             syncMeta.dirty = false;
             syncMeta.lastSyncedAt = new Date().toISOString();
-            saveSyncMeta();
+            saveSyncMeta(); updateSyncButtonVisuals();
+            if (window.firebaseBridge?.hasDriveAccess?.()) runDriveBackup(false).catch(err => console.warn("Drive backup deferred:", err));
           } catch (err) {
+            updateSyncButtonVisuals("error");
             console.warn("Firebase background sync paused:", err);
             const status = document.getElementById("firebaseSyncStatus");
             if (status) status.textContent = "Offline or sync failed. Your changes remain saved on this device.";
@@ -2670,7 +2762,8 @@
             startDate: getLocalTodayStr(),
             totalDays: 0
           },
-          databases: {}
+          databases: {},
+          examPlans: []
         };
       }
 
@@ -2679,6 +2772,7 @@
          ====================================================================== */
       function migrateWorkspaceDatabases(parsed) {
         delete parsed.studyLogs;
+        if (!Array.isArray(parsed.examPlans)) parsed.examPlans = [];
         if (!parsed.databases || typeof parsed.databases !== "object") {
           parsed.databases = {};
         }
@@ -2828,13 +2922,43 @@
         };
       }
 
+      // Daily assignments are date-scoped. Legacy dailyTaskIds are migrated once to today's date.
+      function getDailyTaskIds(row, dateStr = getLocalTodayStr()) {
+        if (!row) return [];
+        if (!row.dailyTaskAssignments || typeof row.dailyTaskAssignments !== "object" || Array.isArray(row.dailyTaskAssignments)) {
+          const legacy = Array.isArray(row.dailyTaskIds) ? row.dailyTaskIds.slice() : [];
+          row.dailyTaskAssignments = {};
+          if (legacy.length) row.dailyTaskAssignments[getLocalTodayStr()] = legacy;
+          row.dailyTaskIds = [];
+        }
+        const ids = row.dailyTaskAssignments[dateStr];
+        return Array.isArray(ids) ? ids : [];
+      }
+
+      function setDailyTaskAssigned(row, taskId, checked, dateStr = getLocalTodayStr()) {
+        if (!row) return;
+        getDailyTaskIds(row, dateStr);
+        const ids = new Set(row.dailyTaskAssignments[dateStr] || []);
+        if (checked) ids.add(taskId); else ids.delete(taskId);
+        row.dailyTaskAssignments[dateStr] = Array.from(ids);
+      }
+
+      function getAssignedTaskIdsForRows(db, rowIds, dateStr = getLocalTodayStr()) {
+        const assigned = new Set();
+        (rowIds || []).forEach(id => {
+          const row = db?.rows?.find(r => r.id === id);
+          getDailyTaskIds(row, dateStr).forEach(taskId => assigned.add(taskId));
+        });
+        return assigned;
+      }
+
       function getSubjectDayStats(db, dateStr) {
         const matchingRows = db.rows.filter((r) => isRowScheduledForDate(db, r, dateStr));
         const checkCols = db.columns.filter((c) => c.type === "checkbox");
         let done = 0;
         let total = 0;
         matchingRows.forEach((r) => {
-          const assigned = Array.isArray(r.dailyTaskIds) ? r.dailyTaskIds : [];
+          const assigned = getDailyTaskIds(r, dateStr);
           assigned.forEach((colId) => {
             const col = checkCols.find(c => c.id === colId);
             if (!col) return;
@@ -3115,15 +3239,18 @@
             `).join("")}
           `;
 
-        const allTasksChecked = checkCols.length > 0 && selTaskCount === checkCols.length;
-        const taskOptionsHtml = checkCols.length === 0
-          ? `<div style="padding:0.35rem; font-size:0.74rem; color:var(--text-muted);">No checkbox task columns</div>`
+        const selectedRowIds = uniqueChapterNames.filter(name => cardOverlay.selectedChapters.has(name)).map(name => db.rows.find(r => normalizeChapterKey(getRowPrimaryTitle(db,r)) === normalizeChapterKey(name))?.id).filter(Boolean);
+        const assignedTaskIds = getAssignedTaskIdsForRows(db, selectedRowIds, trackedDateStr || getLocalTodayStr());
+        const todaysTaskCols = checkCols.filter(c => assignedTaskIds.has(c.id));
+        const allTasksChecked = todaysTaskCols.length > 0 && todaysTaskCols.every(c => cardOverlay.selectedTasks.has(c.id));
+        const taskOptionsHtml = todaysTaskCols.length === 0
+          ? `<div style="padding:0.35rem; font-size:0.74rem; color:var(--text-muted);">Assign tasks for the selected chapters in the daily checklist first.</div>`
           : `
             <label class="multiselect-option select-all-opt">
               <input type="checkbox" data-toggle-all-tasks="true" ${allTasksChecked ? "checked" : ""} />
               <span>Select All</span>
             </label>
-            ${checkCols.map((c) => `
+            ${todaysTaskCols.map((c) => `
               <label class="multiselect-option">
                 <input type="checkbox" data-toggle-task-opt="${escapeHtml(c.id)}" ${cardOverlay.selectedTasks.has(c.id) ? "checked" : ""} />
                 <span>${escapeHtml(c.name)}</span>
@@ -3158,6 +3285,7 @@
               </div>
             </div>
 
+            <div class="form-group" style="margin:.2rem 0;"><label for="galleryTimerExamSelect" style="font-size:.72rem;">Link this session to an exam (optional)</label><select id="galleryTimerExamSelect" class="input-field"><option value="">No exam plan</option>${(state.examPlans || []).map(e => `<option value="${escapeHtml(e.id)}">${escapeHtml(e.name)}</option>`).join("")}</select></div>
             <button type="button" class="btn btn-primary" data-confirm-start-timer="${escapeHtml(subj)}" style="width:100%;">
               ▶ Start time
             </button>
@@ -3178,7 +3306,8 @@
         }
         if (activeTimer) stopAndCommitInCardTimer(false);
         const now = Date.now();
-        activeTimer = { id: uid("session"), subject: subj, date: todayStr, chapterIds, chapterNames, taskNames, elapsedSeconds: 0, accumulatedSeconds: 0, startedAt: now, running: true, intervalId: null };
+        const examId = document.getElementById("galleryTimerExamSelect")?.value || null;
+        activeTimer = { id: uid("session"), subject: subj, date: todayStr, chapterIds, chapterNames, taskNames, examId, elapsedSeconds: 0, accumulatedSeconds: 0, startedAt: now, running: true, intervalId: null };
         cardOverlay = null;
         persistActiveTimer();
         activeTimer.lastPersistAt = Date.now();
@@ -3200,10 +3329,10 @@
           if (ids.length) {
             ids.forEach((rowId, i) => {
               const seconds = base + (i < remainder ? 1 : 0);
-              db.sessionLogs.push({ id: uid("log"), sessionId: timer.id, date: sessionDate, chapterIds: [rowId], chapters: [names[i] || "Chapter"], tasks: timer.taskNames?.length ? timer.taskNames : ["General Study"], seconds });
+              db.sessionLogs.push({ id: uid("log"), sessionId: timer.id, date: sessionDate, chapterIds: [rowId], chapters: [names[i] || "Chapter"], tasks: timer.taskNames?.length ? timer.taskNames : ["General Study"], seconds, examId: timer.examId || null });
             });
           } else {
-            db.sessionLogs.push({ id: uid("log"), sessionId: timer.id, date: sessionDate, chapterIds: [], chapters: [], tasks: timer.taskNames?.length ? timer.taskNames : ["General Study"], seconds: studied });
+            db.sessionLogs.push({ id: uid("log"), sessionId: timer.id, date: sessionDate, chapterIds: [], chapters: [], tasks: timer.taskNames?.length ? timer.taskNames : ["General Study"], seconds: studied, examId: timer.examId || null });
           }
           const minsCol = ensureDatabaseTimeStructures(db);
           ids.forEach((rowId, i) => {
@@ -3228,30 +3357,83 @@
         showToast("Timer discarded — no study time was saved");
       }
 
+      function getManualSelectedChapterIds() {
+        return Array.from(document.querySelectorAll('[data-manual-chapter]:checked')).map(el => el.value);
+      }
+      function renderManualTimeChapters() {
+        const subject = document.getElementById("manualTimeSubject")?.value;
+        const db = state.databases[subject];
+        const box = document.getElementById("manualTimeChapterOptions");
+        if (!box) return;
+        const chapters = db ? db.rows.map(row => ({ id: row.id, name: getRowPrimaryTitle(db, row), row })).filter(x => x.name && x.name !== "Untitled Chapter") : [];
+        box.innerHTML = chapters.length ? chapters.map(ch => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-chapter value="${escapeHtml(ch.id)}"><span>${escapeHtml(ch.name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">No chapters found in this subject.</span>';
+        renderManualTimeTasks();
+      }
+      function renderManualTimeTasks() {
+        const subject = document.getElementById("manualTimeSubject")?.value;
+        const db = state.databases[subject];
+        const box = document.getElementById("manualTimeTaskOptions");
+        if (!box) return;
+        const ids = getManualSelectedChapterIds();
+        const assigned = new Set();
+        const selectedDate = document.getElementById("manualTimeDate")?.value || trackedDateStr || getLocalTodayStr();
+        if (db && ids.length) getAssignedTaskIdsForRows(db, ids, selectedDate).forEach(taskId => assigned.add(taskId));
+        const tasks = db ? db.columns.filter(c => c.type === "checkbox" && assigned.has(c.id)) : [];
+        box.innerHTML = tasks.length ? tasks.map(task => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-task value="${escapeHtml(task.id)}"><span>${escapeHtml(task.name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">No tasks assigned for today to the selected chapters. You can still log time as General Study.</span>';
+      }
       function openManualTimeEntry() {
         const select = document.getElementById("manualTimeSubject");
         if (!select) return;
         select.innerHTML = getAllRepositoryKeys().map(k => `<option value="${escapeHtml(k)}">${escapeHtml(state.databases[k].displayName || k)}</option>`).join("");
-        document.getElementById("manualTimeChapters").value = "";
         document.getElementById("manualTimeHours").value = "0";
         document.getElementById("manualTimeMinutes").value = "30";
-        document.getElementById("manualTimeTasks").value = "";
+        document.getElementById("manualTimeDate").value = trackedDateStr || getLocalTodayStr();
+        const examSelect = document.getElementById("manualTimeExam");
+        if (examSelect) examSelect.innerHTML = '<option value="">No exam plan</option>' + (state.examPlans || []).map(e => `<option value="${escapeHtml(e.id)}">${escapeHtml(e.name)}</option>`).join("");
+        renderManualTimeChapters();
         document.getElementById("manualTimeModal")?.classList.remove("hidden");
       }
       function saveManualTimeEntry() {
         const subj = document.getElementById("manualTimeSubject")?.value;
         const db = state.databases[subj]; if (!db) return;
         const h = Math.max(0, Number(document.getElementById("manualTimeHours")?.value) || 0);
-        const m = Math.max(0, Number(document.getElementById("manualTimeMinutes")?.value) || 0);
+        const m = Math.max(0, Math.min(59, Number(document.getElementById("manualTimeMinutes")?.value) || 0));
         const seconds = Math.round(h * 3600 + m * 60); if (!seconds) return showToast("Enter a duration greater than zero");
-        const chapters = (document.getElementById("manualTimeChapters")?.value || "").split(",").map(x => x.trim()).filter(Boolean);
-        const rows = chapters.map(ch => db.rows.find(r => normalizeChapterKey(getRowPrimaryTitle(db,r)) === normalizeChapterKey(ch))).filter(Boolean);
+        const date = document.getElementById("manualTimeDate")?.value || getLocalTodayStr();
+        const selectedIds = getManualSelectedChapterIds();
+        const rows = selectedIds.map(id => db.rows.find(r => r.id === id)).filter(Boolean);
+        const taskIds = Array.from(document.querySelectorAll('[data-manual-task]:checked')).map(el => el.value);
+        const tasks = db.columns.filter(c => taskIds.includes(c.id)).map(c => c.name);
+        const taskNames = tasks.length ? tasks : ["General Study"];
+        const examId = document.getElementById("manualTimeExam")?.value || null;
         if (!Array.isArray(db.sessionLogs)) db.sessionLogs = [];
-        const base = rows.length ? Math.floor(seconds / rows.length) : seconds; let rem = rows.length ? seconds % rows.length : 0;
-        if (rows.length) rows.forEach((row,i) => db.sessionLogs.push({ id:uid("log"), sessionId:uid("manual"), date:getLocalTodayStr(), chapterIds:[row.id], chapters:[getRowPrimaryTitle(db,row)], tasks:[document.getElementById("manualTimeTasks")?.value.trim() || "Manual entry"], seconds:base+(i<rem?1:0), source:"manual" }));
-        else db.sessionLogs.push({ id:uid("log"), sessionId:uid("manual"), date:getLocalTodayStr(), chapterIds:[], chapters, tasks:[document.getElementById("manualTimeTasks")?.value.trim() || "Manual entry"], seconds, source:"manual" });
-        saveWorkspace(); document.getElementById("manualTimeModal")?.classList.add("hidden"); renderGalleryCards(); showToast(`Added ${formatHHMMSS(seconds)} manually`);
+        const sessionId = uid("manual");
+        const base = rows.length ? Math.floor(seconds / rows.length) : seconds;
+        const rem = rows.length ? seconds % rows.length : 0;
+        const minsCol = ensureDatabaseTimeStructures(db);
+        if (rows.length) rows.forEach((row,i) => {
+          const allocated = base + (i < rem ? 1 : 0);
+          db.sessionLogs.push({ id:uid("log"), sessionId, date, chapterIds:[row.id], chapters:[getRowPrimaryTitle(db,row)], tasks:taskNames, seconds:allocated, source:"manual", examId });
+          row.cells[minsCol.id] = String((Number(row.cells[minsCol.id]) || 0) + Math.round(allocated / 60));
+        });
+        else db.sessionLogs.push({ id:uid("log"), sessionId, date, chapterIds:[], chapters:[], tasks:taskNames, seconds, source:"manual", examId });
+        saveWorkspace();
+        document.getElementById("manualTimeModal")?.classList.add("hidden");
+        renderGalleryCards();
+        if (currentView === "database") renderActiveDatabase();
+        showToast(`Added ${formatHHMMSS(seconds)} to ${db.displayName || subj}${rows.length ? ` across ${rows.length} chapter(s)` : ""}`);
       }
+
+      function getExamActualSeconds(examId) {
+        return getAllRepositoryKeys().reduce((sum,key) => sum + (state.databases[key].sessionLogs || []).filter(log => log.examId === examId).reduce((n,log) => n + (Number(log.seconds)||0),0),0);
+      }
+      function renderExamPrep() {
+        const host=document.getElementById("examPlansList"); if(!host)return;
+        host.innerHTML=(state.examPlans||[]).length ? state.examPlans.map(plan=>{const actual=getExamActualSeconds(plan.id),allocated=Number(plan.allocatedSeconds)||0,pct=allocated?Math.min(100,Math.round(actual/allocated*100)):0;return `<article class="subject-gallery-card" style="padding:1rem;min-width:260px;max-width:380px;flex:1 1 280px;"><div style="font-weight:850;font-size:1rem;">${escapeHtml(plan.name)}</div><div style="color:var(--text-secondary);font-size:.78rem;margin:.35rem 0;">${escapeHtml(plan.examDate||"No exam date")} · ${(plan.subjectKeys||[]).length} subject(s) · ${(plan.chapters||[]).length} chapter(s)</div><div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:.7rem;"><strong>Actual: ${formatHHMMSS(actual)}</strong><span>Allocated: ${formatHHMMSS(allocated)}</span></div><div style="height:8px;background:var(--border);border-radius:20px;overflow:hidden;margin:.4rem 0 .7rem;"><div style="height:100%;width:${pct}%;background:var(--accent);"></div></div><div style="font-size:.76rem;color:var(--text-secondary);">${pct}% of allocated time logged</div><button type="button" class="btn" data-delete-exam="${escapeHtml(plan.id)}" style="margin-top:.8rem;">Delete plan</button></article>`;}).join(""):'<div style="padding:1.2rem;color:var(--text-secondary);">No exam plans yet. Create one to track preparation across subjects.</div>';
+      }
+      function renderExamPlanSubjectChoices(){const box=document.getElementById("examPlanSubjects");if(!box)return;box.innerHTML=getAllRepositoryKeys().map(key=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.35rem .5rem;"><input type="checkbox" data-exam-subject value="${escapeHtml(key)}"><span>${escapeHtml(state.databases[key].displayName||key)}</span></label>`).join("")||'<span style="color:var(--text-muted);">Create subject databases first.</span>';renderExamPlanChapterChoices();}
+      function renderExamPlanChapterChoices(){const box=document.getElementById("examPlanChapters");if(!box)return;const selected=Array.from(document.querySelectorAll('[data-exam-subject]:checked')).map(el=>el.value);const items=selected.flatMap(key=>(state.databases[key]?.rows||[]).map(row=>({key,row,name:getRowPrimaryTitle(state.databases[key],row)})).filter(x=>x.name&&x.name!=="Untitled Chapter"));box.innerHTML=items.length?items.map(x=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.3rem .45rem;"><input type="checkbox" data-exam-chapter data-subject-key="${escapeHtml(x.key)}" value="${escapeHtml(x.row.id)}"><span>${escapeHtml(state.databases[x.key].displayName||x.key)} · ${escapeHtml(x.name)}</span></label>`).join(""):'<span style="color:var(--text-muted);font-size:.8rem;">Select subjects to load chapters.</span>';}
+      function saveExamPlan(){const name=document.getElementById("examPlanName")?.value.trim();if(!name)return showToast("Enter an exam name");const subjectKeys=Array.from(document.querySelectorAll('[data-exam-subject]:checked')).map(el=>el.value);const chapters=Array.from(document.querySelectorAll('[data-exam-chapter]:checked')).map(el=>{const db=state.databases[el.dataset.subjectKey],row=db?.rows.find(r=>r.id===el.value);return{subjectKey:el.dataset.subjectKey,rowId:el.value,name:row?getRowPrimaryTitle(db,row):"Chapter"};});const hours=Math.max(0,Number(document.getElementById("examPlanHours")?.value)||0);if(!subjectKeys.length)return showToast("Select at least one subject");if(!hours)return showToast("Enter allocated time");if(!Array.isArray(state.examPlans))state.examPlans=[];state.examPlans.push({id:uid("exam"),name,examDate:document.getElementById("examPlanDate")?.value||"",subjectKeys,chapters,allocatedSeconds:Math.round(hours*3600),createdAt:new Date().toISOString()});saveWorkspace();document.getElementById("examPlanModal")?.classList.add("hidden");renderExamPrep();showToast("Exam plan created");}
 
       /* ======================================================================
          6. VIEW NAVIGATION & DATABASE TABLE RENDERING
@@ -3262,11 +3444,13 @@
         document.getElementById("databaseDetailView")?.classList.toggle("hidden-view", viewName !== "database");
         document.getElementById("reportAnalyticsView")?.classList.toggle("hidden-view", viewName !== "report");
         document.getElementById("challengeBoardView")?.classList.toggle("hidden-view", viewName !== "challenge");
+        document.getElementById("examPrepView")?.classList.toggle("hidden-view", viewName !== "examPrep");
 
         if (viewName === "gallery") renderGalleryCards();
         if (viewName === "database") renderActiveDatabase();
         if (viewName === "report") renderReportCharts();
         if (viewName === "challenge") renderChallengeBoard();
+        if (viewName === "examPrep") renderExamPrep();
       }
 
       function openSubjectDatabase(subjKey) {
@@ -3342,9 +3526,9 @@
         const row = getOrCreateRowForDateAndChapter(db, portraitSelectedDate, portraitSelectedChapter);
         const checkCols = db.columns.filter((c) => c.type === "checkbox");
         const assignBox = document.getElementById("portraitDailyTaskAssign");
-        if (row && !Array.isArray(row.dailyTaskIds)) row.dailyTaskIds = [];
-        if (assignBox) assignBox.innerHTML = checkCols.length ? `<span style="width:100%;font-size:.72rem;color:var(--text-secondary);font-weight:800;">TODAY'S TASKS — choose what you plan to do</span>` + checkCols.map(c => `<label class="multiselect-option" style="padding:.2rem .35rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-daily-task-assign="${escapeHtml(c.id)}" ${row?.dailyTaskIds?.includes(c.id) ? "checked" : ""}><span>${escapeHtml(c.name)}</span></label>`).join("") : "";
-        const todaysCols = checkCols.filter(c => (row?.dailyTaskIds || []).includes(c.id));
+        const assignedToday = getDailyTaskIds(row, portraitSelectedDate);
+        if (assignBox) assignBox.innerHTML = checkCols.length ? `<span style="width:100%;font-size:.72rem;color:var(--text-secondary);font-weight:800;">TASKS FOR ${escapeHtml(portraitSelectedDate)} — choose today's plan</span>` + checkCols.map(c => `<label class="multiselect-option" style="padding:.2rem .35rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-daily-task-assign="${escapeHtml(c.id)}" ${assignedToday.includes(c.id) ? "checked" : ""}><span>${escapeHtml(c.name)}</span></label>`).join("") : "";
+        const todaysCols = checkCols.filter(c => assignedToday.includes(c.id));
 
         if (checkCols.length === 0) {
           itemsBox.innerHTML = `<div style="padding:0.85rem; text-align:center; color:var(--text-muted); font-size:0.82rem;">No task checkboxes in this subject yet. Tap <strong>+ Add Task</strong> below.</div>`;
@@ -3887,35 +4071,35 @@
         if (overrideState === "syncing") {
           group.classList.add("sync-state-syncing");
           label.textContent = "☁️ Syncing...";
-          if (detailStatus) detailStatus.textContent = "Syncing with Google Drive...";
+          if (detailStatus) detailStatus.textContent = "Syncing with Firebase...";
           return;
         }
         if (overrideState === "error") {
           group.classList.add("sync-state-error");
-          label.textContent = "☁️ Sync";
-          if (detailStatus) detailStatus.textContent = "Sync failed — check Web App URL";
+          label.textContent = "⚠️ Retry sync";
+          if (detailStatus) detailStatus.textContent = "Firebase sync failed. Local data is still saved.";
           return;
         }
-        if (!syncMeta.scriptUrl) {
+        if (!window.firebaseBridge?.getUser()) {
           group.classList.add("sync-state-idle");
-          label.textContent = "☁️ Sync";
-          if (detailStatus) detailStatus.textContent = "Not linked (click ⋮ to add URL)";
+          label.textContent = "☁️ Sign in";
+          if (detailStatus) detailStatus.textContent = "Sign in with Google to enable Firebase sync";
           return;
         }
         if (syncMeta.remoteNewer) {
           group.classList.add("sync-state-remote-newer");
-          label.textContent = "☁️ Sync";
-          if (detailStatus) detailStatus.textContent = "Newer data available on another device!";
+          label.textContent = "☁️ Cloud update";
+          if (detailStatus) detailStatus.textContent = "A newer cloud copy exists. Open sync details to review it.";
           return;
         }
         if (syncMeta.dirty) {
           group.classList.add("sync-state-dirty");
-          label.textContent = "☁️ Sync";
-          if (detailStatus) detailStatus.textContent = "Local edits waiting to push to cloud";
+          label.textContent = "☁️ Pending";
+          if (detailStatus) detailStatus.textContent = "Local edits waiting to sync with Firebase";
           return;
         }
         group.classList.add("sync-state-synced");
-        label.textContent = "☁️ Sync";
+        label.textContent = "✓ Synced";
         if (detailStatus) detailStatus.textContent = "Up to date across devices";
       }
 
@@ -4092,6 +4276,12 @@
         });
         document.getElementById("closeReportViewBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
         document.getElementById("openChallengeBoardBtn")?.addEventListener("click", () => switchWorkspaceView("challenge"));
+        document.getElementById("openExamPrepBtn")?.addEventListener("click",()=>switchWorkspaceView("examPrep"));
+        document.getElementById("closeExamPrepBtn")?.addEventListener("click",()=>switchWorkspaceView("gallery"));
+        document.getElementById("newExamPlanBtn")?.addEventListener("click",()=>{document.getElementById("examPlanName").value="";document.getElementById("examPlanDate").value="";document.getElementById("examPlanHours").value="4";renderExamPlanSubjectChoices();document.getElementById("examPlanModal")?.classList.remove("hidden");});
+        document.getElementById("examPlanSubjects")?.addEventListener("change",renderExamPlanChapterChoices);
+        document.getElementById("saveExamPlanBtn")?.addEventListener("click",saveExamPlan);
+        document.getElementById("examPlansList")?.addEventListener("click",e=>{const btn=e.target.closest("[data-delete-exam]");if(!btn)return;const id=btn.dataset.deleteExam;if(!confirm("Delete this exam plan? Existing study logs will remain."))return;state.examPlans=(state.examPlans||[]).filter(x=>x.id!==id);saveWorkspace();renderExamPrep();});
         document.getElementById("closeChallengeBoardBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
         document.getElementById("backToGalleryBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
 
@@ -4280,6 +4470,9 @@
         document.getElementById("focusTimerDiscardBtn")?.addEventListener("click", () => { if (confirm("Discard this timer session without saving?")) discardActiveTimer(); });
         document.getElementById("focusTimerCloseBtn")?.addEventListener("click", () => { document.getElementById("focusTimerOverlay")?.classList.add("hidden-view"); });
         document.getElementById("openManualTimeBtn")?.addEventListener("click", openManualTimeEntry);
+        document.getElementById("manualTimeSubject")?.addEventListener("change", renderManualTimeChapters);
+        document.getElementById("manualTimeChapterOptions")?.addEventListener("change", renderManualTimeTasks);
+        document.getElementById("manualTimeDate")?.addEventListener("change", renderManualTimeTasks);
         document.getElementById("saveManualTimeBtn")?.addEventListener("click", saveManualTimeEntry);
 
         // Multiselect Checkboxes inside Gallery Popover (including Select All)
@@ -4427,9 +4620,8 @@
           const cb = e.target.closest("[data-daily-task-assign]"); if (!cb) return;
           const db = state.databases[state.activeSubject]; if (!db) return;
           const row = getOrCreateRowForDateAndChapter(db, portraitSelectedDate, portraitSelectedChapter);
-          const colId = cb.dataset.dailyTaskAssign; if (!Array.isArray(row.dailyTaskIds)) row.dailyTaskIds = [];
-          if (cb.checked && !row.dailyTaskIds.includes(colId)) row.dailyTaskIds.push(colId);
-          if (!cb.checked) row.dailyTaskIds = row.dailyTaskIds.filter(id => id !== colId);
+          const colId = cb.dataset.dailyTaskAssign;
+          setDailyTaskAssigned(row, colId, cb.checked, portraitSelectedDate);
           saveWorkspace(); renderActiveDatabase();
         });
 
@@ -5000,8 +5192,35 @@
 
         // Firebase authentication and conflict-aware cloud sync
         const openFirebaseSync = () => document.getElementById("syncDetailsModal")?.classList.remove("hidden");
-        document.getElementById("quickSyncBtn")?.addEventListener("click", openFirebaseSync);
+        document.getElementById("quickSyncBtn")?.addEventListener("click", async () => {
+          if (!window.firebaseBridge?.getUser()) {
+            try { await window.firebaseBridge?.signIn(); }
+            catch (err) { showToast("Google sign-in failed: " + (err.message || err)); }
+            return;
+          }
+          try {
+            updateSyncButtonVisuals("syncing");
+            const result = await window.firebaseBridge.safeSync({ workspace: state, prefs, countdown: countdownConfig });
+            if (result?.conflict) {
+              syncMeta.remoteNewer = true; syncMeta.dirty = true; saveSyncMeta();
+              updateSyncButtonVisuals(); showToast("Newer cloud data found. Open ⋮ to review safely.");
+            } else {
+              syncMeta.dirty = false; syncMeta.remoteNewer = false; syncMeta.lastSyncedAt = new Date().toISOString();
+              saveSyncMeta(); updateSyncButtonVisuals();
+              if (window.firebaseBridge?.hasDriveAccess?.()) runDriveBackup(false).catch(err => console.warn("Drive backup deferred:", err));
+              showToast("Firebase sync completed");
+            }
+          } catch (err) { updateSyncButtonVisuals("error"); showToast("Sync failed: " + (err.message || err)); }
+        });
         document.getElementById("openSyncModalBtn")?.addEventListener("click", openFirebaseSync);
+        document.getElementById("authorizeDriveBtn")?.addEventListener("click", async () => {
+          try { await window.firebaseBridge?.authorizeDrive(); const el=document.getElementById("driveBackupStatus"); if(el)el.textContent="Google Drive access authorized. Automatic daily backup is enabled."; showToast("Google Drive backup authorized"); }
+          catch(err){ const el=document.getElementById("driveBackupStatus"); if(el)el.textContent="Drive authorization failed: "+err.message; showToast("Drive authorization failed: "+err.message); }
+        });
+        document.getElementById("backupDriveNowBtn")?.addEventListener("click", async () => {
+          try { const result=await runDriveBackup(true); showToast("Backup saved to Google Drive"); }
+          catch(err){ const el=document.getElementById("driveBackupStatus"); if(el)el.textContent="Backup failed: "+err.message; showToast("Drive backup failed: "+err.message); }
+        });
         document.getElementById("firebaseSignInBtn")?.addEventListener("click", async () => {
           try { await window.firebaseBridge?.signIn(); }
           catch (err) { showToast("Google sign-in failed: " + (err.message || err)); }
@@ -5055,10 +5274,15 @@
           const signIn = document.getElementById("firebaseSignInBtn");
           const signOut = document.getElementById("firebaseSignOutBtn");
           const controls = ["firebaseSyncNowBtn", "firebasePullBtn", "firebaseForcePushBtn"];
+          updateSyncButtonVisuals();
           if (user) {
             if (status) status.textContent = `Signed in as ${user.displayName || user.email || "Google account"}`;
             if (signIn) signIn.classList.add("hidden-view"); if (signOut) signOut.classList.remove("hidden-view");
             controls.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
+            const driveStatus = document.getElementById("driveBackupStatus");
+            if (driveStatus && window.firebaseBridge?.hasDriveAccess?.()) driveStatus.textContent = "Google Drive access authorized. Automatic daily backup is enabled.";
+            // After sign-in, create the initial cloud copy or safely detect an existing one.
+            queueFirebaseAutoSync();
           } else {
             if (status) status.textContent = "Not signed in. Sign in to sync across devices.";
             if (signIn) signIn.classList.remove("hidden-view"); if (signOut) signOut.classList.add("hidden-view");

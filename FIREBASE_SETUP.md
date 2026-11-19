@@ -25,3 +25,13 @@ Test Google sign-in on the deployed HTTPS GitHub Pages domain. Pop-up restrictio
 
 ## Sync notes
 Firestore stores user-specific workspace, preferences and countdown documents. The current sync layer detects a newer remote revision and pauses rather than silently overwriting it; it is conflict detection, not full record-level merging. Google Drive automatic backup and Exam Prep remain separate pending work.
+
+
+## Google Drive backup setup
+1. In Google Cloud Console for the same Firebase project, enable **Google Drive API** (APIs & Services → Library → Google Drive API → Enable).
+2. Keep Google as the Firebase Authentication provider. The app requests the `drive.file` permission during the **Authorize Google Drive** action.
+3. Deploy the updated app over HTTPS, sign in with the same Google account, open Sync details, and click **Authorize Google Drive**. Accept the Drive permission.
+4. Click **Backup now** once to verify. Later successful Firebase syncs create at most one automatic Drive backup per 24 hours while Drive authorization is active in that browser session. Re-authorize after a fresh browser session or when Google expires the access token.
+5. Backups are JSON files in the visible **Time & Task Tracker Backups** folder. The app retains the 30 newest files it can see in that folder.
+
+Drive backup is a secondary snapshot, not a sync engine. Firebase remains the primary cross-device sync service. The app never deletes Firebase records as part of Drive backup.

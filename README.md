@@ -1,53 +1,32 @@
-# ⏳ TIME & TASK TRACKER — Quick Start & Features Guide
+# Time & Task Tracker
 
-**TIME & TASK TRACKER** is an all-in-one, offline-capable study planner, focus timer, and progress tracker built for students across any exam, degree, or personal goal.
+A standalone HTML/JavaScript study tracker with a GitHub Pages PWA deployment and a Capacitor Android APK workflow.
 
----
+## Features
+- Subject databases and chapter checklists
+- Daily task assignment and completion tracking
+- Focus timer with pause/resume, recovery, discard, and close controls
+- Multi-chapter study sessions with equal time allocation
+- Manual time logs saved to the corresponding subject database
+- Exam Prep plans across multiple subject databases
+- Challenge board with per-day activity reports
+- Countdown, theme preferences, undo, JSON backup/import
+- Firebase Google authentication and Firestore synchronization
+- PWA installation and Android APK build through GitHub Actions
 
-## 🚀 Quick Start in 3 Simple Steps
+## Firebase setup
+1. Create a Firebase Web App and enable Google Authentication.
+2. Create Cloud Firestore.
+3. Publish the user-scoped Firestore rules documented in `FIREBASE_SETUP.md`.
+4. Put the exact Firebase Web App `apiKey` into `firebase-config.js`.
+5. Add the GitHub Pages host to Firebase Authentication authorized domains.
 
-1. **Create Your Subjects:** Click **Add / Manage Subjects** on the home screen to create your first subject or course database (e.g., *Physics*, *Anatomy*, *Mathematics*, or *Coding*).
-2. **Add Chapters & Daily Tasks:** Open any subject card to add chapters and check off daily tasks (*Lecture*, *Reading*, *Notes*, *Practice*, *Revise*, or your own custom columns).
-3. **Start a Focus Session:** Click **Start time** on any subject card, pick the chapter(s) and task(s) you are working on, and study distraction-free with the full-screen focus timer. Your study time is automatically logged into your database when you click **Stop & Save**.
+Never commit Firebase service-account private keys. The Firebase Web API key is client configuration; protect user data with Firestore Security Rules.
 
----
+## Deployment
+- GitHub Pages serves `index.html` from the configured repository branch/folder.
+- GitHub Actions builds the Android debug APK. Download it from the workflow run's Artifacts section.
+- Keep `.git` when replacing repository files locally. Do not upload `node_modules`.
 
-## ✨ Key Features
-
-* **Universal Subject & Course Repository:** Create unlimited databases organized by course or semester. Hide completed semesters from your dashboard via **Settings → Manage Subject Repository** without losing a single note or logged hour.
-* **Smart Focus Timer & Automatic Time Rollup:** Full-screen study timer tracks your active chapter and tasks, then logs minutes straight into your database, daily **Total Hours**, and reports.
-* **Mobile & Tablet Daily Checklist Mode:** Automatically switches to a clean, tap-friendly daily checklist in portrait view so you can tick off today's tasks without horizontal scrolling.
-* **Taskwise & Subjectwise Visual Reports:** Click **Show Report** to analyze how your study hours are distributed across tasks and subjects over Today, 7 Days, 30 Days, or a custom date range.
-* **Custom Target Countdown & Challenge Board:** Set a live countdown to your exam date in the top bar and customize a multi-day consistency heatmap (**Challenge Board**) with daily color-coded hour goals.
-* **Firebase cloud sync:** Google sign-in and private Firestore storage under each account. Safe sync pauses when a newer cloud version is detected instead of silently overwriting it.
-* **Fully Customizable Appearance:** Switch between Light/Dark mode, 6 typography styles, text sizes, page widths, and accent colors in **Settings**.
-
----
-
-HOW TO DOWNLOAD THIS APP ?
-Go to release section -
-click on tag -
-open Tag -
-scroll to the bottom -
-Under asset you'll find apk file
-
-## ☁️ Firebase Cloud Sync
-
-1. Open the app and click the **☁️ Sync** button.
-2. Choose **Continue with Google** and sign in with the Google account you want to use on all devices.
-3. On the first device, use **Safe Sync** to upload its local workspace if the Firebase account has no existing cloud copy.
-4. On another device, sign in with the same Google account. If Firebase already contains data, choose **Use Cloud Copy** to restore it to the new device.
-5. Future workspace, appearance preference, and countdown changes are automatically synced while online and signed in. You can also open Sync and press **Safe Sync** manually.
-
-### Conflict protection
-
-If a cloud update is newer than the last version this device synchronized, Safe Sync pauses. Choose **Use Cloud Copy** to replace this device with the cloud version, or **Replace Cloud with This Device** only after confirming that the local device contains the version you want to keep. Export a JSON backup before a manual replacement if unsure.
-
-### Current scope
-
-Firebase currently synchronizes the workspace, preferences, and countdown as separate documents. This first Firebase integration does not yet provide record-level merging, automatic Google Drive snapshots, or Exam Prep. Those are planned follow-up work. The JSON Export/Import controls remain available as a manual backup route.
-
-### Firestore security
-
-Keep the Firestore rules restricted to authenticated users whose UID matches the `{userId}` path. Never use public read/write rules. The Firebase web configuration in `firebase-client.js` is client configuration; never commit a service-account private key to GitHub.
-\n\n## App branding and Firebase configuration\n- Replace `icons/source-logo.png` with the approved master logo only if branding changes.\n- `icons/icon-192.png`, `icons/icon-512.png`, and `icons/apple-touch-icon.png` are the web/PWA icons.\n- `android-icons/` contains density-specific Android launcher icons.\n- Paste the exact Firebase Web App API key into `firebase-config.js`; see `FIREBASE_SETUP.md`.\n
+## Backup note
+Firebase is the primary sync provider in the current build. JSON export/import is available. Google Drive automatic backup still requires a separate Drive authorization/configuration step and is not yet active.
