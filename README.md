@@ -30,3 +30,10 @@ Never commit Firebase service-account private keys. The Firebase Web API key is 
 
 ## Backup note
 Firebase is the primary sync provider in the current build. JSON export/import is available. Google Drive automatic backup still requires a separate Drive authorization/configuration step and is not yet active.
+
+
+### Recent corrections
+- Manual time chapter choices are sourced from the subject syllabus (`chapterOptions`) and deduplicated even when a chapter has multiple dated database rows. Daily tasks are collected for the selected date.
+- Exam Prep now has a real elapsed-time session with a remaining-time display, pause/resume, and finish/record actions.
+- Firebase Google sign-in no longer requests Google Drive permissions. Drive authorization is a separate, explicit step.
+- Mobile dashboard controls use a compact two-row portrait layout.

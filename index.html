@@ -595,6 +595,38 @@
       }
     }
 
+
+    @media (max-width: 600px) {
+      .workspace { padding: .85rem .7rem 3rem; }
+      .gallery-header-bar {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) auto;
+        grid-template-areas: "manual total" "controls controls";
+        align-items: center;
+        gap: .55rem;
+        margin-bottom: .9rem;
+      }
+      #openManualTimeBtn { grid-area: manual; justify-self: start; min-height: 36px; padding: .38rem .65rem; font-size: .76rem; }
+      .gallery-header-left {
+        grid-area: controls;
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: .4rem;
+        width: 100%;
+      }
+      .gallery-header-left > .btn { min-width: 0; padding: .42rem .35rem !important; font-size: .72rem; white-space: nowrap; }
+      .date-selector-pill { grid-column: 1 / -1; justify-content: center; width: 100%; min-height: 36px; box-sizing: border-box; }
+      .date-selector-pill input { flex: 1; min-width: 0; max-width: 145px; }
+      .total-hours-badge { grid-area: total; min-width: 100px; padding: .35rem .55rem; }
+      .total-hours-label { font-size: .58rem; }
+      .total-hours-value-row { font-size: 1rem; }
+      .subject-gallery-row { grid-template-columns: minmax(0,1fr); max-width: none; gap: .75rem; }
+      .subject-gallery-card, .add-subject-card { min-height: 0; }
+      .countdown-pill { width: auto; max-width: 100%; order: 3; overflow: hidden; }
+      .topbar-actions { flex-wrap: wrap; justify-content: flex-end; }
+      .topbar-actions .btn { font-size: .7rem; padding: .32rem .48rem; }
+    }
+
     /* Portrait Mobile & Tablet Daily Task Checklist Card */
     .portrait-task-card {
       background: var(--bg-elevated);
@@ -2114,7 +2146,7 @@
 
     <section id="examPrepView" class="hidden-view">
       <div class="challenge-header"><div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;"><button type="button" class="btn" id="closeExamPrepBtn">← Back to Gallery</button><h2 style="font-size:1.35rem;font-weight:900;">EXAM PREP</h2></div><button type="button" class="btn btn-primary" id="newExamPlanBtn">＋ New exam plan</button></div>
-      <p style="color:var(--text-secondary);font-size:.84rem;margin:.4rem 0 1rem;">Plan exams independently using subjects and chapters from your existing databases. Actual time is calculated from manual study logs linked to an exam plan.</p>
+      <p style="color:var(--text-secondary);font-size:.84rem;margin:.4rem 0 1rem;">Create a test session using your existing subject syllabus. Start the live countdown when you begin the exam; pause or finish it to record the attempt.</p>
       <div id="examPlansList" class="subject-gallery-row"></div>
     </section>
   </main>
@@ -2124,7 +2156,7 @@
     <div class="form-group"><label for="examPlanDate">Exam date</label><input id="examPlanDate" type="date" class="input-field"></div>
     <div class="form-group"><label>Subjects</label><div id="examPlanSubjects" style="display:flex;flex-wrap:wrap;gap:.4rem;"></div></div>
     <div class="form-group"><label>Chapters</label><div id="examPlanChapters" style="display:flex;flex-wrap:wrap;gap:.4rem;max-height:180px;overflow:auto;padding:.5rem;border:1px solid var(--border);border-radius:9px;"></div></div>
-    <div class="form-group"><label for="examPlanHours">Allocated preparation time (hours)</label><input id="examPlanHours" type="number" min="0.25" step="0.25" value="4" class="input-field"></div>
+    <div class="form-group"><label for="examPlanHours">Required test duration (hours)</label><input id="examPlanHours" type="number" min="0.25" step="0.25" value="4" class="input-field"></div>
     <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:.8rem;"><button type="button" class="btn" data-close-modal="examPlanModal">Cancel</button><button type="button" class="btn btn-primary" id="saveExamPlanBtn">Save exam plan</button></div>
   </div></div>
 
@@ -2644,6 +2676,25 @@
           }
         });
         return db.chapterOptions;
+      }
+
+      // Syllabus is the canonical chapter list. Daily records may repeat a chapter
+      // on many dates; those rows must never create duplicate dropdown options.
+      function getSyllabusChapterNames(db) {
+        const source = ensureSubjectChapterOptions(db);
+        const seen = new Set();
+        return source.map(x => String(x || "").trim()).filter(x => {
+          const key = normalizeChapterKey(x);
+          if (!key || key === "untitled chapter" || seen.has(key)) return false;
+          seen.add(key); return true;
+        });
+      }
+
+      function getRowsForSyllabusChapter(db, chapterName, dateStr = "") {
+        const key = normalizeChapterKey(chapterName);
+        const rows = (db?.rows || []).filter(row => normalizeChapterKey(getRowPrimaryTitle(db, row)) === key);
+        if (!dateStr) return rows;
+        return rows.slice().sort((a,b) => Number(isRowScheduledForDate(db,b,dateStr)) - Number(isRowScheduledForDate(db,a,dateStr)));
       }
 
       /* ======================================================================
@@ -3357,7 +3408,7 @@
         showToast("Timer discarded — no study time was saved");
       }
 
-      function getManualSelectedChapterIds() {
+      function getManualSelectedChapterNames() {
         return Array.from(document.querySelectorAll('[data-manual-chapter]:checked')).map(el => el.value);
       }
       function renderManualTimeChapters() {
@@ -3365,8 +3416,8 @@
         const db = state.databases[subject];
         const box = document.getElementById("manualTimeChapterOptions");
         if (!box) return;
-        const chapters = db ? db.rows.map(row => ({ id: row.id, name: getRowPrimaryTitle(db, row), row })).filter(x => x.name && x.name !== "Untitled Chapter") : [];
-        box.innerHTML = chapters.length ? chapters.map(ch => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-chapter value="${escapeHtml(ch.id)}"><span>${escapeHtml(ch.name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">No chapters found in this subject.</span>';
+        const chapters = getSyllabusChapterNames(db);
+        box.innerHTML = chapters.length ? chapters.map(name => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-chapter value="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">Add chapters to this subject syllabus first.</span>';
         renderManualTimeTasks();
       }
       function renderManualTimeTasks() {
@@ -3374,12 +3425,15 @@
         const db = state.databases[subject];
         const box = document.getElementById("manualTimeTaskOptions");
         if (!box) return;
-        const ids = getManualSelectedChapterIds();
+        const names = getManualSelectedChapterNames();
         const assigned = new Set();
         const selectedDate = document.getElementById("manualTimeDate")?.value || trackedDateStr || getLocalTodayStr();
-        if (db && ids.length) getAssignedTaskIdsForRows(db, ids, selectedDate).forEach(taskId => assigned.add(taskId));
+        if (db && names.length) names.forEach(name => {
+          const rows = getRowsForSyllabusChapter(db, name, selectedDate);
+          getAssignedTaskIdsForRows(db, rows.map(r => r.id), selectedDate).forEach(taskId => assigned.add(taskId));
+        });
         const tasks = db ? db.columns.filter(c => c.type === "checkbox" && assigned.has(c.id)) : [];
-        box.innerHTML = tasks.length ? tasks.map(task => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-task value="${escapeHtml(task.id)}"><span>${escapeHtml(task.name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">No tasks assigned for today to the selected chapters. You can still log time as General Study.</span>';
+        box.innerHTML = tasks.length ? tasks.map(task => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-task value="${escapeHtml(task.id)}"><span>${escapeHtml(task.name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">No tasks assigned for this date to the selected syllabus chapters. You can still log General Study.</span>';
       }
       function openManualTimeEntry() {
         const select = document.getElementById("manualTimeSubject");
@@ -3400,40 +3454,75 @@
         const m = Math.max(0, Math.min(59, Number(document.getElementById("manualTimeMinutes")?.value) || 0));
         const seconds = Math.round(h * 3600 + m * 60); if (!seconds) return showToast("Enter a duration greater than zero");
         const date = document.getElementById("manualTimeDate")?.value || getLocalTodayStr();
-        const selectedIds = getManualSelectedChapterIds();
-        const rows = selectedIds.map(id => db.rows.find(r => r.id === id)).filter(Boolean);
+        const selectedNames = getManualSelectedChapterNames();
         const taskIds = Array.from(document.querySelectorAll('[data-manual-task]:checked')).map(el => el.value);
-        const tasks = db.columns.filter(c => taskIds.includes(c.id)).map(c => c.name);
-        const taskNames = tasks.length ? tasks : ["General Study"];
+        const taskNames = db.columns.filter(c => taskIds.includes(c.id)).map(c => c.name);
+        const tasks = taskNames.length ? taskNames : ["General Study"];
         const examId = document.getElementById("manualTimeExam")?.value || null;
         if (!Array.isArray(db.sessionLogs)) db.sessionLogs = [];
         const sessionId = uid("manual");
-        const base = rows.length ? Math.floor(seconds / rows.length) : seconds;
-        const rem = rows.length ? seconds % rows.length : 0;
+        const names = selectedNames.length ? selectedNames : [""];
+        const base = Math.floor(seconds / names.length), rem = seconds % names.length;
         const minsCol = ensureDatabaseTimeStructures(db);
-        if (rows.length) rows.forEach((row,i) => {
+        names.forEach((chapterName, i) => {
+          const rows = chapterName ? getRowsForSyllabusChapter(db, chapterName, date) : [];
+          const targetRow = rows.find(r => isRowScheduledForDate(db, r, date)) || rows[0] || null;
           const allocated = base + (i < rem ? 1 : 0);
-          db.sessionLogs.push({ id:uid("log"), sessionId, date, chapterIds:[row.id], chapters:[getRowPrimaryTitle(db,row)], tasks:taskNames, seconds:allocated, source:"manual", examId });
-          row.cells[minsCol.id] = String((Number(row.cells[minsCol.id]) || 0) + Math.round(allocated / 60));
+          db.sessionLogs.push({ id:uid("log"), sessionId, date, chapterIds:targetRow ? [targetRow.id] : [], chapters:chapterName ? [chapterName] : [], tasks, seconds:allocated, source:"manual", examId, subjectKey:subj });
+          if (targetRow) targetRow.cells[minsCol.id] = String((Number(targetRow.cells[minsCol.id]) || 0) + Math.round(allocated / 60));
         });
-        else db.sessionLogs.push({ id:uid("log"), sessionId, date, chapterIds:[], chapters:[], tasks:taskNames, seconds, source:"manual", examId });
         saveWorkspace();
         document.getElementById("manualTimeModal")?.classList.add("hidden");
         renderGalleryCards();
         if (currentView === "database") renderActiveDatabase();
-        showToast(`Added ${formatHHMMSS(seconds)} to ${db.displayName || subj}${rows.length ? ` across ${rows.length} chapter(s)` : ""}`);
+        showToast(`Added ${formatHHMMSS(seconds)} to ${db.displayName || subj}${selectedNames.length ? ` across ${selectedNames.length} syllabus chapter(s)` : ""}`);
       }
 
       function getExamActualSeconds(examId) {
         return getAllRepositoryKeys().reduce((sum,key) => sum + (state.databases[key].sessionLogs || []).filter(log => log.examId === examId).reduce((n,log) => n + (Number(log.seconds)||0),0),0);
       }
+      function getExamElapsedSeconds(session = state.activeExamSession) {
+        if (!session) return 0;
+        return Math.max(0, Math.floor((Number(session.elapsedSeconds)||0) + (session.running && session.startedAt ? (Date.now()-Number(session.startedAt))/1000 : 0)));
+      }
+      function startExamTimer(planId) {
+        const plan = (state.examPlans||[]).find(p => p.id === planId); if (!plan) return;
+        const current = state.activeExamSession;
+        if (current?.running && current.planId !== planId) return showToast("Finish or pause the current exam before starting another.");
+        if (current?.planId === planId && !current.running) {
+          current.startedAt = Date.now(); current.running = true;
+        } else {
+          state.activeExamSession = { planId, startedAt:Date.now(), elapsedSeconds:0, running:true, startedLabel:new Date().toISOString() };
+        }
+        saveWorkspace(); renderExamPrep();
+      }
+      function pauseExamTimer() {
+        const session = state.activeExamSession; if (!session?.running) return;
+        session.elapsedSeconds = getExamElapsedSeconds(session); session.running = false; session.startedAt = null;
+        saveWorkspace(); renderExamPrep();
+      }
+      function finishExamTimer() {
+        const session = state.activeExamSession; if (!session) return;
+        const plan = (state.examPlans||[]).find(p => p.id === session.planId);
+        const elapsed = getExamElapsedSeconds(session);
+        if (plan) { if (!Array.isArray(plan.attempts)) plan.attempts=[]; plan.attempts.push({id:uid("attempt"),startedAt:session.startedLabel||new Date().toISOString(),endedAt:new Date().toISOString(),elapsedSeconds:elapsed}); }
+        state.activeExamSession = null; saveWorkspace(); renderExamPrep(); showToast(`Exam session recorded: ${formatHHMMSS(elapsed)}`);
+      }
       function renderExamPrep() {
         const host=document.getElementById("examPlansList"); if(!host)return;
-        host.innerHTML=(state.examPlans||[]).length ? state.examPlans.map(plan=>{const actual=getExamActualSeconds(plan.id),allocated=Number(plan.allocatedSeconds)||0,pct=allocated?Math.min(100,Math.round(actual/allocated*100)):0;return `<article class="subject-gallery-card" style="padding:1rem;min-width:260px;max-width:380px;flex:1 1 280px;"><div style="font-weight:850;font-size:1rem;">${escapeHtml(plan.name)}</div><div style="color:var(--text-secondary);font-size:.78rem;margin:.35rem 0;">${escapeHtml(plan.examDate||"No exam date")} · ${(plan.subjectKeys||[]).length} subject(s) · ${(plan.chapters||[]).length} chapter(s)</div><div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:.7rem;"><strong>Actual: ${formatHHMMSS(actual)}</strong><span>Allocated: ${formatHHMMSS(allocated)}</span></div><div style="height:8px;background:var(--border);border-radius:20px;overflow:hidden;margin:.4rem 0 .7rem;"><div style="height:100%;width:${pct}%;background:var(--accent);"></div></div><div style="font-size:.76rem;color:var(--text-secondary);">${pct}% of allocated time logged</div><button type="button" class="btn" data-delete-exam="${escapeHtml(plan.id)}" style="margin-top:.8rem;">Delete plan</button></article>`;}).join(""):'<div style="padding:1.2rem;color:var(--text-secondary);">No exam plans yet. Create one to track preparation across subjects.</div>';
+        host.innerHTML=(state.examPlans||[]).length ? state.examPlans.map(plan=>{
+          const actual=getExamActualSeconds(plan.id), allocated=Number(plan.allocatedSeconds)||0, pct=allocated?Math.min(100,Math.round(actual/allocated*100)):0;
+          const session=state.activeExamSession?.planId===plan.id?state.activeExamSession:null;
+          const elapsed=session?getExamElapsedSeconds(session):0, remaining=Math.max(0,allocated-elapsed);
+          const timerText=session?`${formatHHMMSS(remaining)} remaining`:`Required time: ${formatHHMMSS(allocated)}`;
+          const timerControls=session?(session.running?`<button type="button" class="btn" data-exam-pause="${escapeHtml(plan.id)}">Ⅱ Pause</button>`:`<button type="button" class="btn btn-primary" data-exam-resume="${escapeHtml(plan.id)}">▶ Resume</button>`) : `<button type="button" class="btn btn-primary" data-exam-start="${escapeHtml(plan.id)}">▶ Start exam</button>`;
+          const attempts=(plan.attempts||[]).length;
+          return `<article class="subject-gallery-card exam-plan-card" style="padding:1rem;min-width:260px;max-width:380px;flex:1 1 280px;"><div style="font-weight:850;font-size:1rem;">${escapeHtml(plan.name)}</div><div style="color:var(--text-secondary);font-size:.78rem;margin:.35rem 0;">${escapeHtml(plan.examDate||"No exam date")} · ${(plan.subjectKeys||[]).length} subject(s) · ${(plan.chapters||[]).length} chapter(s)</div><div class="exam-clock" data-exam-clock="${escapeHtml(plan.id)}" style="font-size:1.65rem;font-weight:900;font-variant-numeric:tabular-nums;margin:.65rem 0;color:var(--accent);">${timerText}</div><div style="font-size:.76rem;color:var(--text-secondary);margin-bottom:.55rem;">Elapsed: ${formatHHMMSS(elapsed)} · ${attempts} completed attempt(s)</div><div style="display:flex;gap:.45rem;flex-wrap:wrap;">${timerControls}${session?`<button type="button" class="btn btn-danger" data-exam-finish="${escapeHtml(plan.id)}">Finish &amp; record</button>`:""}<button type="button" class="btn" data-delete-exam="${escapeHtml(plan.id)}">Delete</button></div><div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:.85rem;"><strong>Study logged: ${formatHHMMSS(actual)}</strong><span>Plan: ${formatHHMMSS(allocated)}</span></div><div style="height:8px;background:var(--border);border-radius:20px;overflow:hidden;margin:.4rem 0 .45rem;"><div style="height:100%;width:${pct}%;background:var(--accent);"></div></div><div style="font-size:.76rem;color:var(--text-secondary);">${pct}% of planned preparation time logged</div></article>`;
+        }).join(""):'<div style="padding:1.2rem;color:var(--text-secondary);">No exams yet. Create an exam, choose its subjects and syllabus chapters, set the test duration, then start its live countdown.</div>';
       }
       function renderExamPlanSubjectChoices(){const box=document.getElementById("examPlanSubjects");if(!box)return;box.innerHTML=getAllRepositoryKeys().map(key=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.35rem .5rem;"><input type="checkbox" data-exam-subject value="${escapeHtml(key)}"><span>${escapeHtml(state.databases[key].displayName||key)}</span></label>`).join("")||'<span style="color:var(--text-muted);">Create subject databases first.</span>';renderExamPlanChapterChoices();}
-      function renderExamPlanChapterChoices(){const box=document.getElementById("examPlanChapters");if(!box)return;const selected=Array.from(document.querySelectorAll('[data-exam-subject]:checked')).map(el=>el.value);const items=selected.flatMap(key=>(state.databases[key]?.rows||[]).map(row=>({key,row,name:getRowPrimaryTitle(state.databases[key],row)})).filter(x=>x.name&&x.name!=="Untitled Chapter"));box.innerHTML=items.length?items.map(x=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.3rem .45rem;"><input type="checkbox" data-exam-chapter data-subject-key="${escapeHtml(x.key)}" value="${escapeHtml(x.row.id)}"><span>${escapeHtml(state.databases[x.key].displayName||x.key)} · ${escapeHtml(x.name)}</span></label>`).join(""):'<span style="color:var(--text-muted);font-size:.8rem;">Select subjects to load chapters.</span>';}
-      function saveExamPlan(){const name=document.getElementById("examPlanName")?.value.trim();if(!name)return showToast("Enter an exam name");const subjectKeys=Array.from(document.querySelectorAll('[data-exam-subject]:checked')).map(el=>el.value);const chapters=Array.from(document.querySelectorAll('[data-exam-chapter]:checked')).map(el=>{const db=state.databases[el.dataset.subjectKey],row=db?.rows.find(r=>r.id===el.value);return{subjectKey:el.dataset.subjectKey,rowId:el.value,name:row?getRowPrimaryTitle(db,row):"Chapter"};});const hours=Math.max(0,Number(document.getElementById("examPlanHours")?.value)||0);if(!subjectKeys.length)return showToast("Select at least one subject");if(!hours)return showToast("Enter allocated time");if(!Array.isArray(state.examPlans))state.examPlans=[];state.examPlans.push({id:uid("exam"),name,examDate:document.getElementById("examPlanDate")?.value||"",subjectKeys,chapters,allocatedSeconds:Math.round(hours*3600),createdAt:new Date().toISOString()});saveWorkspace();document.getElementById("examPlanModal")?.classList.add("hidden");renderExamPrep();showToast("Exam plan created");}
+      function renderExamPlanChapterChoices(){const box=document.getElementById("examPlanChapters");if(!box)return;const selected=Array.from(document.querySelectorAll('[data-exam-subject]:checked')).map(el=>el.value);const items=selected.flatMap(key=>getSyllabusChapterNames(state.databases[key]).map(name=>({key,name})));box.innerHTML=items.length?items.map(x=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.3rem .45rem;"><input type="checkbox" data-exam-chapter data-subject-key="${escapeHtml(x.key)}" value="${escapeHtml(x.name)}"><span>${escapeHtml(state.databases[x.key].displayName||x.key)} · ${escapeHtml(x.name)}</span></label>`).join(""):'<span style="color:var(--text-secondary);font-size:.8rem;">Select subjects to load syllabus chapters.</span>';}
+      function saveExamPlan(){const name=document.getElementById("examPlanName")?.value.trim();if(!name)return showToast("Enter an exam name");const subjectKeys=Array.from(document.querySelectorAll('[data-exam-subject]:checked')).map(el=>el.value);const chapters=Array.from(document.querySelectorAll('[data-exam-chapter]:checked')).map(el=>({subjectKey:el.dataset.subjectKey,name:el.value}));const hours=Math.max(0,Number(document.getElementById("examPlanHours")?.value)||0);if(!subjectKeys.length)return showToast("Select at least one subject");if(!hours)return showToast("Enter the required test duration");if(!Array.isArray(state.examPlans))state.examPlans=[];state.examPlans.push({id:uid("exam"),name,examDate:document.getElementById("examPlanDate")?.value||"",subjectKeys,chapters,allocatedSeconds:Math.round(hours*3600),attempts:[],createdAt:new Date().toISOString()});saveWorkspace();document.getElementById("examPlanModal")?.classList.add("hidden");renderExamPrep();showToast("Exam created. Start it when you begin the test.");}
 
       /* ======================================================================
          6. VIEW NAVIGATION & DATABASE TABLE RENDERING
@@ -4281,7 +4370,13 @@
         document.getElementById("newExamPlanBtn")?.addEventListener("click",()=>{document.getElementById("examPlanName").value="";document.getElementById("examPlanDate").value="";document.getElementById("examPlanHours").value="4";renderExamPlanSubjectChoices();document.getElementById("examPlanModal")?.classList.remove("hidden");});
         document.getElementById("examPlanSubjects")?.addEventListener("change",renderExamPlanChapterChoices);
         document.getElementById("saveExamPlanBtn")?.addEventListener("click",saveExamPlan);
-        document.getElementById("examPlansList")?.addEventListener("click",e=>{const btn=e.target.closest("[data-delete-exam]");if(!btn)return;const id=btn.dataset.deleteExam;if(!confirm("Delete this exam plan? Existing study logs will remain."))return;state.examPlans=(state.examPlans||[]).filter(x=>x.id!==id);saveWorkspace();renderExamPrep();});
+        document.getElementById("examPlansList")?.addEventListener("click",e=>{
+          const start=e.target.closest("[data-exam-start],[data-exam-resume]"); if(start){startExamTimer(start.dataset.examStart||start.dataset.examResume);return;}
+          const pause=e.target.closest("[data-exam-pause]"); if(pause){pauseExamTimer();return;}
+          const finish=e.target.closest("[data-exam-finish]"); if(finish){if(confirm("Finish this exam and record the elapsed time?"))finishExamTimer();return;}
+          const btn=e.target.closest("[data-delete-exam]");if(!btn)return;const id=btn.dataset.deleteExam;if(state.activeExamSession?.planId===id)return showToast("Finish or pause this exam before deleting it.");if(!confirm("Delete this exam plan? Existing study logs and completed attempts will remain in the workspace history."))return;state.examPlans=(state.examPlans||[]).filter(x=>x.id!==id);saveWorkspace();renderExamPrep();
+        });
+        setInterval(()=>{if(currentView==="examPrep" && state.activeExamSession?.running)renderExamPrep();},1000);
         document.getElementById("closeChallengeBoardBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
         document.getElementById("backToGalleryBtn")?.addEventListener("click", () => switchWorkspaceView("gallery"));
 
@@ -5268,6 +5363,15 @@
             showToast("This device was uploaded to Firebase");
           } catch (err) { showToast("Upload failed: " + err.message); }
         });
+        window.addEventListener("firebase-init-error", (event) => {
+          const message = event.detail?.message || "Firebase configuration needs attention.";
+          const status = document.getElementById("firebaseAuthStatus");
+          if (status) status.textContent = message;
+          const signIn = document.getElementById("firebaseSignInBtn");
+          if (signIn) { signIn.disabled = false; signIn.title = message; }
+          updateSyncButtonVisuals("error");
+        });
+
         window.addEventListener("firebase-auth-changed", (event) => {
           const user = event.detail?.user;
           const status = document.getElementById("firebaseAuthStatus");

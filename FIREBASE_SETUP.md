@@ -21,7 +21,7 @@ Keep `index.html`, `firebase-client.js`, `firebase-config.js`, `sw.js`, `manifes
 After updating `firebase-config.js`, commit and push. The service-worker cache has been versioned so deployed clients fetch the new config and logo. If the old icon remains installed, remove the old PWA shortcut and install it again after deployment.
 
 ## Authentication
-Test Google sign-in on the deployed HTTPS GitHub Pages domain. Pop-up restrictions may block sign-in inside embedded Android WebViews; use the browser/PWA while testing.
+Firebase sign-in and Google Drive authorization are separate actions. The **Continue with Google** button requests only Firebase Authentication; it does not request Drive access. Use **Authorize Google Drive** later from Sync settings to grant the additional `drive.file` scope. Test Firebase sign-in on the deployed HTTPS GitHub Pages domain. Popup restrictions may block sign-in inside embedded Android WebViews; use the browser/PWA while testing. The app now displays a clear configuration message if `apiKey` is still the placeholder, and a specific message for invalid keys, blocked popups, or unauthorized domains.
 
 ## Sync notes
 Firestore stores user-specific workspace, preferences and countdown documents. The current sync layer detects a newer remote revision and pauses rather than silently overwriting it; it is conflict detection, not full record-level merging. Google Drive automatic backup and Exam Prep remain separate pending work.
@@ -35,3 +35,10 @@ Firestore stores user-specific workspace, preferences and countdown documents. T
 5. Backups are JSON files in the visible **Time & Task Tracker Backups** folder. The app retains the 30 newest files it can see in that folder.
 
 Drive backup is a secondary snapshot, not a sync engine. Firebase remains the primary cross-device sync service. The app never deletes Firebase records as part of Drive backup.
+
+
+## Syllabus chapter dropdowns
+Manual time logging uses each subject database's `chapterOptions` syllabus list as the canonical chapter dropdown. Repeated dated rows for the same chapter are grouped under one syllabus chapter. Daily task options are gathered from the selected chapter's rows for the chosen date.
+
+## Exam timer
+Exam plans store a required test duration. Starting an exam persists its start timestamp and elapsed duration; the displayed remaining time is calculated from timestamps rather than interval tick counts. Pause/resume and finish/record are supported.
