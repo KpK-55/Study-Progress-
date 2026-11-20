@@ -65,6 +65,24 @@
       --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.65);
     }
 
+
+    .revision-schedule-toolbar{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin:.75rem 0;}
+    .revision-schedule-toolbar .btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .revision-schedule-day{margin:1rem 0 .45rem;font-size:.88rem;font-weight:800;color:var(--text-primary);display:flex;align-items:center;gap:.5rem;}
+    .revision-schedule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.6rem;}
+    .revision-schedule-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-width:0;}
+    .revision-schedule-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;}
+    .revision-schedule-card strong{font-size:.88rem;line-height:1.35;}
+    .revision-schedule-meta{font-size:.74rem;color:var(--text-secondary);line-height:1.5;}
+    .revision-status{display:inline-flex;align-items:center;border-radius:999px;padding:.18rem .55rem;font-size:.68rem;font-weight:800;white-space:nowrap;border:1px solid var(--border);}
+    .revision-status.today{background:#fff3cd;color:#805b00;border-color:#f0d98a;}
+    .revision-status.pending{background:#e8f1ff;color:#2459a6;border-color:#c8dcff;}
+    .revision-status.completed{background:#e5f6eb;color:#1e7540;border-color:#bde7ca;}
+    body.dark .revision-status.today{background:#493b17;color:#ffe29a;border-color:#705c24;}
+    body.dark .revision-status.pending{background:#1c3557;color:#b8d5ff;border-color:#31527d;}
+    body.dark .revision-status.completed{background:#183d2a;color:#a8e6bd;border-color:#286443;}
+    .revision-schedule-empty{padding:1rem;border:1px dashed var(--border);border-radius:10px;color:var(--text-secondary);font-size:.82rem;text-align:center;}
+    @media(max-width:640px){.revision-schedule-grid{grid-template-columns:1fr;}}
     .revision-due-panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:14px;padding:.8rem 1rem;}
     .revision-panel-head{display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;}
     .revision-panel-subtitle{font-size:.76rem;color:var(--text-secondary);margin-top:.15rem;}
@@ -1999,10 +2017,32 @@
       </div>
 
       <section id="revisionDuePanel" class="revision-due-panel" aria-live="polite" style="margin:.8rem 0 1rem;">
-        <div class="revision-panel-head"><div><strong>📚 Chapter revision due</strong><div class="revision-panel-subtitle" id="revisionDueSummary">Your completed chapters will appear here on their review dates.</div></div><button type="button" class="btn" id="enableRevisionNotificationsBtn">Enable notifications</button></div>
+        <div class="revision-panel-head"><div><strong>📚 Chapter revision due</strong><div class="revision-panel-subtitle" id="revisionDueSummary">Your completed chapters will appear here on their review dates.</div></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;"><button type="button" class="btn" id="openRevisionScheduleBtn">All schedules</button><button type="button" class="btn" id="enableRevisionNotificationsBtn">Enable notifications</button></div></div>
         <div id="revisionDueList" class="revision-due-list"></div>
       </section>
       <div class="subject-gallery-row" id="subjectGalleryRow"></div>
+    </section>
+
+
+    <section id="revisionScheduleView" class="hidden-view">
+      <div class="db-header-bar" style="margin-bottom:.8rem;">
+        <div><h2 style="margin:0;">📅 Revision Schedule</h2><div class="revision-panel-subtitle">Day 3 · Day 7 · Day 15 · Day 30 review plan</div></div>
+        <button type="button" class="btn" id="closeRevisionScheduleBtn">← Back to dashboard</button>
+      </div>
+      <div class="revision-due-panel">
+        <div class="revision-panel-head"><div><strong>Upcoming revision cards</strong><div class="revision-panel-subtitle" id="revisionUpcomingSummary">Your next scheduled reviews.</div></div></div>
+        <div id="revisionUpcomingCards" class="revision-schedule-grid" style="margin-top:.7rem;"></div>
+      </div>
+      <div class="revision-due-panel" style="margin-top:.8rem;">
+        <div class="revision-panel-head"><div><strong>All schedules · Date wise</strong><div class="revision-panel-subtitle" id="revisionAllSummary">Completed and upcoming review dates.</div></div></div>
+        <div class="revision-schedule-toolbar" id="revisionScheduleFilters">
+          <button type="button" class="btn active" data-revision-filter="all">All</button>
+          <button type="button" class="btn" data-revision-filter="today">Today</button>
+          <button type="button" class="btn" data-revision-filter="pending">Pending</button>
+          <button type="button" class="btn" data-revision-filter="completed">Completed</button>
+        </div>
+        <div id="revisionScheduleDateList"></div>
+      </div>
     </section>
 
     <!-- 2. SUBJECT DATABASE VIEW -->
@@ -2733,7 +2773,7 @@
         });
       }
 
-      const REVISION_INTERVAL_DAYS = [1, 3, 7, 14, 30, 60, 90];
+      const REVISION_INTERVAL_DAYS = [3, 7, 15, 30];
       function ensureRevisionTrackingColumn(db) {
         if (!db) return;
         if (!Array.isArray(db.revisionSchedules)) db.revisionSchedules = [];
@@ -2742,6 +2782,13 @@
         if (!col) { col = { id:uid("revcol"), name:"Completion Date", type:"date", width:132, isRevisionCompletionCol:true }; db.columns.push(col); }
         else col.isRevisionCompletionCol = true;
         db.rows.forEach(row => { if (!row.cells) row.cells = {}; if (row.cells[col.id] === undefined) row.cells[col.id] = ""; });
+        // One-time migration from the earlier 1/3/7/14/30/60/90-day cycle.
+        (db.revisionSchedules || []).forEach(item => {
+          if (item.scheduleVersion === 2) return;
+          const index = Math.min(Number(item.intervalIndex) || 0, REVISION_INTERVAL_DAYS.length - 1);
+          if (item.completionDate) item.dueDate = addDaysToDate(item.completionDate, REVISION_INTERVAL_DAYS[index]);
+          item.scheduleVersion = 2;
+        });
       }
       function addDaysToDate(dateStr, days) { const d = new Date(`${dateStr}T12:00:00`); d.setDate(d.getDate()+days); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
       function scheduleChapterRevision(db, chapterName, completionDate) {
@@ -2751,8 +2798,8 @@
         const row = getRowsForSyllabusChapter(db, chapterName, completionDate)[0];
         if (row && col) row.cells[col.id] = completionDate;
         let item = db.revisionSchedules.find(x => normalizeChapterKey(x.chapter) === key);
-        if (!item) { item = { id:uid("revision"), chapter:chapterName, completionDate, intervalIndex:0, dueDate:addDaysToDate(completionDate,REVISION_INTERVAL_DAYS[0]), postponedUntil:"", history:[] }; db.revisionSchedules.push(item); }
-        else if (item.completionDate !== completionDate) { item.completionDate=completionDate; item.intervalIndex=0; item.dueDate=addDaysToDate(completionDate,REVISION_INTERVAL_DAYS[0]); item.postponedUntil=""; }
+        if (!item) { item = { id:uid("revision"), chapter:chapterName, completionDate, intervalIndex:0, scheduleVersion:2, dueDate:addDaysToDate(completionDate,REVISION_INTERVAL_DAYS[0]), postponedUntil:"", history:[] }; db.revisionSchedules.push(item); }
+        else if (item.completionDate !== completionDate) { item.completionDate=completionDate; item.intervalIndex=0; item.scheduleVersion=2; item.dueDate=addDaysToDate(completionDate,REVISION_INTERVAL_DAYS[0]); item.postponedUntil=""; }
       }
       function completeChapterRevision(dbKey, chapterName, dateStr=getLocalTodayStr()) {
         const db=state.databases[dbKey]; if(!db || !chapterName) return;
@@ -2776,6 +2823,70 @@
         list.innerHTML=due.length?due.map(x=>`<article class="revision-due-card"><div><strong>${escapeHtml(x.chapter)}</strong><small>${escapeHtml(x.subject)} · Completed ${escapeHtml(x.completionDate)} · Due ${escapeHtml(x.dueDate)}</small></div><div class="revision-due-actions"><button class="btn" type="button" data-revision-action="tomorrow" data-revision-id="${escapeHtml(x.id)}" data-revision-subject="${escapeHtml(x.subjectKey)}">Tomorrow</button><button class="btn" type="button" data-revision-action="skip" data-revision-id="${escapeHtml(x.id)}" data-revision-subject="${escapeHtml(x.subjectKey)}">Skip</button><button class="btn btn-primary" type="button" data-revision-action="reviewed" data-revision-id="${escapeHtml(x.id)}" data-revision-subject="${escapeHtml(x.subjectKey)}">Reviewed</button></div></article>`).join(""):'<div style="font-size:.78rem;color:var(--text-secondary);padding:.25rem 0;">No chapter revisions due right now.</div>';
         if(due.length && "Notification" in window && Notification.permission==="granted") { const stamp=`${getLocalTodayStr()}_${due.map(x=>x.id).sort().join("_")}`; if(localStorage.getItem("revision_notice_stamp")!==stamp){ localStorage.setItem("revision_notice_stamp",stamp); navigator.serviceWorker?.ready.then(reg=>reg.showNotification("Chapter revisions due",{body:due.slice(0,4).map(x=>`${x.chapter} (${x.subject})`).join(" · "),icon:"./icons/icon-192.png",badge:"./icons/icon-192.png",tag:"chapter-revisions"})).catch(()=>{}); } }
       }
+
+      function getRevisionScheduleEntries() {
+        const entries = [], today = getLocalTodayStr();
+        getAllRepositoryKeys().forEach(key => {
+          const db = state.databases[key];
+          ensureRevisionTrackingColumn(db);
+          (db.revisionSchedules || []).forEach(item => {
+            const subject = db.displayName || key;
+            const history = Array.isArray(item.history) ? item.history : [];
+            history.forEach((h, index) => {
+              if (!h || !h.dueDate) return;
+              entries.push({
+                id: `${item.id}_done_${index}`, revisionId: item.id, subjectKey: key,
+                subject, chapter: item.chapter, completionDate: item.completionDate,
+                dueDate: h.dueDate, status: "completed", stage: history.length - index,
+                reviewedOn: h.reviewedOn || ""
+              });
+            });
+            const dueDate = item.postponedUntil || item.dueDate;
+            if (dueDate) {
+              const stage = REVISION_INTERVAL_DAYS[Math.min(Number(item.intervalIndex) || 0, REVISION_INTERVAL_DAYS.length - 1)];
+              entries.push({
+                id: `${item.id}_current`, revisionId: item.id, subjectKey: key,
+                subject, chapter: item.chapter, completionDate: item.completionDate,
+                dueDate, status: dueDate === today ? "today" : "pending", stage,
+                reviewedOn: ""
+              });
+            }
+          });
+        });
+        return entries.sort((a,b) => a.dueDate.localeCompare(b.dueDate) || a.chapter.localeCompare(b.chapter));
+      }
+      function revisionStatusLabel(status) {
+        return status === "completed" ? "Completed" : status === "today" ? "Today" : "Pending";
+      }
+      function renderRevisionScheduleCard(entry) {
+        const status = entry.status;
+        return `<article class="revision-schedule-card">
+          <div class="revision-schedule-card-head"><strong>${escapeHtml(entry.chapter)}</strong><span class="revision-status ${status}">${revisionStatusLabel(status)}</span></div>
+          <div class="revision-schedule-meta">${escapeHtml(entry.subject)}<br>Review: ${escapeHtml(entry.dueDate)} · Day ${escapeHtml(String(entry.stage))}<br>Chapter completed: ${escapeHtml(entry.completionDate || "—")}${status === "completed" && entry.reviewedOn ? `<br>Reviewed on: ${escapeHtml(entry.reviewedOn)}` : ""}</div>
+          ${status !== "completed" ? `<div class="revision-due-actions"><button type="button" class="btn" data-schedule-action="tomorrow" data-revision-id="${escapeHtml(entry.revisionId)}" data-revision-subject="${escapeHtml(entry.subjectKey)}">Tomorrow</button><button type="button" class="btn btn-primary" data-schedule-action="reviewed" data-revision-id="${escapeHtml(entry.revisionId)}" data-revision-subject="${escapeHtml(entry.subjectKey)}">Mark reviewed</button></div>` : ""}
+        </article>`;
+      }
+      let activeRevisionScheduleFilter = "all";
+      function renderRevisionScheduleView() {
+        const entries = getRevisionScheduleEntries(), today = getLocalTodayStr();
+        const upcoming = entries.filter(x => x.status !== "completed").slice(0, 8);
+        const upcomingEl = document.getElementById("revisionUpcomingCards");
+        const upcomingSummary = document.getElementById("revisionUpcomingSummary");
+        if (upcomingSummary) upcomingSummary.textContent = `${upcoming.length} upcoming review(s) shown · Review cycle: Day 3, 7, 15 and 30.`;
+        if (upcomingEl) upcomingEl.innerHTML = upcoming.length ? upcoming.map(renderRevisionScheduleCard).join("") : '<div class="revision-schedule-empty">No upcoming revisions. Complete a chapter to create its review schedule.</div>';
+        const filtered = entries.filter(x => activeRevisionScheduleFilter === "all" || x.status === activeRevisionScheduleFilter);
+        const grouped = {};
+        filtered.forEach(x => (grouped[x.dueDate] ||= []).push(x));
+        const dateList = document.getElementById("revisionScheduleDateList");
+        const allSummary = document.getElementById("revisionAllSummary");
+        if (allSummary) allSummary.textContent = `${entries.length} scheduled review event(s) · ${entries.filter(x=>x.status==="completed").length} completed · ${entries.filter(x=>x.status==="today").length} today · ${entries.filter(x=>x.status==="pending").length} pending.`;
+        if (dateList) {
+          const dates = Object.keys(grouped).sort();
+          dateList.innerHTML = dates.length ? dates.map(date => `<div class="revision-schedule-day">${escapeHtml(date)} ${date === today ? '<span class="revision-status today">Today</span>' : ""}</div><div class="revision-schedule-grid">${grouped[date].map(renderRevisionScheduleCard).join("")}</div>`).join("") : '<div class="revision-schedule-empty">No schedules match this filter.</div>';
+        }
+        document.querySelectorAll("[data-revision-filter]").forEach(btn => btn.classList.toggle("active", btn.dataset.revisionFilter === activeRevisionScheduleFilter));
+      }
+
       function requestRevisionNotifications() { if(!("Notification" in window))return showToast("This browser does not support notifications."); Notification.requestPermission().then(p=>{ if(p==="granted") { showToast("Revision notifications enabled."); renderRevisionDuePanel(); } else showToast("Notification permission was not granted."); }); }
 
       function getRowsForSyllabusChapter(db, chapterName, dateStr = "") {
@@ -3703,12 +3814,14 @@
         document.getElementById("reportAnalyticsView")?.classList.toggle("hidden-view", viewName !== "report");
         document.getElementById("challengeBoardView")?.classList.toggle("hidden-view", viewName !== "challenge");
         document.getElementById("examPrepView")?.classList.toggle("hidden-view", viewName !== "examPrep");
+        document.getElementById("revisionScheduleView")?.classList.toggle("hidden-view", viewName !== "revisionSchedule");
 
         if (viewName === "gallery") { renderGalleryCards(); renderRevisionDuePanel(); }
         if (viewName === "database") renderActiveDatabase();
         if (viewName === "report") renderReportCharts();
         if (viewName === "challenge") renderChallengeBoard();
         if (viewName === "examPrep") renderExamPrep();
+        if (viewName === "revisionSchedule") renderRevisionScheduleView();
       }
 
       function openSubjectDatabase(subjKey) {
@@ -4542,6 +4655,12 @@
         document.getElementById("reviseSubjectSelect")?.addEventListener("change",renderReviseChapterOptions);
         document.getElementById("startRevisionSessionBtn")?.addEventListener("click",startRevisionStudySession);
         document.getElementById("enableRevisionNotificationsBtn")?.addEventListener("click",requestRevisionNotifications);
+        document.getElementById("openRevisionScheduleBtn")?.addEventListener("click",()=>switchWorkspaceView("revisionSchedule"));
+        document.getElementById("closeRevisionScheduleBtn")?.addEventListener("click",()=>switchWorkspaceView("gallery"));
+        document.getElementById("revisionScheduleFilters")?.addEventListener("click",e=>{const btn=e.target.closest("[data-revision-filter]");if(!btn)return;activeRevisionScheduleFilter=btn.dataset.revisionFilter;renderRevisionScheduleView();});
+        document.getElementById("revisionScheduleDateList")?.addEventListener("click",e=>{const btn=e.target.closest("[data-schedule-action]");if(!btn)return;advanceRevision(btn.dataset.revisionSubject,btn.dataset.revisionId,btn.dataset.scheduleAction);renderRevisionScheduleView();});
+        document.getElementById("revisionUpcomingCards")?.addEventListener("click",e=>{const btn=e.target.closest("[data-schedule-action]");if(!btn)return;advanceRevision(btn.dataset.revisionSubject,btn.dataset.revisionId,btn.dataset.scheduleAction);renderRevisionScheduleView();});
+
         document.getElementById("revisionDueList")?.addEventListener("click",e=>{const btn=e.target.closest("[data-revision-action]");if(!btn)return;advanceRevision(btn.dataset.revisionSubject,btn.dataset.revisionId,btn.dataset.revisionAction);});
         document.getElementById("newExamPlanBtn")?.addEventListener("click",()=>{document.getElementById("examPlanName").value="";document.getElementById("examPlanDate").value="";document.getElementById("examPlanHours").value="4";renderExamPlanSubjectChoices();document.getElementById("examPlanModal")?.classList.remove("hidden");});
         document.getElementById("examPlanSubjects")?.addEventListener("change",renderExamPlanChapterChoices);
