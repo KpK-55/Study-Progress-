@@ -37,3 +37,10 @@ Firebase is the primary sync provider in the current build. JSON export/import i
 - Exam Prep now has a real elapsed-time session with a remaining-time display, pause/resume, and finish/record actions.
 - Firebase Google sign-in no longer requests Google Drive permissions. Drive authorization is a separate, explicit step.
 - Mobile dashboard controls use a compact two-row portrait layout.
+
+
+## Spaced chapter revision
+- Completing all tasks assigned to a chapter for the day, or setting its daily status to Done/Completed, records the completion date in the dedicated `Completion Date` database column.
+- Each subject database keeps one revision schedule per syllabus chapter. Default review intervals are 1, 3, 7, 14, 30, 60 and 90 days. Marking Reviewed advances the interval; Tomorrow postpones one day; Skip advances to the next interval without marking a review.
+- The dashboard shows due/overdue chapters. Browser notifications are shown when the app is opened or returns to the foreground and notification permission has been granted. A static GitHub Pages app cannot guarantee scheduled notifications while completely closed; that requires a trusted server-side scheduler and push delivery (for example Firebase Cloud Messaging with scheduled Cloud Functions).
+- Exam Prep includes a separate Revise Chapters workflow so chapters outside an exam plan can be revised and timed.

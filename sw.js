@@ -1,4 +1,4 @@
-const CACHE_NAME = "time-task-tracker-v-final-fix-3";
+const CACHE_NAME = "time-task-tracker-v-revision-scheduler-2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,7 +9,8 @@ const APP_SHELL = [
   "./icons/favicon-32.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./icons/apple-touch-icon.png"
+  "./icons/apple-touch-icon.png",
+  "./icons/source-logo.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -41,4 +42,12 @@ self.addEventListener("fetch", (event) => {
       return cached || network;
     })
   );
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    for (const client of list) { if ("focus" in client) return client.focus(); }
+    if (clients.openWindow) return clients.openWindow("./index.html");
+  }));
 });

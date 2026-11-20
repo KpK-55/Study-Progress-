@@ -1,14 +1,14 @@
 {
   "id": "./index.html",
   "name": "TIME & TASK TRACKER",
-  "short_name": "Task Tracker",
+  "short_name": "Study Progress",
   "description": "Universal student study timer, customizable syllabus & habit tracker, daily checklists, and Google Drive cross-device sync.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#ffffff",
-  "theme_color": "#2383e2",
+  "theme_color": "#1554bd",
   "categories": [
     "education",
     "productivity"
