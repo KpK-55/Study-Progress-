@@ -38,6 +38,27 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
       return id;
     })();
     const userDoc = (uid, name) => doc(db, "users", uid, "appData", name);
+
+    // Firestore rejects undefined at any nesting depth. Workspace data can acquire
+    // undefined properties from optional UI fields, so normalize the JSON-like
+    // payload before writing. Arrays preserve positions as null; object keys are omitted.
+    function cleanFirestoreValue(value) {
+      if (value === undefined || typeof value === "function" || typeof value === "symbol") return undefined;
+      if (value === null || typeof value !== "object") {
+        if (typeof value === "number" && !Number.isFinite(value)) return null;
+        return value;
+      }
+      if (Array.isArray(value)) return value.map(item => {
+        const cleaned = cleanFirestoreValue(item);
+        return cleaned === undefined ? null : cleaned;
+      });
+      const out = {};
+      Object.entries(value).forEach(([key, item]) => {
+        const cleaned = cleanFirestoreValue(item);
+        if (cleaned !== undefined) out[key] = cleaned;
+      });
+      return out;
+    }
     const readBundle = async uid => {
       const names = ["workspace", "preferences", "countdown", "syncState"];
       const snaps = await Promise.all(names.map(name => getDoc(userDoc(uid, name))));
@@ -60,7 +81,8 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
         const remoteVersion = metaSnap.exists() ? Number(metaSnap.data().clientUpdatedAt) || 0 : 0;
         if (!force && remoteVersion > lastRemote) { conflict = true; return; }
         [["workspace", bundle.workspace], ["preferences", bundle.prefs], ["countdown", bundle.countdown]].forEach(([name, payload]) => {
-          transaction.set(userDoc(user.uid, name), { payload: payload ?? null, schemaVersion: 1, writerId, updatedAt: serverTimestamp(), clientUpdatedAt: stamp });
+          const safePayload = cleanFirestoreValue(payload ?? null);
+          transaction.set(userDoc(user.uid, name), { payload: safePayload, schemaVersion: 1, writerId, updatedAt: serverTimestamp(), clientUpdatedAt: stamp });
         });
         transaction.set(metaRef, { schemaVersion: 1, writerId, clientUpdatedAt: stamp, updatedAt: serverTimestamp() });
       });
@@ -101,6 +123,9 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
       if (!response.ok) {
         const body = await response.text().catch(() => "");
         if (response.status === 401) driveAccessToken = null;
+        if (response.status === 403 && /has not been used|disabled|accessNotConfigured/i.test(body)) {
+          throw new Error("Google Drive API is disabled for Firebase project 251824598441. Enable Google Drive API in Google Cloud Console, wait 2–5 minutes, then click Authorize Google Drive again: https://console.cloud.google.com/apis/library/drive.googleapis.com?project=251824598441");
+        }
         throw new Error(`Google Drive API ${response.status}: ${body.slice(0, 240) || response.statusText}`);
       }
       return response.status === 204 ? null : response.json();

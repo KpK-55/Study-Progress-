@@ -42,3 +42,11 @@ Manual time logging uses each subject database's `chapterOptions` syllabus list 
 
 ## Exam timer
 Exam plans store a required test duration. Starting an exam persists its start timestamp and elapsed duration; the displayed remaining time is calculated from timestamps rather than interval tick counts. Pause/resume and finish/record are supported.
+
+## Google Drive backup: one-time API enablement
+
+The app cannot enable Google APIs in your Cloud project automatically. In Google Cloud Console, open the Drive API page for project `251824598441`, click **Enable**, wait a few minutes, then return to the app and click **Authorize Google Drive** again:
+
+https://console.cloud.google.com/apis/library/drive.googleapis.com?project=251824598441
+
+Firebase Firestore sync does not require Google Drive API. Drive backup is a separate optional backup layer.
