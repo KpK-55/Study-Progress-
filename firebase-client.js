@@ -1,4 +1,4 @@
-// Firebase client for GitHub Pages and Capacitor. Authentication and Drive
+// Firebase client for the GitHub Pages PWA. Authentication and Drive
 // authorization are deliberately separate: signing in must not request Drive.
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
@@ -6,7 +6,8 @@ import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp, runTransaction, collection, query, orderBy, limit, getDocs, onSnapshot, collection, query, orderBy, limit, getDocs, onSnapshot
+  getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp, runTransaction,
+  collection, query, orderBy, limit, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const dispatch = (name, detail = {}) => window.dispatchEvent(new CustomEvent(name, { detail }));
@@ -162,7 +163,6 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
     onAuthStateChanged(auth, user => dispatch("firebase-auth-changed", { user: user ? { uid:user.uid, displayName:user.displayName, email:user.email, photoURL:user.photoURL } : null }));
     window.firebaseBridge = {
       getUser: () => auth.currentUser,
-      getDeviceId: () => writerId,
       getDeviceId: () => writerId,
       signIn: signInToFirebase,
       authorizeDrive,
