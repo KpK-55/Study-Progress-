@@ -21,3 +21,11 @@
 - Application inline JavaScript and Firebase module syntax checked with Node.
 - Static feature hooks checked.
 - Runtime testing still required on deployed GitHub Pages and Android APK.
+
+
+## Native revision and PWA-only update
+- Removed the Android APK GitHub Actions workflow; PWA remains the installable app.
+- Removed the dashboard revision due panel and added a bell-led dedicated revision screen.
+- Revision intervals are Day 3, Day 7, Day 15 and Day 30.
+- Revision responses are handled inside the app; no Google Sheet or Telegram integration is included.
+- Firebase remains the cloud sync provider.

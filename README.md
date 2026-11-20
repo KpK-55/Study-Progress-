@@ -1,18 +1,23 @@
-# Time & Task Tracker
+# Study Progress
 
-A standalone HTML/JavaScript study tracker with a GitHub Pages PWA deployment and a Capacitor Android APK workflow.
+A standalone HTML/JavaScript study tracker deployed as a Progressive Web App (PWA) through GitHub Pages. The PWA can be installed from a supported browser and runs in a standalone app window; no Android APK build is maintained.
 
 ## Features
 - Subject databases and chapter checklists
 - Daily task assignment and completion tracking
-- Focus timer with pause/resume, recovery, discard, and close controls
-- Multi-chapter study sessions with equal time allocation
-- Manual time logs saved to the corresponding subject database
-- Exam Prep plans across multiple subject databases
-- Challenge board with per-day activity reports
-- Countdown, theme preferences, undo, JSON backup/import
-- Firebase Google authentication and Firestore synchronization
-- PWA installation and Android APK build through GitHub Actions
+- Focus timer with pause/resume and recovery
+- Manual time logs, Exam Prep plans and challenge board
+- Countdown, theme preferences, undo and JSON backup/import
+- Firebase Google authentication and Firestore cross-device sync
+- Native in-app chapter revision reminders and date-wise revision screen
+- PWA installation with manifest and service worker
+
+## Revision schedule
+- Review intervals: Day 3, Day 7, Day 15 and Day 30. After Day 30, the schedule repeats at 30-day intervals.
+- Use the bell beside Sync to open Today, Tomorrow, Upcoming or Date-wise revision lists.
+- Mark a review Done or postpone it to Tomorrow.
+- A red bell badge indicates unread due chapters.
+- Revision records are stored in the workspace and included in Firebase sync.
 
 ## Firebase setup
 1. Create a Firebase Web App and enable Google Authentication.
@@ -21,26 +26,13 @@ A standalone HTML/JavaScript study tracker with a GitHub Pages PWA deployment an
 4. Put the exact Firebase Web App `apiKey` into `firebase-config.js`.
 5. Add the GitHub Pages host to Firebase Authentication authorized domains.
 
-Never commit Firebase service-account private keys. The Firebase Web API key is client configuration; protect user data with Firestore Security Rules.
+The app uses Firebase client configuration only. Never commit service-account private keys. Protect user data with Firestore Security Rules.
 
 ## Deployment
 - GitHub Pages serves `index.html` from the configured repository branch/folder.
-- GitHub Actions builds the Android debug APK. Download it from the workflow run's Artifacts section.
-- Keep `.git` when replacing repository files locally. Do not upload `node_modules`.
+- Keep the PWA files (`manifest.json`, `sw.js`, and `icons/`) in the deployed root.
+- Install from the browser's Install App option or browser menu when available.
+- There is no APK workflow in this version.
 
-## Backup note
-Firebase is the primary sync provider in the current build. JSON export/import is available. Google Drive automatic backup still requires a separate Drive authorization/configuration step and is not yet active.
-
-
-### Recent corrections
-- Manual time chapter choices are sourced from the subject syllabus (`chapterOptions`) and deduplicated even when a chapter has multiple dated database rows. Daily tasks are collected for the selected date.
-- Exam Prep now has a real elapsed-time session with a remaining-time display, pause/resume, and finish/record actions.
-- Firebase Google sign-in no longer requests Google Drive permissions. Drive authorization is a separate, explicit step.
-- Mobile dashboard controls use a compact two-row portrait layout.
-
-
-## Spaced chapter revision
-- Completing all tasks assigned to a chapter for the day, or setting its daily status to Done/Completed, records the completion date in the dedicated `Completion Date` database column.
-- Each subject database keeps one revision schedule per syllabus chapter. Default review intervals are 1, 3, 7, 14, 30, 60 and 90 days. Marking Reviewed advances the interval; Tomorrow postpones one day; Skip advances to the next interval without marking a review.
-- The dashboard shows due/overdue chapters. Browser notifications are shown when the app is opened or returns to the foreground and notification permission has been granted. A static GitHub Pages app cannot guarantee scheduled notifications while completely closed; that requires a trusted server-side scheduler and push delivery (for example Firebase Cloud Messaging with scheduled Cloud Functions).
-- Exam Prep includes a separate Revise Chapters workflow so chapters outside an exam plan can be revised and timed.
+## Backup and version history
+Firebase is the primary cross-device sync provider. The Sync window includes restore-latest and cloud version history controls. JSON export/import remains available as a manual backup. Google Drive backup is optional and requires separate authorization.

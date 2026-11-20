@@ -1,4 +1,4 @@
-const CACHE_NAME = "time-task-tracker-v-revision-scheduler-2";
+const CACHE_NAME = "time-task-tracker-v-native-revision-3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -28,7 +28,6 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.url.includes("script.google.com") || event.request.url.includes("script.googleusercontent.com")) return;
   if (event.request.method !== "GET") return;
   event.respondWith(
     caches.match(event.request).then((cached) => {

@@ -6,7 +6,7 @@ import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, serverTimestamp, runTransaction
+  getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp, runTransaction, collection, query, orderBy, limit, getDocs, onSnapshot, collection, query, orderBy, limit, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const dispatch = (name, detail = {}) => window.dispatchEvent(new CustomEvent(name, { detail }));
@@ -87,6 +87,14 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
         transaction.set(metaRef, { schemaVersion: 1, writerId, clientUpdatedAt: stamp, updatedAt: serverTimestamp() });
       });
       if (conflict) return { conflict: true };
+      // Keep a small cloud version history for rollback. A snapshot is best-effort:
+      // the live workspace sync remains successful even if a large snapshot exceeds Firestore limits.
+      try {
+        const versionRef = doc(collection(db, "users", user.uid, "appData", "versions"));
+        await setDoc(versionRef, { clientUpdatedAt: stamp, writerId, createdAt: serverTimestamp(), payload: cleanFirestoreValue(bundle) });
+        const old = await getDocs(query(collection(db, "users", user.uid, "appData", "versions"), orderBy("clientUpdatedAt", "desc")));
+        for (const snap of old.docs.slice(10)) await deleteDoc(snap.ref);
+      } catch (historyError) { console.warn("Cloud version history snapshot skipped:", historyError); }
       localStorage.setItem(LAST_REMOTE_KEY, String(stamp));
       return { conflict: false, updatedAt: stamp };
     }
@@ -154,6 +162,8 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
     onAuthStateChanged(auth, user => dispatch("firebase-auth-changed", { user: user ? { uid:user.uid, displayName:user.displayName, email:user.email, photoURL:user.photoURL } : null }));
     window.firebaseBridge = {
       getUser: () => auth.currentUser,
+      getDeviceId: () => writerId,
+      getDeviceId: () => writerId,
       signIn: signInToFirebase,
       authorizeDrive,
       hasDriveAccess: () => Boolean(driveAccessToken),
@@ -166,7 +176,29 @@ if (!apiKey || apiKey === "PASTE_EXACT_API_KEY_HERE") {
         return bundle;
       },
       safeSync: bundle => writeBundle(bundle, false),
-      forcePush: bundle => writeBundle(bundle, true)
+      forcePush: bundle => writeBundle(bundle, true),
+      getRemoteMeta: async () => {
+        if (!auth.currentUser) return null;
+        const snap = await getDoc(userDoc(auth.currentUser.uid, "syncState"));
+        return snap.exists() ? snap.data() : null;
+      },
+      watchRemoteMeta: callback => {
+        if (!auth.currentUser) return () => {};
+        return onSnapshot(userDoc(auth.currentUser.uid, "syncState"), snap => callback(snap.exists() ? snap.data() : null));
+      },
+      listVersions: async () => {
+        if (!auth.currentUser) throw new Error("Sign in with Google first.");
+        const snaps = await getDocs(query(collection(db, "users", auth.currentUser.uid, "appData", "versions"), orderBy("clientUpdatedAt", "desc"), limit(10)));
+        return snaps.docs.map(s => ({ id:s.id, ...s.data(), payload:undefined }));
+      },
+      restoreVersion: async versionId => {
+        if (!auth.currentUser) throw new Error("Sign in with Google first.");
+        const snap = await getDoc(doc(db, "users", auth.currentUser.uid, "appData", "versions", versionId));
+        if (!snap.exists()) throw new Error("That cloud version is no longer available.");
+        const payload = snap.data().payload;
+        if (!payload) throw new Error("This version has no restorable data.");
+        return payload;
+      }
     };
     dispatch("firebase-client-ready", {});
   } catch (error) {

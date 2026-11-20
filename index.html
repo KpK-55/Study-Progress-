@@ -65,24 +65,6 @@
       --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.65);
     }
 
-
-    .revision-schedule-toolbar{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin:.75rem 0;}
-    .revision-schedule-toolbar .btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
-    .revision-schedule-day{margin:1rem 0 .45rem;font-size:.88rem;font-weight:800;color:var(--text-primary);display:flex;align-items:center;gap:.5rem;}
-    .revision-schedule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.6rem;}
-    .revision-schedule-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-width:0;}
-    .revision-schedule-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;}
-    .revision-schedule-card strong{font-size:.88rem;line-height:1.35;}
-    .revision-schedule-meta{font-size:.74rem;color:var(--text-secondary);line-height:1.5;}
-    .revision-status{display:inline-flex;align-items:center;border-radius:999px;padding:.18rem .55rem;font-size:.68rem;font-weight:800;white-space:nowrap;border:1px solid var(--border);}
-    .revision-status.today{background:#fff3cd;color:#805b00;border-color:#f0d98a;}
-    .revision-status.pending{background:#e8f1ff;color:#2459a6;border-color:#c8dcff;}
-    .revision-status.completed{background:#e5f6eb;color:#1e7540;border-color:#bde7ca;}
-    body.dark .revision-status.today{background:#493b17;color:#ffe29a;border-color:#705c24;}
-    body.dark .revision-status.pending{background:#1c3557;color:#b8d5ff;border-color:#31527d;}
-    body.dark .revision-status.completed{background:#183d2a;color:#a8e6bd;border-color:#286443;}
-    .revision-schedule-empty{padding:1rem;border:1px dashed var(--border);border-radius:10px;color:var(--text-secondary);font-size:.82rem;text-align:center;}
-    @media(max-width:640px){.revision-schedule-grid{grid-template-columns:1fr;}}
     .revision-due-panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:14px;padding:.8rem 1rem;}
     .revision-panel-head{display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;}
     .revision-panel-subtitle{font-size:.76rem;color:var(--text-secondary);margin-top:.15rem;}
@@ -1912,7 +1894,36 @@
     body.dark .brand-icon { background:#fff; border-color:#d7e0ea; }
     body.dark .focus-big-digits { color:#f6f9fc; text-shadow:0 0 28px rgba(49,139,255,.16); }
     body.dark .modal-backdrop { background:rgba(0,0,0,.72); }
-  </style>
+  
+    .revision-bell-btn{position:relative;min-width:42px;font-size:1.05rem;}
+    .revision-bell-badge{position:absolute;right:-5px;top:-6px;min-width:18px;height:18px;padding:0 4px;border-radius:99px;background:#e53945;color:#fff;font-size:10px;font-weight:900;display:grid;place-items:center;border:2px solid var(--bg-surface);}
+    .revision-bell-badge.hidden{display:none!important;}
+    .revision-bell-btn.has-unread{animation:revisionBellPulse 1.1s infinite;}
+    @keyframes revisionBellPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,57,69,0)}50%{box-shadow:0 0 0 5px rgba(229,57,69,.16)}}
+    .revision-screen-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:0 0 1.2rem;}
+    .revision-screen-title{display:flex;align-items:center;justify-content:center;gap:.5rem;flex:1;font-size:1.6rem;letter-spacing:.04em;}
+    .revision-screen-title span{font-size:2.5rem;}
+    .revision-close-btn{background:#ed6474;color:#111;border:0;border-radius:999px;padding:.55rem 1.4rem;}
+    .revision-screen-controls{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin:1rem 0 2rem;}
+    .revision-date-select{border:0;border-radius:999px;background:#cbd5df;color:#111;font-size:1rem;font-weight:800;padding:.8rem 2.6rem .8rem 1.2rem;min-width:180px;}
+    .revision-table-wrap{overflow:auto;border:1px solid var(--border);background:var(--bg-surface);}
+    .revision-table{width:100%;border-collapse:collapse;min-width:850px;}
+    .revision-table th,.revision-table td{border:1px solid var(--border);padding:.85rem .65rem;text-align:center;vertical-align:middle;}
+    .revision-table th{font-weight:700;font-size:.78rem;letter-spacing:.03em;}
+    .revision-table td{font-size:.82rem;}
+    .revision-response{border:0;border-radius:999px;background:#cbd5df;color:#111;font-weight:700;padding:.65rem 1rem;min-width:150px;}
+    .revision-status-tag{display:inline-block;padding:.2rem .55rem;border-radius:999px;font-size:.68rem;font-weight:800;}
+    .revision-status-tag.today{background:#fff0bf;color:#765400;}
+    .revision-status-tag.pending{background:#e4efff;color:#24549a;}
+    .revision-status-tag.completed{background:#dff5e7;color:#17653b;}
+    .revision-empty{padding:2rem;text-align:center;color:var(--text-secondary);}
+    @media(max-width:700px){.revision-screen-title{font-size:1.2rem}.revision-screen-controls{margin-bottom:1rem}.revision-date-select{width:100%}}
+
+  
+    @keyframes cloudRemotePulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}50%{box-shadow:0 0 0 5px rgba(220,38,38,.28)}}
+    .sync-split-group.sync-state-remote-newer{animation:cloudRemotePulse 1.15s infinite;}
+    .sync-split-group.sync-state-remote-newer .sync-status-indicator{background:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.16);}
+    </style>
   <script type="module" src="./firebase-client.js"></script>
 </head>
 <body>
@@ -1942,6 +1953,7 @@
       <div class="topbar-actions">
         <button type="button" class="btn hidden-view" id="installPwaBtn">📲 Install App</button>
 
+        <button type="button" class="btn revision-bell-btn" id="revisionBellBtn" title="Revision reminders" aria-label="Revision reminders">🔔<span id="revisionBellBadge" class="revision-bell-badge hidden">0</span></button>
         <div class="sync-split-group sync-state-idle" id="syncSplitGroup" title="Firebase Cloud Sync">
           <button type="button" class="btn sync-quick-btn" id="quickSyncBtn">
             <span class="sync-status-indicator"></span>
@@ -2016,33 +2028,28 @@
         </div>
       </div>
 
-      <section id="revisionDuePanel" class="revision-due-panel" aria-live="polite" style="margin:.8rem 0 1rem;">
-        <div class="revision-panel-head"><div><strong>📚 Chapter revision due</strong><div class="revision-panel-subtitle" id="revisionDueSummary">Your completed chapters will appear here on their review dates.</div></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;"><button type="button" class="btn" id="openRevisionScheduleBtn">All schedules</button><button type="button" class="btn" id="enableRevisionNotificationsBtn">Enable notifications</button></div></div>
-        <div id="revisionDueList" class="revision-due-list"></div>
-      </section>
       <div class="subject-gallery-row" id="subjectGalleryRow"></div>
     </section>
 
 
     <section id="revisionScheduleView" class="hidden-view">
-      <div class="db-header-bar" style="margin-bottom:.8rem;">
-        <div><h2 style="margin:0;">📅 Revision Schedule</h2><div class="revision-panel-subtitle">Day 3 · Day 7 · Day 15 · Day 30 review plan</div></div>
-        <button type="button" class="btn" id="closeRevisionScheduleBtn">← Back to dashboard</button>
+      <div class="revision-screen-header">
+        <div class="revision-screen-title"><span aria-hidden="true">⌛</span><strong>REVISION</strong></div>
+        <button type="button" class="btn revision-close-btn" id="closeRevisionScheduleBtn">CLOSE</button>
       </div>
-      <div class="revision-due-panel">
-        <div class="revision-panel-head"><div><strong>Upcoming revision cards</strong><div class="revision-panel-subtitle" id="revisionUpcomingSummary">Your next scheduled reviews.</div></div></div>
-        <div id="revisionUpcomingCards" class="revision-schedule-grid" style="margin-top:.7rem;"></div>
+      <div class="revision-screen-controls">
+        <select id="revisionDateFilter" class="revision-date-select" aria-label="Revision date filter">
+          <option value="today">Today</option><option value="tomorrow">Tomorrow</option><option value="upcoming">Upcoming</option><option value="all">Date wise · All</option>
+        </select>
+        <span id="revisionDateHint">Your recall schedule</span>
       </div>
-      <div class="revision-due-panel" style="margin-top:.8rem;">
-        <div class="revision-panel-head"><div><strong>All schedules · Date wise</strong><div class="revision-panel-subtitle" id="revisionAllSummary">Completed and upcoming review dates.</div></div></div>
-        <div class="revision-schedule-toolbar" id="revisionScheduleFilters">
-          <button type="button" class="btn active" data-revision-filter="all">All</button>
-          <button type="button" class="btn" data-revision-filter="today">Today</button>
-          <button type="button" class="btn" data-revision-filter="pending">Pending</button>
-          <button type="button" class="btn" data-revision-filter="completed">Completed</button>
-        </div>
-        <div id="revisionScheduleDateList"></div>
+      <div class="revision-table-wrap">
+        <table class="revision-table">
+          <thead><tr><th>SUBJECT</th><th>CHAPTER NAME</th><th>COMPLETION DATE</th><th>DUE COUNT</th><th>DUE DATE</th><th>RESPONSE</th></tr></thead>
+          <tbody id="revisionScheduleRows"></tbody>
+        </table>
       </div>
+      <div id="revisionScheduleEmpty" class="revision-empty hidden">No revision chapters for this date.</div>
     </section>
 
     <!-- 2. SUBJECT DATABASE VIEW -->
@@ -2442,6 +2449,12 @@
         <h3>☁️ Cloud Sync & Backup</h3>
         <button type="button" class="btn btn-icon" data-close-modal="syncDetailsModal">✕</button>
       </div>
+      <section style="margin:.2rem 0 .9rem;padding:.8rem;border:1px solid var(--border);border-radius:12px;">
+        <strong>Cloud version history</strong>
+        <p style="font-size:.78rem;color:var(--text-secondary);margin:.35rem 0 .7rem;">Restore one of the latest saved cloud versions if you need to revert an edit.</p>
+        <button type="button" class="btn" id="loadCloudVersionsBtn">Load previous versions</button>
+        <div id="cloudVersionHistoryList" style="margin-top:.65rem;"></div>
+      </section>
       <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;margin-bottom:.85rem;">
         <div style="font-weight:800;margin-bottom:.25rem;">Firebase account</div>
         <div id="firebaseAuthStatus" style="font-size:.82rem;color:var(--text-secondary);">Checking Firebase connection…</div>
@@ -2456,7 +2469,7 @@
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem;">
         <button type="button" class="btn btn-primary" id="firebaseSyncNowBtn" disabled>🔄 Safe Sync</button>
-        <button type="button" class="btn" id="firebasePullBtn" disabled>⬇ Use Cloud Copy</button>
+        <button type="button" class="btn" id="firebasePullBtn" disabled>⬇ Restore latest</button>
         <button type="button" class="btn" id="firebaseForcePushBtn" disabled style="grid-column:1/-1;">⬆ Replace Cloud with This Device</button>
       </div>
       <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;margin-bottom:.85rem;">
@@ -2694,7 +2707,6 @@
         targetDate: ""
       };
       let syncMeta = {
-        scriptUrl: "",
         deviceId: uid("dev"),
         localUsn: 1,
         cloudUsn: 0,
@@ -2782,11 +2794,10 @@
         if (!col) { col = { id:uid("revcol"), name:"Completion Date", type:"date", width:132, isRevisionCompletionCol:true }; db.columns.push(col); }
         else col.isRevisionCompletionCol = true;
         db.rows.forEach(row => { if (!row.cells) row.cells = {}; if (row.cells[col.id] === undefined) row.cells[col.id] = ""; });
-        // One-time migration from the earlier 1/3/7/14/30/60/90-day cycle.
         (db.revisionSchedules || []).forEach(item => {
           if (item.scheduleVersion === 2) return;
-          const index = Math.min(Number(item.intervalIndex) || 0, REVISION_INTERVAL_DAYS.length - 1);
-          if (item.completionDate) item.dueDate = addDaysToDate(item.completionDate, REVISION_INTERVAL_DAYS[index]);
+          const idx = Math.min(Number(item.intervalIndex) || 0, REVISION_INTERVAL_DAYS.length - 1);
+          if (item.completionDate) item.dueDate = addDaysToDate(item.completionDate, REVISION_INTERVAL_DAYS[idx]);
           item.scheduleVersion = 2;
         });
       }
@@ -2805,91 +2816,79 @@
         const db=state.databases[dbKey]; if(!db || !chapterName) return;
         scheduleChapterRevision(db,chapterName,dateStr);
       }
-      function getDueRevisionItems() {
-        const today=getLocalTodayStr(), items=[];
-        getAllRepositoryKeys().forEach(key=>{ const db=state.databases[key]; ensureRevisionTrackingColumn(db); (db.revisionSchedules||[]).forEach(item=>{ const due=item.postponedUntil||item.dueDate; if(due && due<=today) items.push({subjectKey:key,subject:db.displayName||key,...item,dueDate:due}); }); });
-        return items.sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
-      }
-      function advanceRevision(dbKey, revisionId, action="reviewed") {
-        const db=state.databases[dbKey], item=db?.revisionSchedules?.find(x=>x.id===revisionId); if(!item)return;
-        if(action==="tomorrow"){ item.postponedUntil=addDaysToDate(getLocalTodayStr(),1); }
-        else if(action==="skip"){ item.intervalIndex=Math.min((Number(item.intervalIndex)||0)+1,REVISION_INTERVAL_DAYS.length-1); item.dueDate=addDaysToDate(getLocalTodayStr(),REVISION_INTERVAL_DAYS[item.intervalIndex]); item.postponedUntil=""; }
-        else { item.history=Array.isArray(item.history)?item.history:[]; item.history.push({reviewedOn:getLocalTodayStr(),dueDate:item.dueDate}); item.intervalIndex=Math.min((Number(item.intervalIndex)||0)+1,REVISION_INTERVAL_DAYS.length-1); item.completionDate=getLocalTodayStr(); item.dueDate=addDaysToDate(getLocalTodayStr(),REVISION_INTERVAL_DAYS[item.intervalIndex]); item.postponedUntil=""; }
-        saveWorkspace(); renderRevisionDuePanel();
-      }
-      function renderRevisionDuePanel() {
-        const list=document.getElementById("revisionDueList"), summary=document.getElementById("revisionDueSummary"); if(!list)return;
-        const due=getDueRevisionItems(); if(summary) summary.textContent=due.length?`${due.length} chapter revision(s) due or overdue.`:"No revisions due today. Your upcoming spaced-repetition schedule is being tracked.";
-        list.innerHTML=due.length?due.map(x=>`<article class="revision-due-card"><div><strong>${escapeHtml(x.chapter)}</strong><small>${escapeHtml(x.subject)} · Completed ${escapeHtml(x.completionDate)} · Due ${escapeHtml(x.dueDate)}</small></div><div class="revision-due-actions"><button class="btn" type="button" data-revision-action="tomorrow" data-revision-id="${escapeHtml(x.id)}" data-revision-subject="${escapeHtml(x.subjectKey)}">Tomorrow</button><button class="btn" type="button" data-revision-action="skip" data-revision-id="${escapeHtml(x.id)}" data-revision-subject="${escapeHtml(x.subjectKey)}">Skip</button><button class="btn btn-primary" type="button" data-revision-action="reviewed" data-revision-id="${escapeHtml(x.id)}" data-revision-subject="${escapeHtml(x.subjectKey)}">Reviewed</button></div></article>`).join(""):'<div style="font-size:.78rem;color:var(--text-secondary);padding:.25rem 0;">No chapter revisions due right now.</div>';
-        if(due.length && "Notification" in window && Notification.permission==="granted") { const stamp=`${getLocalTodayStr()}_${due.map(x=>x.id).sort().join("_")}`; if(localStorage.getItem("revision_notice_stamp")!==stamp){ localStorage.setItem("revision_notice_stamp",stamp); navigator.serviceWorker?.ready.then(reg=>reg.showNotification("Chapter revisions due",{body:due.slice(0,4).map(x=>`${x.chapter} (${x.subject})`).join(" · "),icon:"./icons/icon-192.png",badge:"./icons/icon-192.png",tag:"chapter-revisions"})).catch(()=>{}); } }
-      }
 
       function getRevisionScheduleEntries() {
-        const entries = [], today = getLocalTodayStr();
+        const today = getLocalTodayStr(), tomorrow = addDaysToDate(today, 1), entries = [];
         getAllRepositoryKeys().forEach(key => {
-          const db = state.databases[key];
-          ensureRevisionTrackingColumn(db);
+          const db = state.databases[key]; ensureRevisionTrackingColumn(db);
           (db.revisionSchedules || []).forEach(item => {
-            const subject = db.displayName || key;
-            const history = Array.isArray(item.history) ? item.history : [];
-            history.forEach((h, index) => {
-              if (!h || !h.dueDate) return;
-              entries.push({
-                id: `${item.id}_done_${index}`, revisionId: item.id, subjectKey: key,
-                subject, chapter: item.chapter, completionDate: item.completionDate,
-                dueDate: h.dueDate, status: "completed", stage: history.length - index,
-                reviewedOn: h.reviewedOn || ""
-              });
-            });
-            const dueDate = item.postponedUntil || item.dueDate;
-            if (dueDate) {
-              const stage = REVISION_INTERVAL_DAYS[Math.min(Number(item.intervalIndex) || 0, REVISION_INTERVAL_DAYS.length - 1)];
-              entries.push({
-                id: `${item.id}_current`, revisionId: item.id, subjectKey: key,
-                subject, chapter: item.chapter, completionDate: item.completionDate,
-                dueDate, status: dueDate === today ? "today" : "pending", stage,
-                reviewedOn: ""
-              });
+            (item.history || []).forEach((h, i) => entries.push({
+              subjectKey:key, subject:db.displayName||key, chapter:item.chapter,
+              completionDate:item.completionDate, dueCount:`Review ${i+1}`,
+              dueDate:h.dueDate, status:"completed", revisionId:item.id, actionLabel:"Completed"
+            }));
+            const due = item.postponedUntil || item.dueDate;
+            if (due) {
+              const idx = Math.min(Number(item.intervalIndex)||0, REVISION_INTERVAL_DAYS.length-1);
+              entries.push({subjectKey:key,subject:db.displayName||key,chapter:item.chapter,
+                completionDate:item.completionDate,dueCount:`Day ${REVISION_INTERVAL_DAYS[idx]}`,
+                dueDate:due,status:due<=today?"today":"pending",revisionId:item.id,actionLabel:"Choose response"});
             }
           });
         });
-        return entries.sort((a,b) => a.dueDate.localeCompare(b.dueDate) || a.chapter.localeCompare(b.chapter));
+        return entries.sort((x,y)=>x.dueDate.localeCompare(y.dueDate)||x.subject.localeCompare(y.subject)||x.chapter.localeCompare(y.chapter));
       }
-      function revisionStatusLabel(status) {
-        return status === "completed" ? "Completed" : status === "today" ? "Today" : "Pending";
+      function getTodayRevisionEntries() {
+        const today=getLocalTodayStr();
+        return getRevisionScheduleEntries().filter(x=>x.status!=="completed" && x.dueDate<=today);
       }
-      function renderRevisionScheduleCard(entry) {
-        const status = entry.status;
-        return `<article class="revision-schedule-card">
-          <div class="revision-schedule-card-head"><strong>${escapeHtml(entry.chapter)}</strong><span class="revision-status ${status}">${revisionStatusLabel(status)}</span></div>
-          <div class="revision-schedule-meta">${escapeHtml(entry.subject)}<br>Review: ${escapeHtml(entry.dueDate)} · Day ${escapeHtml(String(entry.stage))}<br>Chapter completed: ${escapeHtml(entry.completionDate || "—")}${status === "completed" && entry.reviewedOn ? `<br>Reviewed on: ${escapeHtml(entry.reviewedOn)}` : ""}</div>
-          ${status !== "completed" ? `<div class="revision-due-actions"><button type="button" class="btn" data-schedule-action="tomorrow" data-revision-id="${escapeHtml(entry.revisionId)}" data-revision-subject="${escapeHtml(entry.subjectKey)}">Tomorrow</button><button type="button" class="btn btn-primary" data-schedule-action="reviewed" data-revision-id="${escapeHtml(entry.revisionId)}" data-revision-subject="${escapeHtml(entry.subjectKey)}">Mark reviewed</button></div>` : ""}
-        </article>`;
+      function renderRevisionBell() {
+        const due=getTodayRevisionEntries(), badge=document.getElementById("revisionBellBadge"), bell=document.getElementById("revisionBellBtn");
+        const seen=JSON.parse(localStorage.getItem("revision_seen_ids_v1")||"[]");
+        const unread=due.filter(x=>!seen.includes(`${x.revisionId}_${x.dueDate}`)).length;
+        if(badge){badge.textContent=String(unread);badge.classList.toggle("hidden",unread===0);}
+        if(bell)bell.classList.toggle("has-unread",unread>0);
       }
-      let activeRevisionScheduleFilter = "all";
       function renderRevisionScheduleView() {
-        const entries = getRevisionScheduleEntries(), today = getLocalTodayStr();
-        const upcoming = entries.filter(x => x.status !== "completed").slice(0, 8);
-        const upcomingEl = document.getElementById("revisionUpcomingCards");
-        const upcomingSummary = document.getElementById("revisionUpcomingSummary");
-        if (upcomingSummary) upcomingSummary.textContent = `${upcoming.length} upcoming review(s) shown · Review cycle: Day 3, 7, 15 and 30.`;
-        if (upcomingEl) upcomingEl.innerHTML = upcoming.length ? upcoming.map(renderRevisionScheduleCard).join("") : '<div class="revision-schedule-empty">No upcoming revisions. Complete a chapter to create its review schedule.</div>';
-        const filtered = entries.filter(x => activeRevisionScheduleFilter === "all" || x.status === activeRevisionScheduleFilter);
-        const grouped = {};
-        filtered.forEach(x => (grouped[x.dueDate] ||= []).push(x));
-        const dateList = document.getElementById("revisionScheduleDateList");
-        const allSummary = document.getElementById("revisionAllSummary");
-        if (allSummary) allSummary.textContent = `${entries.length} scheduled review event(s) · ${entries.filter(x=>x.status==="completed").length} completed · ${entries.filter(x=>x.status==="today").length} today · ${entries.filter(x=>x.status==="pending").length} pending.`;
-        if (dateList) {
-          const dates = Object.keys(grouped).sort();
-          dateList.innerHTML = dates.length ? dates.map(date => `<div class="revision-schedule-day">${escapeHtml(date)} ${date === today ? '<span class="revision-status today">Today</span>' : ""}</div><div class="revision-schedule-grid">${grouped[date].map(renderRevisionScheduleCard).join("")}</div>`).join("") : '<div class="revision-schedule-empty">No schedules match this filter.</div>';
+        const filter=document.getElementById("revisionDateFilter")?.value||"today";
+        const entries=getRevisionScheduleEntries(), today=getLocalTodayStr(), tomorrow=addDaysToDate(today,1);
+        let filtered=entries;
+        if(filter==="today") filtered=entries.filter(x=>x.status!=="completed" && x.dueDate<=today);
+        else if(filter==="tomorrow") filtered=entries.filter(x=>x.status!=="completed" && x.dueDate===tomorrow);
+        else if(filter==="upcoming") filtered=entries.filter(x=>x.status!=="completed" && x.dueDate>tomorrow);
+        const hint=document.getElementById("revisionDateHint");
+        if(hint)hint.textContent=filter==="today"?"Today’s recall chapters":filter==="tomorrow"?"Tomorrow’s recall chapters":filter==="upcoming"?"Upcoming revision schedule":"All revision events · date wise";
+        const body=document.getElementById("revisionScheduleRows"), empty=document.getElementById("revisionScheduleEmpty");
+        if(body) body.innerHTML=filtered.map(x=>`<tr>
+          <td>${escapeHtml(x.subject)}</td><td>${escapeHtml(x.chapter)}</td><td>${escapeHtml(x.completionDate||"—")}</td>
+          <td>${escapeHtml(x.dueCount)}</td><td>${escapeHtml(x.dueDate)}<br><span class="revision-status-tag ${x.status}">${x.status==="today"?"Today":x.status==="completed"?"Completed":"Pending"}</span></td>
+          <td>${x.status==="completed"?'<span class="revision-status-tag completed">Done</span>':`<select class="revision-response" data-revision-response data-revision-id="${escapeHtml(x.revisionId)}" data-revision-subject="${escapeHtml(x.subjectKey)}"><option value="">click to choose response</option><option value="reviewed">Done</option><option value="tomorrow">Tomorrow</option></select>`}</td>
+        </tr>`).join("");
+        if(empty)empty.classList.toggle("hidden",filtered.length>0);
+        renderRevisionBell();
+      }
+      function advanceRevision(dbKey, revisionId, action="reviewed") {
+        const db=state.databases[dbKey], item=db?.revisionSchedules?.find(x=>x.id===revisionId); if(!item)return;
+        if(action==="tomorrow") item.postponedUntil=addDaysToDate(getLocalTodayStr(),1);
+        else {
+          item.history=Array.isArray(item.history)?item.history:[];
+          item.history.push({reviewedOn:getLocalTodayStr(),dueDate:item.postponedUntil||item.dueDate});
+          item.intervalIndex=Math.min((Number(item.intervalIndex)||0)+1,REVISION_INTERVAL_DAYS.length-1);
+          item.dueDate=addDaysToDate(getLocalTodayStr(),REVISION_INTERVAL_DAYS[item.intervalIndex]);
+          item.postponedUntil="";
         }
-        document.querySelectorAll("[data-revision-filter]").forEach(btn => btn.classList.toggle("active", btn.dataset.revisionFilter === activeRevisionScheduleFilter));
+        saveWorkspace(); renderRevisionScheduleView(); renderRevisionBell();
+      }
+      function openRevisionSchedule() {
+        const seen=JSON.parse(localStorage.getItem("revision_seen_ids_v1")||"[]");
+        getTodayRevisionEntries().forEach(x=>seen.push(`${x.revisionId}_${x.dueDate}`));
+        localStorage.setItem("revision_seen_ids_v1",JSON.stringify([...new Set(seen)]));
+        document.getElementById("revisionDateFilter").value="today";
+        switchWorkspaceView("revisionSchedule");
+        renderRevisionScheduleView();
       }
 
-      function requestRevisionNotifications() { if(!("Notification" in window))return showToast("This browser does not support notifications."); Notification.requestPermission().then(p=>{ if(p==="granted") { showToast("Revision notifications enabled."); renderRevisionDuePanel(); } else showToast("Notification permission was not granted."); }); }
-
-      function getRowsForSyllabusChapter(db, chapterName, dateStr = "") {
+            function getRowsForSyllabusChapter(db, chapterName, dateStr = "") {
         const key = normalizeChapterKey(chapterName);
         const rows = (db?.rows || []).filter(row => normalizeChapterKey(getRowPrimaryTitle(db, row)) === key);
         if (!dateStr) return rows;
@@ -3816,7 +3815,7 @@
         document.getElementById("examPrepView")?.classList.toggle("hidden-view", viewName !== "examPrep");
         document.getElementById("revisionScheduleView")?.classList.toggle("hidden-view", viewName !== "revisionSchedule");
 
-        if (viewName === "gallery") { renderGalleryCards(); renderRevisionDuePanel(); }
+        if (viewName === "gallery") { renderGalleryCards(); renderRevisionBell(); }
         if (viewName === "database") renderActiveDatabase();
         if (viewName === "report") renderReportCharts();
         if (viewName === "challenge") renderChallengeBoard();
@@ -4476,111 +4475,26 @@
         if (detailStatus) detailStatus.textContent = "Up to date across devices";
       }
 
-      async function checkRemoteMetaQuietly() {
-        if (!syncMeta.scriptUrl) return;
-        try {
-          const sep = syncMeta.scriptUrl.includes("?") ? "&" : "?";
-          const res = await fetch(`${syncMeta.scriptUrl}${sep}action=meta`, { method: "GET" });
-          const meta = await res.json();
-          if (meta && meta.status === "ok") {
-            const remoteUsn = Number(meta.usn) || 0;
-            syncMeta.cloudUsn = remoteUsn;
-            if (remoteUsn > (Number(syncMeta.localUsn) || 0) && meta.deviceId !== syncMeta.deviceId) {
-              syncMeta.remoteNewer = true;
+
+      let stopCloudMetaWatch = null, cloudPollTimer = null;
+      function startCloudChangePolling() {
+        if (cloudPollTimer) clearInterval(cloudPollTimer);
+        const check = async () => {
+          if (!window.firebaseBridge?.getUser()) return;
+          try {
+            const meta = await window.firebaseBridge.getRemoteMeta();
+            if (!meta) return;
+            const remoteStamp = Number(meta.clientUpdatedAt) || 0;
+            const lastSeen = Number(localStorage.getItem("time_task_tracker_firebase_remote_v1") || 0);
+            if (remoteStamp > lastSeen && meta.writerId !== window.firebaseBridge.getDeviceId?.()) {
+              syncMeta.remoteNewer = true; saveSyncMeta(); updateSyncButtonVisuals();
+              const btn=document.getElementById("quickSyncBtn");
+              if(btn)btn.title="New cloud data is available. Open Sync and restore the latest copy.";
             }
-            saveSyncMeta();
-            updateSyncButtonVisuals();
-          }
-        } catch (err) {}
-      }
-
-      async function pushWorkspaceToCloud() {
-        updateSyncButtonVisuals("syncing");
-        const payload = {
-          bundle: {
-            usn: syncMeta.localUsn,
-            deviceId: syncMeta.deviceId,
-            workspace: state,
-            prefs,
-            countdown: countdownConfig
-          }
+          } catch(err) {}
         };
-        const res = await fetch(syncMeta.scriptUrl, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        if (result.status !== "success") throw new Error(result.message || "Push failed");
-
-        syncMeta.localUsn = Number(result.usn) || syncMeta.localUsn;
-        syncMeta.cloudUsn = syncMeta.localUsn;
-        syncMeta.lastSyncedAt = result.syncedAt || new Date().toISOString();
-        syncMeta.dirty = false;
-        syncMeta.remoteNewer = false;
-        saveSyncMeta();
-        updateSyncButtonVisuals();
-        showToast("☁️ Synced & saved to Google Drive!");
-      }
-
-      async function pullWorkspaceFromCloud() {
-        updateSyncButtonVisuals("syncing");
-        const res = await fetch(syncMeta.scriptUrl, { method: "GET" });
-        const data = await res.json();
-        if (data.status === "empty") {
-          await pushWorkspaceToCloud();
-          return;
-        }
-        if (data.status === "error") throw new Error(data.message || "Pull failed");
-
-        if (data.workspace && data.workspace.databases) {
-          migrateWorkspaceDatabases(data.workspace);
-          state = data.workspace;
-          saveWorkspace(false);
-        }
-        if (data.prefs) {
-          prefs = { ...prefs, ...data.prefs };
-          saveAndApplyPrefs(false);
-        }
-        if (data.countdown) {
-          countdownConfig = { ...countdownConfig, ...data.countdown };
-          localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
-        }
-
-        syncMeta.localUsn = Number(data.usn) || syncMeta.localUsn;
-        syncMeta.cloudUsn = syncMeta.localUsn;
-        syncMeta.lastSyncedAt = data.syncedAt || new Date().toISOString();
-        syncMeta.dirty = false;
-        syncMeta.remoteNewer = false;
-        saveSyncMeta();
-        updateSyncButtonVisuals();
-        switchWorkspaceView(currentView);
-        showToast("☁️ Pulled latest backup from Google Drive!");
-      }
-
-      async function executeSmartSync() {
-        if (!syncMeta.scriptUrl) {
-          document.getElementById("syncDetailsModal")?.classList.remove("hidden");
-          showToast("Paste your Google Apps Script Web App URL first");
-          return;
-        }
-        try {
-          updateSyncButtonVisuals("syncing");
-          const sep = syncMeta.scriptUrl.includes("?") ? "&" : "?";
-          const metaRes = await fetch(`${syncMeta.scriptUrl}${sep}action=meta`, { method: "GET" });
-          const meta = await metaRes.json();
-          const remoteUsn = Number(meta.usn) || 0;
-          syncMeta.cloudUsn = remoteUsn;
-
-          if (remoteUsn > (Number(syncMeta.localUsn) || 0) && !syncMeta.dirty) {
-            await pullWorkspaceFromCloud();
-          } else {
-            await pushWorkspaceToCloud();
-          }
-        } catch (err) {
-          updateSyncButtonVisuals("error");
-          showToast("Cloud sync error: " + err.message);
-        }
+        check();
+        cloudPollTimer=setInterval(check,15000);
       }
 
       /* ======================================================================
@@ -4636,11 +4550,39 @@
               if (activeDatePicker) activeDatePicker.value = trackedDateStr;
             }
             lastKnownTodayStr = nowToday;
-            if (currentView === "gallery") renderGalleryCards();
+            if (currentView === "gallery") renderGalleryCards(); renderRevisionBell();
           }
         }, 30000);
 
         document.getElementById("undoActionBtn")?.addEventListener("click", undoLastAction);
+        document.getElementById("loadCloudVersionsBtn")?.addEventListener("click",async()=>{
+          const box=document.getElementById("cloudVersionHistoryList"); if(box)box.textContent="Loading versions…";
+          try{
+            const versions=await window.firebaseBridge.listVersions();
+            if(!box)return;
+            box.innerHTML=versions.length?versions.map(v=>`<div style="display:flex;justify-content:space-between;gap:.5rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);"><span style="font-size:.75rem;">${new Date(v.clientUpdatedAt).toLocaleString()}</span><button class="btn" type="button" data-restore-version="${escapeHtml(v.id)}">Restore</button></div>`).join(""):"No previous cloud versions are available yet.";
+          }catch(err){if(box)box.textContent=err.message;}
+        });
+        document.getElementById("cloudVersionHistoryList")?.addEventListener("click",async e=>{
+          const btn=e.target.closest("[data-restore-version]");if(!btn)return;
+          if(!confirm("Restore this previous cloud version? Current local data will be replaced."))return;
+          try{const bundle=await window.firebaseBridge.restoreVersion(btn.dataset.restoreVersion);
+            state=bundle.workspace;prefs=bundle.prefs||prefs;countdownConfig=bundle.countdown||countdownConfig;
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(state));localStorage.setItem(PREFS_KEY,JSON.stringify(prefs));
+            localStorage.setItem(COUNTDOWN_KEY,JSON.stringify(countdownConfig));
+            await window.firebaseBridge.forcePush({workspace:state,prefs,countdown:countdownConfig});
+            applyPrefsToDocument();switchWorkspaceView(currentView);showToast("Previous cloud version restored.");
+          }catch(err){showToast("Version restore failed: "+err.message);}
+        });
+
+        document.getElementById("revisionBellBtn")?.addEventListener("click",openRevisionSchedule);
+        document.getElementById("closeRevisionScheduleBtn")?.addEventListener("click",()=>switchWorkspaceView("gallery"));
+        document.getElementById("revisionDateFilter")?.addEventListener("change",renderRevisionScheduleView);
+        document.getElementById("revisionScheduleRows")?.addEventListener("change",e=>{
+          const sel=e.target.closest("[data-revision-response]"); if(!sel||!sel.value)return;
+          advanceRevision(sel.dataset.revisionSubject,sel.dataset.revisionId,sel.value);
+        });
+
 
         document.getElementById("openReportViewBtn")?.addEventListener("click", () => {
           const repDate = document.getElementById("reportBaseDateInput");
@@ -4654,14 +4596,8 @@
         document.getElementById("openReviseChaptersBtn")?.addEventListener("click",openReviseChaptersModal);
         document.getElementById("reviseSubjectSelect")?.addEventListener("change",renderReviseChapterOptions);
         document.getElementById("startRevisionSessionBtn")?.addEventListener("click",startRevisionStudySession);
-        document.getElementById("enableRevisionNotificationsBtn")?.addEventListener("click",requestRevisionNotifications);
-        document.getElementById("openRevisionScheduleBtn")?.addEventListener("click",()=>switchWorkspaceView("revisionSchedule"));
-        document.getElementById("closeRevisionScheduleBtn")?.addEventListener("click",()=>switchWorkspaceView("gallery"));
-        document.getElementById("revisionScheduleFilters")?.addEventListener("click",e=>{const btn=e.target.closest("[data-revision-filter]");if(!btn)return;activeRevisionScheduleFilter=btn.dataset.revisionFilter;renderRevisionScheduleView();});
-        document.getElementById("revisionScheduleDateList")?.addEventListener("click",e=>{const btn=e.target.closest("[data-schedule-action]");if(!btn)return;advanceRevision(btn.dataset.revisionSubject,btn.dataset.revisionId,btn.dataset.scheduleAction);renderRevisionScheduleView();});
-        document.getElementById("revisionUpcomingCards")?.addEventListener("click",e=>{const btn=e.target.closest("[data-schedule-action]");if(!btn)return;advanceRevision(btn.dataset.revisionSubject,btn.dataset.revisionId,btn.dataset.scheduleAction);renderRevisionScheduleView();});
 
-        document.getElementById("revisionDueList")?.addEventListener("click",e=>{const btn=e.target.closest("[data-revision-action]");if(!btn)return;advanceRevision(btn.dataset.revisionSubject,btn.dataset.revisionId,btn.dataset.revisionAction);});
+
         document.getElementById("newExamPlanBtn")?.addEventListener("click",()=>{document.getElementById("examPlanName").value="";document.getElementById("examPlanDate").value="";document.getElementById("examPlanHours").value="4";renderExamPlanSubjectChoices();document.getElementById("examPlanModal")?.classList.remove("hidden");});
         document.getElementById("examPlanSubjects")?.addEventListener("change",renderExamPlanChapterChoices);
         document.getElementById("examStudySubject")?.addEventListener("change",renderExamStudyChapterOptions);
@@ -5032,7 +4968,7 @@
           if(allDone) { completeChapterRevision(state.activeSubject,getRowPrimaryTitle(db,row),portraitSelectedDate); const revCol=db.columns.find(c=>c.isRevisionCompletionCol); if(revCol) row.cells[revCol.id]=portraitSelectedDate; }
           saveWorkspace();
           renderActiveDatabase();
-          renderRevisionDuePanel();
+          renderRevisionBell();
         });
 
         document.getElementById("portraitRowStatusSelect")?.addEventListener("change", (e) => {
@@ -5045,7 +4981,7 @@
           if(/done|complete/i.test(sel.value)) { completeChapterRevision(state.activeSubject,getRowPrimaryTitle(db,row),portraitSelectedDate); const revCol=db.columns.find(c=>c.isRevisionCompletionCol); if(revCol) row.cells[revCol.id]=portraitSelectedDate; }
           saveWorkspace();
           renderActiveDatabase();
-          renderRevisionDuePanel();
+          renderRevisionBell();
         });
 
         document.getElementById("portraitAddTaskColBtn")?.addEventListener("click", () => {
@@ -5655,7 +5591,7 @@
             localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
             localStorage.setItem(COUNTDOWN_KEY, JSON.stringify(countdownConfig));
             applyPrefsToDocument(); initTargetCountdown(); switchWorkspaceView(currentView);
-            syncMeta.dirty = false; saveSyncMeta();
+            syncMeta.dirty = false; syncMeta.remoteNewer = false; saveSyncMeta(); updateSyncButtonVisuals();
             document.getElementById("firebaseSyncStatus").textContent = "Cloud copy restored";
             showToast("Cloud data restored to this device");
           } catch (err) { showToast("Cloud restore failed: " + err.message); }
@@ -5679,6 +5615,7 @@
         });
 
         window.addEventListener("firebase-auth-changed", (event) => {
+          startCloudChangePolling();
           const user = event.detail?.user;
           const status = document.getElementById("firebaseAuthStatus");
           const signIn = document.getElementById("firebaseSignInBtn");
@@ -5805,7 +5742,7 @@ function doPost(e) {
         } catch(e) { console.warn("Timer recovery skipped", e); }
       }
 
-      document.addEventListener("visibilitychange", () => { if (!document.hidden && activeTimer) { refreshActiveTimerDisplay(); persistActiveTimer(); } if(!document.hidden) renderRevisionDuePanel(); });
+      document.addEventListener("visibilitychange", () => { if (!document.hidden && activeTimer) { refreshActiveTimerDisplay(); persistActiveTimer(); } if(!document.hidden) renderRevisionBell(); });
       window.addEventListener("pagehide", persistActiveTimer);
 
       function bootstrap() {
@@ -5819,8 +5756,8 @@ function doPost(e) {
         initEmbeddedPwa();
         bindAllEvents();
         renderGalleryCards();
-        renderRevisionDuePanel();
-        checkRemoteMetaQuietly();
+        renderRevisionBell();
+        startCloudChangePolling();
       }
 
       if (document.readyState === "loading") {
