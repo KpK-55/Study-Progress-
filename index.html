@@ -1972,6 +1972,57 @@
     .daily-task-summary-empty{font-size:.85rem;color:var(--text-muted);padding:1rem .5rem;}
     @media(max-width:640px){.daily-task-modal-backdrop{padding:.45rem;}.daily-task-modal-card{width:100%;max-height:92vh;padding:.8rem;}.daily-task-subject-block{padding:.65rem;}.daily-task-checkboxes{gap:.35rem;}.daily-task-check{font-size:.78rem;}}
 
+  
+    .exam-plan-card{
+      box-sizing:border-box!important;
+      width:min(100%,620px)!important;
+      max-width:620px!important;
+      min-width:0!important;
+      height:auto!important;
+      min-height:0!important;
+      flex:1 1 340px!important;
+      justify-content:flex-start!important;
+      align-self:stretch;
+      overflow:hidden!important;
+      gap:.55rem;
+      padding:1.1rem!important;
+      cursor:default!important;
+    }
+    .exam-plan-card .exam-clock{font-size:clamp(1.35rem,4vw,2rem)!important;line-height:1.2;overflow-wrap:anywhere;}
+    .exam-plan-card .exam-plan-actions{display:flex;flex-wrap:wrap;gap:.45rem;min-width:0;}
+    .exam-plan-card .exam-plan-actions .btn{max-width:100%;white-space:normal;overflow-wrap:anywhere;}
+    .exam-plan-card .exam-plan-stats{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;flex-wrap:wrap;font-size:.8rem;margin-top:.35rem;}
+    .exam-plan-card .exam-plan-progress{height:8px;background:var(--border);border-radius:20px;overflow:hidden;margin:.1rem 0 .2rem;}
+    @media(max-width:520px){.exam-plan-card{width:100%!important;flex-basis:100%!important;padding:.9rem!important;}.exam-plan-card .exam-plan-actions .btn{flex:1 1 auto;}}
+
+  
+    .daily-task-open-btn{
+      background:linear-gradient(135deg,#0f9d75,#087fba)!important;
+      color:#fff!important;border:1px solid rgba(88,220,190,.65)!important;
+      box-shadow:0 4px 14px rgba(0,150,125,.22);
+      padding:.58rem .9rem!important;font-weight:900!important;
+      border-radius:12px!important;letter-spacing:.01em;
+    }
+    .daily-task-open-btn:hover{filter:brightness(1.12);transform:translateY(-1px);}
+    .daily-task-open-btn span{background:rgba(255,255,255,.2)!important;color:#fff!important;font-size:.76rem!important;padding:.2rem .48rem!important;}
+
+  
+    .countdown-scale-toggle{padding:.32rem .5rem!important;min-width:32px;line-height:1;}
+    .countdown-pill.countdown-expanded{
+      position:fixed!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;
+      z-index:2500!important;display:flex!important;flex-direction:column!important;align-items:center!important;
+      gap:1rem!important;padding:2rem 2.4rem!important;border-radius:22px!important;
+      background:var(--bg-elevated)!important;border:2px solid var(--accent)!important;
+      box-shadow:0 20px 80px rgba(0,0,0,.55)!important;white-space:normal!important;
+      min-width:min(90vw,620px);max-width:94vw;
+    }
+    .countdown-pill.countdown-expanded #cdTitleLabel{font-size:clamp(1rem,3vw,1.5rem);}
+    .countdown-pill.countdown-expanded .countdown-units{gap:clamp(.45rem,2vw,1rem);font-size:clamp(2rem,8vw,5rem);font-weight:950;}
+    .countdown-pill.countdown-expanded .countdown-units span{display:flex;flex-direction:column;align-items:center;line-height:1;}
+    .countdown-pill.countdown-expanded .countdown-units span small{font-size:clamp(.7rem,1.7vw,1rem);margin-top:.35rem;}
+    .countdown-pill.countdown-expanded > span:last-child{font-size:.85rem!important;}
+    body.countdown-overlay-open:after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:2499;}
+
   </style>
   <script type="module" src="./firebase-client.js"></script>
 </head>
@@ -1998,6 +2049,7 @@
           <span style="font-size:0.72rem; color:var(--text-secondary);">✏️</span>
         </span>
       </button>
+      <button type="button" class="btn countdown-scale-toggle" id="toggleCountdownSizeBtn" title="Enlarge countdown" aria-label="Enlarge countdown">⛶</button>
 
       <div class="topbar-actions">
         <button type="button" class="btn hidden-view" id="installPwaBtn">📲 Install App</button>
@@ -3400,7 +3452,7 @@
             if(!tasks.length)return;
             const chapter=getRowPrimaryTitle(db,row);
             tasks.forEach(col=>{total++;if(row.cells[col.id])done++;});
-            chapterGroups.push({chapter,tasks:tasks.map(col=>({name:col.name,checked:Boolean(row.cells[col.id])}))});
+            chapterGroups.push({rowId:row.id,chapter,tasks:tasks.map(col=>({id:col.id,name:col.name,checked:Boolean(row.cells[col.id])}))});
           });
           if(!chapterGroups.length)return "";
           const subjectDone=chapterGroups.reduce((n,g)=>n+g.tasks.filter(t=>t.checked).length,0);
@@ -3413,7 +3465,7 @@
             ${chapterGroups.map(group=>`
               <div class="daily-task-chapter-row">
                 <div class="daily-task-chapter-name">${escapeHtml(group.chapter)}</div>
-                <div class="daily-task-checkboxes">${group.tasks.map(task=>`<label class="daily-task-check ${task.checked?"is-done":""}"><input type="checkbox" disabled ${task.checked?"checked":""}><span>${escapeHtml(task.name)}</span></label>`).join("")}</div>
+                <div class="daily-task-checkboxes">${group.tasks.map(task=>`<label class="daily-task-check ${task.checked?"is-done":""}"><input type="checkbox" data-daily-task-toggle data-subject-key="${escapeHtml(key)}" data-row-id="${escapeHtml(group.rowId)}" data-col-id="${escapeHtml(task.id)}" ${task.checked?"checked":""}><span>${escapeHtml(task.name)}</span></label>`).join("")}</div>
               </div>`).join("")}
           </section>`;
         }).filter(Boolean);
@@ -3624,12 +3676,12 @@
 
         const selChCount = cardOverlay.selectedChapters.size;
         const chSummary = selChCount === 0
-          ? "Select chapter(s)..."
+          ? "Choose chapter(s) to track..."
           : (selChCount === uniqueChapterNames.length && uniqueChapterNames.length > 0 ? `All ${selChCount} chapters selected` : `${selChCount} chapter(s) selected`);
 
         const selTaskCount = cardOverlay.selectedTasks.size;
         const taskSummary = selTaskCount === 0
-          ? "Select task(s)..."
+          ? "Choose task(s) to track..."
           : `${selTaskCount} task(s) selected`;
 
         const allChChecked = uniqueChapterNames.length > 0 && selChCount === uniqueChapterNames.length;
@@ -3891,7 +3943,7 @@
           const timerText=session?`${formatHHMMSS(remaining)} remaining`:`Required time: ${formatHHMMSS(allocated)}`;
           const timerControls=session?(session.running?`<button type="button" class="btn" data-exam-pause="${escapeHtml(plan.id)}">Ⅱ Pause</button>`:`<button type="button" class="btn btn-primary" data-exam-resume="${escapeHtml(plan.id)}">▶ Resume</button>`) : `<button type="button" class="btn btn-primary" data-exam-start="${escapeHtml(plan.id)}">▶ Start exam</button>`;
           const attempts=(plan.attempts||[]).length;
-          return `<article class="subject-gallery-card exam-plan-card" style="padding:1rem;min-width:260px;max-width:380px;flex:1 1 280px;"><div style="font-weight:850;font-size:1rem;">${escapeHtml(plan.name)}</div><div style="color:var(--text-secondary);font-size:.78rem;margin:.35rem 0;">${escapeHtml(plan.examDate||"No exam date")} · ${(plan.subjectKeys||[]).length} subject(s) · ${(plan.chapters||[]).length} chapter(s)</div><div class="exam-clock" data-exam-clock="${escapeHtml(plan.id)}" style="font-size:1.65rem;font-weight:900;font-variant-numeric:tabular-nums;margin:.65rem 0;color:var(--accent);">${timerText}</div><div style="font-size:.76rem;color:var(--text-secondary);margin-bottom:.55rem;">Elapsed: ${formatHHMMSS(elapsed)} · ${attempts} completed attempt(s)</div><div style="display:flex;gap:.45rem;flex-wrap:wrap;"><button type="button" class="btn" data-exam-study="${escapeHtml(plan.id)}">📚 Study chapters</button>${timerControls}${session?`<button type="button" class="btn btn-danger" data-exam-finish="${escapeHtml(plan.id)}">Finish &amp; record</button>`:""}<button type="button" class="btn" data-delete-exam="${escapeHtml(plan.id)}">Delete</button></div><div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:.85rem;"><strong>Study logged: ${formatHHMMSS(actual)}</strong><span>Plan: ${formatHHMMSS(allocated)}</span></div><div style="height:8px;background:var(--border);border-radius:20px;overflow:hidden;margin:.4rem 0 .45rem;"><div style="height:100%;width:${pct}%;background:var(--accent);"></div></div><div style="font-size:.76rem;color:var(--text-secondary);">${pct}% of planned preparation time logged</div></article>`;
+          return `<article class="subject-gallery-card exam-plan-card"><div style="font-weight:850;font-size:1rem;overflow-wrap:anywhere;">${escapeHtml(plan.name)}</div><div style="color:var(--text-secondary);font-size:.78rem;line-height:1.45;overflow-wrap:anywhere;">${escapeHtml(plan.examDate||"No exam date")} · ${(plan.subjectKeys||[]).length} subject(s) · ${(plan.chapters||[]).length} chapter(s)</div><div class="exam-clock" data-exam-clock="${escapeHtml(plan.id)}" style="font-size:1.65rem;font-weight:900;font-variant-numeric:tabular-nums;margin:.65rem 0;color:var(--accent);">${timerText}</div><div style="font-size:.76rem;color:var(--text-secondary);margin-bottom:.55rem;">Elapsed: ${formatHHMMSS(elapsed)} · ${attempts} completed attempt(s)</div><div class="exam-plan-actions"><button type="button" class="btn" data-exam-study="${escapeHtml(plan.id)}">📚 Study chapters</button>${timerControls}${session?`<button type="button" class="btn btn-danger" data-exam-finish="${escapeHtml(plan.id)}">Finish &amp; record</button>`:""}<button type="button" class="btn" data-delete-exam="${escapeHtml(plan.id)}">Delete</button></div><div class="exam-plan-stats"><strong>Study logged: ${formatHHMMSS(actual)}</strong><span>Plan: ${formatHHMMSS(allocated)}</span></div><div class="exam-plan-progress"><div style="height:100%;width:${pct}%;background:var(--accent);"></div></div><div style="font-size:.76rem;color:var(--text-secondary);">${pct}% of planned preparation time logged</div></article>`;
         }).join(""):'<div style="padding:1.2rem;color:var(--text-secondary);">No exams yet. Create an exam, choose its subjects and syllabus chapters, set the test duration, then start its live countdown.</div>';
       }
       function renderExamPlanSubjectChoices(){const box=document.getElementById("examPlanSubjects");if(!box)return;box.innerHTML=getAllRepositoryKeys().map(key=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.35rem .5rem;"><input type="checkbox" data-exam-subject value="${escapeHtml(key)}"><span>${escapeHtml(state.databases[key].displayName||key)}</span></label>`).join("")||'<span style="color:var(--text-muted);">Create subject databases first.</span>';renderExamPlanChapterChoices();}
@@ -4554,7 +4606,18 @@
         renderCountdownPill();
         setInterval(renderCountdownPill, 1000);
 
+        document.getElementById("toggleCountdownSizeBtn")?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const pill=document.getElementById("openCountdownModalBtn");
+          const expanded=pill?.classList.toggle("countdown-expanded");
+          document.body.classList.toggle("countdown-overlay-open",Boolean(expanded));
+          const btn=document.getElementById("toggleCountdownSizeBtn");
+          if(btn){btn.textContent=expanded?"⤢":"⛶";btn.title=expanded?"Shrink countdown":"Enlarge countdown";}
+        });
+        document.addEventListener("keydown",(e)=>{if(e.key==="Escape"){document.getElementById("openCountdownModalBtn")?.classList.remove("countdown-expanded");document.body.classList.remove("countdown-overlay-open");}});
         document.getElementById("openCountdownModalBtn")?.addEventListener("click", () => {
+          document.getElementById("openCountdownModalBtn")?.classList.remove("countdown-expanded");
+          document.body.classList.remove("countdown-overlay-open");
           document.getElementById("countdownTitleInput").value = countdownConfig.title || "";
           document.getElementById("examDateInput").value = countdownConfig.targetDate || "";
           document.getElementById("countdownModal")?.classList.remove("hidden");
@@ -4842,17 +4905,11 @@
                 .filter((t) => t && t !== "Untitled Chapter")
             ));
             const checkCols = db.columns.filter((c) => c.type === "checkbox");
-            const defaultRows=todayUniqueChapters.flatMap(ch=>{
-              const rows=getRowsForSyllabusChapter(db,ch,trackedDateStr);
-              const scheduled=rows.find(r=>isRowScheduledForDate(db,r,trackedDateStr));
-              return scheduled?[scheduled]:rows.slice(0,1);
-            });
-            const defaultAssigned=getAssignedTaskIdsForRows(db,defaultRows.map(r=>r.id),trackedDateStr);
             cardOverlay = {
               type: "track",
               subject: subj,
-              selectedChapters: new Set(todayUniqueChapters),
-              selectedTasks: new Set(Array.from(defaultAssigned)),
+              selectedChapters: new Set(),
+              selectedTasks: new Set(),
               openDropdown: null
             };
             renderGalleryCards();
@@ -4989,6 +5046,19 @@
         });
         document.getElementById("focusTimerDiscardBtn")?.addEventListener("click", () => { if (confirm("Discard this timer session without saving?")) discardActiveTimer(); });
         document.getElementById("focusTimerCloseBtn")?.addEventListener("click", () => { document.getElementById("focusTimerOverlay")?.classList.add("hidden-view"); });
+        document.getElementById("dailyTaskSummaryContent")?.addEventListener("change", (e) => {
+          const input=e.target.closest("[data-daily-task-toggle]");
+          if(!input)return;
+          const db=state.databases[input.dataset.subjectKey];
+          const row=db?.rows?.find(r=>r.id===input.dataset.rowId);
+          if(!db||!row)return;
+          if(!row.cells)row.cells={};
+          row.cells[input.dataset.colId]=input.checked;
+          saveWorkspace();
+          renderDailyTaskSummary(trackedDateStr||getLocalTodayStr());
+          renderGalleryCards();
+          showToast(input.checked?"Task marked completed":"Task marked pending");
+        });
         document.getElementById("openDailyTaskSummaryBtn")?.addEventListener("click", openDailyTaskSummary);
         document.getElementById("closeDailyTaskSummaryBtn")?.addEventListener("click", closeDailyTaskSummary);
         document.getElementById("dailyTaskSummaryModal")?.addEventListener("click", (e) => { if(e.target.id==="dailyTaskSummaryModal") closeDailyTaskSummary(); });

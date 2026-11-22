@@ -44,3 +44,11 @@ Firebase is the primary cross-device sync provider. The Sync window includes res
 - Due spaced-repetition chapters are automatically assigned a `Revise` checkbox task in the corresponding subject on their due date. Postponing moves that assignment; marking a review done preserves the completed task in its original date and schedules the next review.
 - Gallery timer popovers preselect only tasks actually assigned to the selected chapters/date. Changing selected chapters refreshes the assigned task selection.
 - Manual time and Exam Prep's Revise Chapters use checkbox dropdowns for selecting multiple chapters.
+
+
+## Follow-up UI fixes
+- Daily Tasks popup checkboxes now update the underlying subject database row cells and persist through workspace/cloud sync.
+- Gallery timer selection opens with no chapters or tasks preselected; users explicitly choose what to track.
+- Exam plan cards use content-driven height and wrapping-safe controls to prevent text overflow.
+- Daily Tasks toolbar button uses a stronger high-contrast colour treatment.
+- Target countdown has a separate expand/shrink control for a large centered running display.
