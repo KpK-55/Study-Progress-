@@ -1154,43 +1154,18 @@
       transform: scale(1.06);
     }
 
-    /* Add / Manage Subjects Dashed Card */
-    .add-subject-card {
-      width: 300px;
-      height: 300px;
-      background: var(--accent-soft);
-      border: 1.5px dashed var(--accent);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 0.65rem;
-      cursor: pointer;
-      transition: all 0.16s ease;
+    /* Compact add-subject action: follows the subject grid without becoming a large tile. */
+    .add-subject-card{
+      width:100%;min-height:150px;height:auto;background:transparent;border:0;border-radius:0;
+      padding:1rem .5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;gap:.55rem;cursor:pointer;transition:color .16s ease;
     }
-
-    .add-subject-card:hover {
-      background: rgba(35, 131, 226, 0.18);
-      transform: translateY(-2px);
+    .add-subject-card:hover{background:transparent;transform:none;}
+    .add-plus-circle{
+      width:42px;height:42px;border-radius:50%;background:var(--bg-elevated);
+      border:1px solid var(--border);display:grid;place-items:center;font-size:1.3rem;
+      font-weight:700;color:var(--accent);box-shadow:none;
     }
-
-    .add-plus-circle {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      display: grid;
-      place-items: center;
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--accent);
-      box-shadow: var(--shadow-sm);
-    }
-
     /* In-Card Popover (Track Time Multiselect & Edit Card) */
     .in-card-overlay {
       position: absolute;
@@ -2009,19 +1984,54 @@
   
     .countdown-scale-toggle{padding:.32rem .5rem!important;min-width:32px;line-height:1;}
     .countdown-pill.countdown-expanded{
-      position:fixed!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;
-      z-index:2500!important;display:flex!important;flex-direction:column!important;align-items:center!important;
-      gap:1rem!important;padding:2rem 2.4rem!important;border-radius:22px!important;
-      background:var(--bg-elevated)!important;border:2px solid var(--accent)!important;
-      box-shadow:0 20px 80px rgba(0,0,0,.55)!important;white-space:normal!important;
-      min-width:min(90vw,620px);max-width:94vw;
+      position:relative!important;left:auto!important;top:auto!important;transform:none!important;
+      z-index:auto!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;
+      gap:.55rem!important;padding:.5rem .85rem!important;border-radius:var(--radius-md)!important;
+      background:var(--bg-surface)!important;border:1px solid var(--accent)!important;
+      box-shadow:0 0 0 2px rgba(35,131,226,.12)!important;white-space:normal!important;
+      min-width:0!important;max-width:100%!important;
     }
-    .countdown-pill.countdown-expanded #cdTitleLabel{font-size:clamp(1rem,3vw,1.5rem);}
-    .countdown-pill.countdown-expanded .countdown-units{gap:clamp(.45rem,2vw,1rem);font-size:clamp(2rem,8vw,5rem);font-weight:950;}
-    .countdown-pill.countdown-expanded .countdown-units span{display:flex;flex-direction:column;align-items:center;line-height:1;}
-    .countdown-pill.countdown-expanded .countdown-units span small{font-size:clamp(.7rem,1.7vw,1rem);margin-top:.35rem;}
-    .countdown-pill.countdown-expanded > span:last-child{font-size:.85rem!important;}
-    body.countdown-overlay-open:after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:2499;}
+    .countdown-pill.countdown-expanded #cdTitleLabel{font-size:1rem;}
+    .countdown-pill.countdown-expanded .countdown-units{gap:.5rem;font-size:clamp(1.5rem,3vw,2.4rem);font-weight:950;}
+    .countdown-pill.countdown-expanded .countdown-units span{display:inline-flex;flex-direction:column;align-items:center;line-height:1;}
+    .countdown-pill.countdown-expanded .countdown-units span small{font-size:.65rem;margin-top:.15rem;}
+    .countdown-pill.countdown-expanded > span:last-child{font-size:.72rem!important;}
+
+    .mobile-menu-trigger{display:none!important;}
+    .mobile-menu-backdrop{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.55);display:flex;justify-content:flex-end;}
+    .mobile-menu-backdrop.hidden{display:none!important;}
+    .mobile-menu-panel{width:min(320px,86vw);height:100%;background:var(--bg-elevated);border-left:1px solid var(--border);padding:1rem;display:flex;flex-direction:column;gap:.55rem;box-shadow:-12px 0 36px rgba(0,0,0,.3);}
+    .mobile-menu-heading{display:flex;align-items:center;justify-content:space-between;padding-bottom:.8rem;border-bottom:1px solid var(--border);margin-bottom:.35rem;}
+    .mobile-menu-item{width:100%;text-align:left;padding:.85rem .9rem;border:1px solid var(--border);border-radius:10px;background:var(--bg-surface);color:var(--text-primary);font-weight:750;}
+    @media(max-width:600px){
+      .topbar{padding:.45rem .6rem;}
+      .topbar-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.35rem .5rem;align-items:center;}
+      .brand{display:none!important;}
+      .countdown-pill{grid-column:1;grid-row:1;width:100%;min-width:0;max-width:100%;justify-content:flex-start;overflow:hidden;padding:.4rem .55rem!important;font-size:.72rem;}
+      .countdown-pill .countdown-units{font-size:.78rem;gap:.2rem;}
+      .countdown-scale-toggle{grid-column:1;grid-row:2;justify-self:start;font-size:.7rem;min-height:26px;}
+      .topbar-actions{grid-column:2;grid-row:1 / span 2;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:.28rem;width:auto;}
+      .topbar-actions .btn{font-size:.75rem;padding:.36rem .45rem;min-height:34px;}
+      #installPwaBtn,#undoActionBtn,#openSettingsBtn{display:none!important;}
+      .mobile-menu-trigger{display:inline-flex!important;align-items:center;justify-content:center;min-width:36px;font-size:1.1rem!important;}
+      .gallery-header-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"date total" "daily daily";align-items:center;gap:.5rem;margin-bottom:.75rem;}
+      #openManualTimeBtn{display:none!important;}
+      .gallery-header-left{grid-area:date;display:grid;grid-template-columns:minmax(0,1fr);gap:.4rem;width:100%;}
+      .gallery-header-left #openReportViewBtn,
+      .gallery-header-left #openChallengeBoardBtn,
+      .gallery-header-left #openExamPrepBtn{display:none!important;}
+      .date-selector-pill{grid-column:auto!important;width:100%;min-width:0;justify-content:space-between;padding:.35rem .45rem;font-size:.68rem;gap:.25rem;}
+      .date-selector-pill input{flex:1;min-width:0;max-width:120px;font-size:.7rem;}
+      .date-selector-pill #trackingDateErrorMark{font-size:.58rem;}
+      .daily-task-open-btn{grid-area:daily;justify-content:center;width:100%;min-height:42px;font-size:.88rem!important;padding:.55rem .8rem!important;border:1px solid #10b981!important;background:linear-gradient(110deg,#087f5b,#1479d4)!important;color:#fff!important;box-shadow:0 3px 12px rgba(16,185,129,.22);}
+      .daily-task-open-btn span{background:rgba(255,255,255,.2)!important;color:#fff!important;font-size:.76rem!important;padding:.2rem .48rem!important;}
+      .total-hours-badge{grid-area:total;min-width:90px;padding:.35rem .5rem;}
+      .total-hours-label{font-size:.55rem;}
+      .total-hours-value-row{font-size:.95rem;}
+      .subject-gallery-row{grid-template-columns:minmax(0,1fr)!important;max-width:none!important;gap:.7rem;}
+      .subject-gallery-card{width:100%!important;}
+      .add-subject-card{min-height:105px!important;padding:.5rem!important;}
+    }
 
   </style>
   <script type="module" src="./firebase-client.js"></script>
@@ -2049,9 +2059,10 @@
           <span style="font-size:0.72rem; color:var(--text-secondary);">✏️</span>
         </span>
       </button>
-      <button type="button" class="btn countdown-scale-toggle" id="toggleCountdownSizeBtn" title="Enlarge countdown" aria-label="Enlarge countdown">⛶</button>
+      <button type="button" class="btn countdown-scale-toggle" id="toggleCountdownSizeBtn" title="Increase countdown size" aria-label="Increase countdown size">⛶</button>
 
       <div class="topbar-actions">
+        <button type="button" class="btn mobile-menu-trigger" id="mobileMenuTrigger" aria-label="Open dashboard menu" aria-expanded="false">☰</button>
         <button type="button" class="btn hidden-view" id="installPwaBtn">📲 Install App</button>
 
         <button type="button" class="btn revision-bell-btn" id="revisionBellBtn" title="Revision reminders" aria-label="Revision reminders">🔔<span id="revisionBellBadge" class="revision-bell-badge hidden">0</span></button>
@@ -2068,6 +2079,18 @@
       </div>
     </div>
   </header>
+
+  <div class="mobile-menu-backdrop hidden" id="mobileMenuBackdrop">
+    <nav class="mobile-menu-panel" aria-label="Dashboard menu">
+      <div class="mobile-menu-heading"><strong>Dashboard menu</strong><button type="button" class="btn btn-icon" id="closeMobileMenuBtn" aria-label="Close menu">✕</button></div>
+      <button type="button" class="mobile-menu-item" data-menu-target="openReportViewBtn">📊 Show Report</button>
+      <button type="button" class="mobile-menu-item" data-menu-target="openChallengeBoardBtn">🏆 Challenge Board</button>
+      <button type="button" class="mobile-menu-item" data-menu-target="openExamPrepBtn">📝 Exam Prep</button>
+      <button type="button" class="mobile-menu-item" data-menu-target="openManualTimeBtn">＋ Manual Time</button>
+      <button type="button" class="mobile-menu-item" data-menu-target="undoActionBtn">↶ Undo</button>
+      <button type="button" class="mobile-menu-item" data-menu-target="openSettingsBtn">⚙️ Settings</button>
+    </nav>
+  </div>
 
   <!-- FULL-SCREEN STUDY FOCUS TIMER POPUP OVERLAY -->
   <div class="focus-timer-overlay hidden-view" id="focusTimerOverlay">
@@ -3581,10 +3604,8 @@
         const addCardHtml = `
           <div class="add-subject-card" id="openAddSubjectCard">
             <div class="add-plus-circle">+</div>
-            <div style="font-weight: 800; font-size: 0.95rem; color: var(--accent);">Add / Manage Subjects</div>
-            <div style="font-size: 0.76rem; color: var(--text-secondary); max-width: 220px;">
-              Create a new database or select subjects from your repository
-            </div>
+            <div style="font-weight:800;font-size:.9rem;color:var(--accent);">Add subject</div>
+            <div style="font-size:.72rem;color:var(--text-secondary);max-width:180px;">Create or choose a subject</div>
           </div>
         `;
 
@@ -4610,14 +4631,11 @@
           e.stopPropagation();
           const pill=document.getElementById("openCountdownModalBtn");
           const expanded=pill?.classList.toggle("countdown-expanded");
-          document.body.classList.toggle("countdown-overlay-open",Boolean(expanded));
           const btn=document.getElementById("toggleCountdownSizeBtn");
-          if(btn){btn.textContent=expanded?"⤢":"⛶";btn.title=expanded?"Shrink countdown":"Enlarge countdown";}
+          if(btn){btn.textContent=expanded?"⤢":"⛶";btn.title=expanded?"Normal countdown size":"Increase countdown size";}
         });
-        document.addEventListener("keydown",(e)=>{if(e.key==="Escape"){document.getElementById("openCountdownModalBtn")?.classList.remove("countdown-expanded");document.body.classList.remove("countdown-overlay-open");}});
         document.getElementById("openCountdownModalBtn")?.addEventListener("click", () => {
           document.getElementById("openCountdownModalBtn")?.classList.remove("countdown-expanded");
-          document.body.classList.remove("countdown-overlay-open");
           document.getElementById("countdownTitleInput").value = countdownConfig.title || "";
           document.getElementById("examDateInput").value = countdownConfig.targetDate || "";
           document.getElementById("countdownModal")?.classList.remove("hidden");
@@ -5059,6 +5077,15 @@
           renderGalleryCards();
           showToast(input.checked?"Task marked completed":"Task marked pending");
         });
+        const mobileMenu=document.getElementById("mobileMenuBackdrop");
+        const closeMobileMenu=()=>{mobileMenu?.classList.add("hidden");document.getElementById("mobileMenuTrigger")?.setAttribute("aria-expanded","false");};
+        document.getElementById("mobileMenuTrigger")?.addEventListener("click",()=>{mobileMenu?.classList.remove("hidden");document.getElementById("mobileMenuTrigger")?.setAttribute("aria-expanded","true");});
+        document.getElementById("closeMobileMenuBtn")?.addEventListener("click",closeMobileMenu);
+        mobileMenu?.addEventListener("click",e=>{if(e.target===mobileMenu)closeMobileMenu();});
+        mobileMenu?.querySelectorAll("[data-menu-target]")?.forEach(btn=>btn.addEventListener("click",()=>{
+          const target=document.getElementById(btn.dataset.menuTarget);closeMobileMenu();target?.click();
+        }));
+        document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMobileMenu();});
         document.getElementById("openDailyTaskSummaryBtn")?.addEventListener("click", openDailyTaskSummary);
         document.getElementById("closeDailyTaskSummaryBtn")?.addEventListener("click", closeDailyTaskSummary);
         document.getElementById("dailyTaskSummaryModal")?.addEventListener("click", (e) => { if(e.target.id==="dailyTaskSummaryModal") closeDailyTaskSummary(); });

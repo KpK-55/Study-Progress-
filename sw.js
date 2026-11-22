@@ -1,4 +1,4 @@
-const CACHE_NAME = "time-task-tracker-v-summary-interactive-exam-layout-6";
+const CACHE_NAME = "time-task-tracker-v-mobile-dashboard-6";
 const APP_SHELL = [
   "./",
   "./index.html",
