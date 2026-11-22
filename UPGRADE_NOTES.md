@@ -29,3 +29,11 @@
 - Revision intervals are Day 3, Day 7, Day 15 and Day 30.
 - Revision responses are handled inside the app; no Google Sheet or Telegram integration is included.
 - Firebase remains the cloud sync provider.
+
+
+## Daily task summary update
+- Added selected-date daily task summary to Gallery, grouped by subject/chapter.
+- Added the same date-specific task summary to each Challenge Board day report.
+- Spaced repetition due dates automatically assign a `Revise` checkbox task to the chapter's subject/day.
+- Fixed Gallery timer task defaults so only tasks assigned to selected chapters/date are selected and logged.
+- Changed Manual Time and Exam Prep Revise Chapters selection to checkbox dropdowns.

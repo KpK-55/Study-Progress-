@@ -1923,7 +1923,31 @@
     @keyframes cloudRemotePulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}50%{box-shadow:0 0 0 5px rgba(220,38,38,.28)}}
     .sync-split-group.sync-state-remote-newer{animation:cloudRemotePulse 1.15s infinite;}
     .sync-split-group.sync-state-remote-newer .sync-status-indicator{background:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.16);}
-    </style>
+    
+    .daily-task-summary-panel{margin:.85rem 0 1rem;padding:.85rem 1rem;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);}
+    .daily-task-summary-head{display:flex;justify-content:space-between;align-items:center;gap:.7rem;margin-bottom:.7rem;}
+    .daily-task-summary-head strong{font-size:.9rem;font-weight:850;}
+    .daily-task-summary-subtitle{font-size:.72rem;color:var(--text-secondary);margin-top:.15rem;}
+    .daily-task-summary-count{font-size:.7rem;font-weight:800;border-radius:999px;padding:.25rem .55rem;background:var(--bg-hover);color:var(--text-secondary);white-space:nowrap;}
+    .daily-task-summary-content{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.55rem;}
+    .daily-task-summary-subject{border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;min-width:0;}
+    .daily-task-summary-subject-title{font-size:.78rem;font-weight:850;margin-bottom:.4rem;display:flex;justify-content:space-between;gap:.5rem;}
+    .daily-task-summary-chapter{font-size:.75rem;font-weight:750;margin:.35rem 0 .18rem;overflow-wrap:anywhere;}
+    .daily-task-summary-task{display:flex;align-items:center;gap:.4rem;font-size:.71rem;color:var(--text-secondary);padding:.12rem 0;}
+    .daily-task-summary-task input{accent-color:var(--accent);width:13px;height:13px;margin:0;}
+    .daily-task-summary-empty{font-size:.76rem;color:var(--text-muted);padding:.35rem 0;}
+    .daily-checkbox-dropdown{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--bg-surface);}
+    .daily-checkbox-dropdown>summary{list-style:none;cursor:pointer;padding:.62rem .8rem;font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
+    .daily-checkbox-dropdown>summary::-webkit-details-marker{display:none;}
+    .daily-checkbox-dropdown>summary:after{content:"▾";font-size:.9rem;color:var(--text-secondary);}
+    .daily-checkbox-dropdown[open]>summary:after{content:"▴";}
+    .daily-checkbox-dropdown-options{display:flex;flex-direction:column;gap:.25rem;padding:.45rem .55rem .6rem;border-top:1px solid var(--border);max-height:190px;overflow:auto;}
+    .daily-checkbox-dropdown-options .multiselect-option{display:flex;align-items:center;gap:.5rem;padding:.35rem .45rem;border-radius:7px;font-size:.78rem;cursor:pointer;}
+    .daily-checkbox-dropdown-options .multiselect-option:hover{background:var(--bg-hover);}
+    .daily-checkbox-dropdown-options input{accent-color:var(--accent);}
+    @media(max-width:640px){.daily-task-summary-content{grid-template-columns:1fr;}.daily-task-summary-panel{padding:.7rem;}}
+
+  </style>
   <script type="module" src="./firebase-client.js"></script>
 </head>
 <body>
@@ -2028,6 +2052,13 @@
         </div>
       </div>
 
+      <section id="dailyTaskSummaryPanel" class="daily-task-summary-panel">
+        <div class="daily-task-summary-head">
+          <div><strong>☑ Daily checklist summary</strong><div class="daily-task-summary-subtitle" id="dailyTaskSummarySubtitle">Tasks assigned for the selected date</div></div>
+          <span class="daily-task-summary-count" id="dailyTaskSummaryCount">0 tasks</span>
+        </div>
+        <div id="dailyTaskSummaryContent" class="daily-task-summary-content"></div>
+      </section>
       <div class="subject-gallery-row" id="subjectGalleryRow"></div>
     </section>
 
@@ -2245,7 +2276,7 @@
     <div class="modal-header"><h3>↻ Revise chapters</h3><button type="button" class="btn btn-icon" data-close-modal="reviseChaptersModal">✕</button></div>
     <p style="font-size:.8rem;color:var(--text-secondary);margin-bottom:.8rem;">Choose any syllabus chapter, including chapters outside your current exam plans. Select a common task list and start a cumulative revision timer.</p>
     <div class="form-group"><label for="reviseSubjectSelect">Subject</label><select id="reviseSubjectSelect" class="input-field"></select></div>
-    <div class="form-group"><label for="reviseChapterSelect">Chapters (multi-select)</label><select id="reviseChapterSelect" class="input-field" multiple size="7" style="min-height:150px;"></select><small style="color:var(--text-secondary);">Use Ctrl (Windows) or long-press (mobile) to select multiple chapters.</small></div>
+    <div class="form-group"><label>Chapters</label><details class="daily-checkbox-dropdown" id="reviseChapterDropdown"><summary id="reviseChapterSummary">Choose chapter(s)</summary><div id="reviseChapterOptions" class="daily-checkbox-dropdown-options"></div></details></div>
     <div class="form-group"><label>Common revision tasks</label><div id="reviseTaskOptions" style="display:flex;flex-wrap:wrap;gap:.4rem;max-height:140px;overflow:auto;padding:.5rem;border:1px solid var(--border);border-radius:9px;"></div></div>
     <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:.8rem;"><button type="button" class="btn" data-close-modal="reviseChaptersModal">Cancel</button><button type="button" class="btn btn-primary" id="startRevisionSessionBtn">▶ Start revision timer</button></div>
   </div></div>
@@ -2526,8 +2557,8 @@
     <div class="modal-card" style="max-width:420px;">
       <div class="modal-header"><h3>＋ Add study time</h3><button type="button" class="btn btn-icon" data-close-modal="manualTimeModal">✕</button></div>
       <div class="form-group"><label for="manualTimeSubject">Subject database</label><select id="manualTimeSubject" class="input-field"></select></div>
-      <div class="form-group"><label>Chapter(s) — select one or more</label><div id="manualTimeChapterOptions" class="multiselect-menu" style="position:static;display:flex;flex-wrap:wrap;gap:.35rem;max-height:150px;overflow:auto;padding:.55rem;border:1px solid var(--border);border-radius:10px;"></div></div>
-      <div class="form-group"><label>Tasks assigned for the selected chapter(s) today</label><div id="manualTimeTaskOptions" style="display:flex;flex-wrap:wrap;gap:.35rem;max-height:130px;overflow:auto;padding:.55rem;border:1px solid var(--border);border-radius:10px;"><span class="text-muted">Choose a subject and chapter first.</span></div></div>
+      <div class="form-group"><label>Chapter(s)</label><details class="daily-checkbox-dropdown" id="manualTimeChapterDropdown"><summary id="manualTimeChapterSummary">Choose chapter(s)</summary><div id="manualTimeChapterOptions" class="daily-checkbox-dropdown-options"></div></details></div>
+      <div class="form-group"><label>Tasks assigned for the selected chapter(s) on this date</label><div id="manualTimeTaskOptions" style="display:flex;flex-wrap:wrap;gap:.35rem;max-height:130px;overflow:auto;padding:.55rem;border:1px solid var(--border);border-radius:10px;"><span class="text-muted">Choose a subject and chapter first.</span></div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
         <div class="form-group"><label for="manualTimeHours">Hours</label><input id="manualTimeHours" type="number" min="0" max="24" value="0" class="input-field" /></div>
         <div class="form-group"><label for="manualTimeMinutes">Minutes</label><input id="manualTimeMinutes" type="number" min="0" max="59" value="30" class="input-field" /></div>
@@ -2817,11 +2848,44 @@
         scheduleChapterRevision(db,chapterName,dateStr);
       }
 
+      function ensureRevisionTaskColumn(db) {
+        if (!db || !Array.isArray(db.columns)) return null;
+        let col = db.columns.find(c => c.isRevisionTaskCol || (c.type === "checkbox" && String(c.name).toLowerCase() === "revise"));
+        if (!col) {
+          col = { id:uid("revtask"), name:"Revise", type:"checkbox", width:92, isRevisionTaskCol:true };
+          db.columns.push(col);
+          (db.rows || []).forEach(row => { if (!row.cells) row.cells={}; if (row.cells[col.id] === undefined) row.cells[col.id]=false; });
+        } else col.isRevisionTaskCol = true;
+        return col;
+      }
+      function syncRevisionTaskAssignment(db, item) {
+        if (!db || !item) return;
+        const col = ensureRevisionTaskColumn(db);
+        if (!col) return;
+        const dueDate = item.postponedUntil || item.dueDate;
+        if (!dueDate) return;
+        if (item.revisionTaskDate && item.revisionTaskDate !== dueDate) {
+          getRowsForSyllabusChapter(db,item.chapter,item.revisionTaskDate).forEach(row => {
+            const ids = getDailyTaskIds(row,item.revisionTaskDate).filter(id => id !== col.id);
+            row.dailyTaskAssignments[item.revisionTaskDate] = ids;
+          });
+        }
+        const row = getOrCreateRowForDateAndChapter(db,dueDate,item.chapter);
+        if (!row) return;
+        if (!row.cells) row.cells={};
+        if (row.cells[col.id] === undefined || item.revisionTaskDate !== dueDate) row.cells[col.id]=false;
+        const ids = new Set(getDailyTaskIds(row,dueDate));
+        ids.add(col.id);
+        row.dailyTaskAssignments[dueDate]=Array.from(ids);
+        item.revisionTaskDate=dueDate;
+      }
+
       function getRevisionScheduleEntries() {
         const today = getLocalTodayStr(), tomorrow = addDaysToDate(today, 1), entries = [];
         getAllRepositoryKeys().forEach(key => {
           const db = state.databases[key]; ensureRevisionTrackingColumn(db);
           (db.revisionSchedules || []).forEach(item => {
+            syncRevisionTaskAssignment(db,item);
             (item.history || []).forEach((h, i) => entries.push({
               subjectKey:key, subject:db.displayName||key, chapter:item.chapter,
               completionDate:item.completionDate, dueCount:`Review ${i+1}`,
@@ -2869,15 +2933,23 @@
       }
       function advanceRevision(dbKey, revisionId, action="reviewed") {
         const db=state.databases[dbKey], item=db?.revisionSchedules?.find(x=>x.id===revisionId); if(!item)return;
-        if(action==="tomorrow") item.postponedUntil=addDaysToDate(getLocalTodayStr(),1);
-        else {
+        const oldDue=item.postponedUntil||item.dueDate;
+        const revCol=ensureRevisionTaskColumn(db);
+        if(action==="tomorrow") {
+          item.postponedUntil=addDaysToDate(getLocalTodayStr(),1);
+        } else {
+          const dueRows=getRowsForSyllabusChapter(db,item.chapter,oldDue);
+          dueRows.forEach(row=>{if(revCol)row.cells[revCol.id]=true;});
           item.history=Array.isArray(item.history)?item.history:[];
-          item.history.push({reviewedOn:getLocalTodayStr(),dueDate:item.postponedUntil||item.dueDate});
+          item.history.push({reviewedOn:getLocalTodayStr(),dueDate:oldDue});
           item.intervalIndex=Math.min((Number(item.intervalIndex)||0)+1,REVISION_INTERVAL_DAYS.length-1);
           item.dueDate=addDaysToDate(getLocalTodayStr(),REVISION_INTERVAL_DAYS[item.intervalIndex]);
           item.postponedUntil="";
+          item.revisionTaskDate="";
         }
+        syncRevisionTaskAssignment(db,item);
         saveWorkspace(); renderRevisionScheduleView(); renderRevisionBell();
+        if(currentView==="gallery")renderDailyTaskSummary(trackedDateStr);
       }
       function openRevisionSchedule() {
         const seen=JSON.parse(localStorage.getItem("revision_seen_ids_v1")||"[]");
@@ -3077,6 +3149,7 @@
             if (previous) { undoStack.push(previous); if (undoStack.length > 20) undoStack.shift(); updateUndoButton(); }
           }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          if (document.getElementById("dailyTaskSummaryContent")) renderDailyTaskSummary(trackedDateStr || getLocalTodayStr());
           if (markDirty) queueFirebaseAutoSync();
           if (markDirty) {
             syncMeta.localUsn = (Number(syncMeta.localUsn) || 1) + 1;
@@ -3283,7 +3356,44 @@
         if (pauseBtn) pauseBtn.textContent = activeTimer.running ? "⏸ Pause" : "▶ Resume";
       }
 
+      function buildDailyTaskSummaryHtml(dateStr) {
+        const subjectKeys=getSubjectKeys();
+        let total=0,done=0;
+        const groups=subjectKeys.map(key=>{
+          const db=state.databases[key];
+          const rows=(db.rows||[]).filter(row=>isRowScheduledForDate(db,row,dateStr));
+          const taskCols=db.columns.filter(c=>c.type==="checkbox");
+          const chapterGroups=[];
+          rows.forEach(row=>{
+            const assigned=getDailyTaskIds(row,dateStr);
+            const tasks=assigned.map(id=>taskCols.find(c=>c.id===id)).filter(Boolean);
+            if(!tasks.length)return;
+            const chapter=getRowPrimaryTitle(db,row);
+            tasks.forEach(col=>{total++;if(row.cells[col.id])done++;});
+            chapterGroups.push({chapter,tasks:tasks.map(col=>({name:col.name,checked:Boolean(row.cells[col.id])}))});
+          });
+          if(!chapterGroups.length)return "";
+          return `<section class="daily-task-summary-subject">
+            <div class="daily-task-summary-subject-title"><span style="color:${escapeHtml(db.color||"var(--accent)")}">● ${escapeHtml(db.displayName||key)}</span><span>${chapterGroups.reduce((n,g)=>n+g.tasks.filter(t=>t.checked).length,0)}/${chapterGroups.reduce((n,g)=>n+g.tasks.length,0)}</span></div>
+            ${chapterGroups.map(group=>`<div class="daily-task-summary-chapter">${escapeHtml(group.chapter)}</div>${group.tasks.map(task=>`<label class="daily-task-summary-task"><input type="checkbox" disabled ${task.checked?"checked":""}><span>${escapeHtml(task.name)}</span></label>`).join("")}`).join("")}
+          </section>`;
+        }).filter(Boolean);
+        return {html:groups.join("")||'<div class="daily-task-summary-empty">No tasks assigned for this date yet. Assign tasks in a subject Daily Checklist, or check scheduled revisions.</div>',total,done,subjects:groups.length};
+      }
+      function renderDailyTaskSummary(dateStr=trackedDateStr||getLocalTodayStr()) {
+        const panel=document.getElementById("dailyTaskSummaryContent");
+        if(!panel)return;
+        const summary=buildDailyTaskSummaryHtml(dateStr);
+        panel.innerHTML=summary.html;
+        const subtitle=document.getElementById("dailyTaskSummarySubtitle");
+        const count=document.getElementById("dailyTaskSummaryCount");
+        if(subtitle)subtitle.textContent=`Assigned tasks for ${formatShortDate(dateStr)} · ${summary.subjects} subject(s)`;
+        if(count)count.textContent=`${summary.done}/${summary.total} completed`;
+      }
+
       function renderGalleryCards() {
+        getRevisionScheduleEntries();
+        renderDailyTaskSummary(trackedDateStr || getLocalTodayStr());
         validateTrackingDateIsToday();
         updateDailyTotalHoursBadge();
         updateFocusTimerOverlayUI();
@@ -3473,7 +3583,7 @@
         const selTaskCount = cardOverlay.selectedTasks.size;
         const taskSummary = selTaskCount === 0
           ? "Select task(s)..."
-          : (selTaskCount === checkCols.length && checkCols.length > 0 ? `All ${selTaskCount} tasks selected` : `${selTaskCount} task(s) selected`);
+          : `${selTaskCount} task(s) selected`;
 
         const allChChecked = uniqueChapterNames.length > 0 && selChCount === uniqueChapterNames.length;
         const chOptionsHtml = uniqueChapterNames.length === 0
@@ -3491,7 +3601,11 @@
             `).join("")}
           `;
 
-        const selectedRowIds = uniqueChapterNames.filter(name => cardOverlay.selectedChapters.has(name)).map(name => db.rows.find(r => normalizeChapterKey(getRowPrimaryTitle(db,r)) === normalizeChapterKey(name))?.id).filter(Boolean);
+        const selectedRowIds = uniqueChapterNames.filter(name => cardOverlay.selectedChapters.has(name)).flatMap(name => {
+          const rows=getRowsForSyllabusChapter(db,name,trackedDateStr||getLocalTodayStr());
+          const scheduled=rows.find(r=>isRowScheduledForDate(db,r,trackedDateStr||getLocalTodayStr()));
+          return scheduled?[scheduled.id]:(rows[0]?[rows[0].id]:[]);
+        });
         const assignedTaskIds = getAssignedTaskIdsForRows(db, selectedRowIds, trackedDateStr || getLocalTodayStr());
         const todaysTaskCols = checkCols.filter(c => assignedTaskIds.has(c.id));
         const allTasksChecked = todaysTaskCols.length > 0 && todaysTaskCols.every(c => cardOverlay.selectedTasks.has(c.id));
@@ -3554,7 +3668,13 @@
           chapterNames = Array.from(cardOverlay.selectedChapters);
           const selectedNorms = new Set(chapterNames.map(normalizeChapterKey));
           chapterIds = chapterNames.map(ch => db.rows.find(r => selectedNorms.has(normalizeChapterKey(getRowPrimaryTitle(db,r))) && normalizeChapterKey(getRowPrimaryTitle(db,r)) === normalizeChapterKey(ch))?.id).filter(Boolean);
-          taskNames = db.columns.filter(c => c.type === "checkbox" && cardOverlay.selectedTasks.has(c.id)).map(c => c.name);
+          const selectedRows=chapterNames.flatMap(ch=>{
+            const rows=getRowsForSyllabusChapter(db,ch,todayStr);
+            const scheduled=rows.find(r=>isRowScheduledForDate(db,r,todayStr));
+            return scheduled?[scheduled]:rows.slice(0,1);
+          });
+          const assignedIds=getAssignedTaskIdsForRows(db,selectedRows.map(r=>r.id),todayStr);
+          taskNames = db.columns.filter(c => c.type === "checkbox" && assignedIds.has(c.id) && cardOverlay.selectedTasks.has(c.id)).map(c => c.name);
         }
         if (activeTimer) stopAndCommitInCardTimer(false);
         const now = Date.now();
@@ -3612,13 +3732,19 @@
       function getManualSelectedChapterNames() {
         return Array.from(document.querySelectorAll('[data-manual-chapter]:checked')).map(el => el.value);
       }
+      function updateManualTimeChapterSummary(){
+        const selected=getManualSelectedChapterNames();
+        const summary=document.getElementById("manualTimeChapterSummary");
+        if(summary)summary.textContent=selected.length?`${selected.length} chapter(s) selected`:"Choose chapter(s)";
+      }
       function renderManualTimeChapters() {
         const subject = document.getElementById("manualTimeSubject")?.value;
         const db = state.databases[subject];
         const box = document.getElementById("manualTimeChapterOptions");
         if (!box) return;
         const chapters = getSyllabusChapterNames(db);
-        box.innerHTML = chapters.length ? chapters.map(name => `<label class="multiselect-option" style="padding:.28rem .4rem;border:1px solid var(--border);border-radius:7px;"><input type="checkbox" data-manual-chapter value="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">Add chapters to this subject syllabus first.</span>';
+        box.innerHTML = chapters.length ? chapters.map(name => `<label class="multiselect-option"><input type="checkbox" data-manual-chapter value="${escapeHtml(name)}"><span>${escapeHtml(name)}</span></label>`).join("") : '<span style="color:var(--text-muted);font-size:.8rem;">Add chapters to this subject syllabus first.</span>';
+        updateManualTimeChapterSummary();
         renderManualTimeTasks();
       }
       function renderManualTimeTasks() {
@@ -3783,15 +3909,21 @@
         if(!keys.length)return showToast("Create a subject database first.");
         renderReviseChapterOptions(); document.getElementById("reviseChaptersModal")?.classList.remove("hidden");
       }
+      function updateReviseChapterSummary(){
+        const selected=Array.from(document.querySelectorAll("[data-revise-chapter]:checked")).map(x=>x.value);
+        const summary=document.getElementById("reviseChapterSummary");
+        if(summary)summary.textContent=selected.length?`${selected.length} chapter(s) selected`:"Choose chapter(s)";
+      }
       function renderReviseChapterOptions(){
-        const key=document.getElementById("reviseSubjectSelect")?.value, db=state.databases[key], chapters=document.getElementById("reviseChapterSelect"), tasks=document.getElementById("reviseTaskOptions");
+        const key=document.getElementById("reviseSubjectSelect")?.value, db=state.databases[key], chapters=document.getElementById("reviseChapterOptions"), tasks=document.getElementById("reviseTaskOptions");
         if(!db||!chapters||!tasks)return;
-        chapters.innerHTML=getSyllabusChapterNames(db).map(ch=>`<option value="${escapeHtml(ch)}">${escapeHtml(ch)}</option>`).join("");
+        chapters.innerHTML=getSyllabusChapterNames(db).map(ch=>`<label class="multiselect-option"><input type="checkbox" data-revise-chapter value="${escapeHtml(ch)}"><span>${escapeHtml(ch)}</span></label>`).join("")||'<span class="text-muted">No syllabus chapters available.</span>';
+        updateReviseChapterSummary();
         tasks.innerHTML=db.columns.filter(c=>c.type==="checkbox").map(c=>`<label class="multiselect-option" style="border:1px solid var(--border);border-radius:8px;padding:.3rem .45rem;"><input type="checkbox" data-revise-task value="${escapeHtml(c.id)}"><span>${escapeHtml(c.name)}</span></label>`).join("")||'<span style="color:var(--text-secondary);">No task columns in this subject.</span>';
       }
       function startRevisionStudySession(){
         const key=document.getElementById("reviseSubjectSelect")?.value, db=state.databases[key];
-        const names=Array.from(document.getElementById("reviseChapterSelect")?.selectedOptions||[]).map(o=>o.value);
+        const names=Array.from(document.querySelectorAll("[data-revise-chapter]:checked")).map(o=>o.value);
         if(!db||!names.length)return showToast("Choose at least one chapter.");
         if(activeTimer)return showToast("Finish or pause the current study timer first.");
         const rows=names.map(name=>getOrCreateRowForDateAndChapter(db,getLocalTodayStr(),name));
@@ -4289,6 +4421,8 @@
         if (!titleEl || !bodyEl) return;
 
         titleEl.textContent = `Day ${dayNum} Progress Report (${formatShortDate(dateStr)})`;
+        getRevisionScheduleEntries();
+        const dailyTaskSummary=buildDailyTaskSummaryHtml(dateStr);
         const allLogs = getAllDatabaseSessionLogs().filter((l) => l.date === dateStr);
         const totalHrs = allLogs.reduce((s, l) => s + (Number(l.seconds) || 0), 0) / 3600;
 
@@ -4323,6 +4457,7 @@
           <h4 style="margin:.35rem 0 0;">Subject distribution</h4>${subjectBars || `<div style="color:var(--text-muted);">No recorded activity.</div>`}
           <h4 style="margin:.35rem 0 0;">Chapter activity</h4>${chapterRows || `<div style="color:var(--text-muted);">No chapter-level records for this day.</div>`}
           <h4 style="margin:.35rem 0 0;">Daily checklist</h4>${subjCards || `<div style="color:var(--text-muted);">No subjects added yet.</div>`}
+          <h4 style="margin:.35rem 0 0;">Assigned task list</h4><div class="daily-task-summary-content">${dailyTaskSummary.html}</div>
         `;
         document.getElementById("dayReportModal")?.classList.remove("hidden");
       }
@@ -4537,6 +4672,7 @@
               trackedDateStr = activeDatePicker.value;
               cardOverlay = null;
               renderGalleryCards();
+              renderDailyTaskSummary(trackedDateStr);
             }
           });
         }
@@ -4595,6 +4731,7 @@
         document.getElementById("closeExamPrepBtn")?.addEventListener("click",()=>switchWorkspaceView("gallery"));
         document.getElementById("openReviseChaptersBtn")?.addEventListener("click",openReviseChaptersModal);
         document.getElementById("reviseSubjectSelect")?.addEventListener("change",renderReviseChapterOptions);
+        document.getElementById("reviseChapterOptions")?.addEventListener("change",updateReviseChapterSummary);
         document.getElementById("startRevisionSessionBtn")?.addEventListener("click",startRevisionStudySession);
 
 
@@ -4658,11 +4795,17 @@
                 .filter((t) => t && t !== "Untitled Chapter")
             ));
             const checkCols = db.columns.filter((c) => c.type === "checkbox");
+            const defaultRows=todayUniqueChapters.flatMap(ch=>{
+              const rows=getRowsForSyllabusChapter(db,ch,trackedDateStr);
+              const scheduled=rows.find(r=>isRowScheduledForDate(db,r,trackedDateStr));
+              return scheduled?[scheduled]:rows.slice(0,1);
+            });
+            const defaultAssigned=getAssignedTaskIdsForRows(db,defaultRows.map(r=>r.id),trackedDateStr);
             cardOverlay = {
               type: "track",
               subject: subj,
               selectedChapters: new Set(todayUniqueChapters),
-              selectedTasks: new Set(checkCols.map((c) => c.id)),
+              selectedTasks: new Set(Array.from(defaultAssigned)),
               openDropdown: null
             };
             renderGalleryCards();
@@ -4801,7 +4944,7 @@
         document.getElementById("focusTimerCloseBtn")?.addEventListener("click", () => { document.getElementById("focusTimerOverlay")?.classList.add("hidden-view"); });
         document.getElementById("openManualTimeBtn")?.addEventListener("click", openManualTimeEntry);
         document.getElementById("manualTimeSubject")?.addEventListener("change", renderManualTimeChapters);
-        document.getElementById("manualTimeChapterOptions")?.addEventListener("change", renderManualTimeTasks);
+        document.getElementById("manualTimeChapterOptions")?.addEventListener("change", () => { updateManualTimeChapterSummary(); renderManualTimeTasks(); });
         document.getElementById("manualTimeDate")?.addEventListener("change", renderManualTimeTasks);
         document.getElementById("saveManualTimeBtn")?.addEventListener("click", saveManualTimeEntry);
 
@@ -4822,6 +4965,13 @@
             const chName = e.target.dataset.toggleChapterOpt;
             if (e.target.checked) cardOverlay.selectedChapters.add(chName);
             else cardOverlay.selectedChapters.delete(chName);
+            const rows=Array.from(cardOverlay.selectedChapters).flatMap(name=>{
+              const matches=getRowsForSyllabusChapter(db,name,trackedDateStr);
+              const scheduled=matches.find(r=>isRowScheduledForDate(db,r,trackedDateStr));
+              return scheduled?[scheduled]:matches.slice(0,1);
+            });
+            const allowed=getAssignedTaskIdsForRows(db,rows.map(r=>r.id),trackedDateStr);
+            cardOverlay.selectedTasks=new Set(Array.from(allowed));
             renderGalleryCards();
           } else if (e.target.dataset.toggleAllTasks) {
             const checkCols = db.columns.filter((c) => c.type === "checkbox");

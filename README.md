@@ -36,3 +36,11 @@ The app uses Firebase client configuration only. Never commit service-account pr
 
 ## Backup and version history
 Firebase is the primary cross-device sync provider. The Sync window includes restore-latest and cloud version history controls. JSON export/import remains available as a manual backup. Google Drive backup is optional and requires separate authorization.
+
+
+## Daily task summary and revision assignment
+- The Gallery dashboard shows a selected-date task summary grouped by subject and chapter, including checked/unchecked task status.
+- Challenge Board day reports show the same assigned task list for that exact day.
+- Due spaced-repetition chapters are automatically assigned a `Revise` checkbox task in the corresponding subject on their due date. Postponing moves that assignment; marking a review done preserves the completed task in its original date and schedules the next review.
+- Gallery timer popovers preselect only tasks actually assigned to the selected chapters/date. Changing selected chapters refreshes the assigned task selection.
+- Manual time and Exam Prep's Revise Chapters use checkbox dropdowns for selecting multiple chapters.
