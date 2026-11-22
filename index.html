@@ -647,6 +647,77 @@
       .add-subject-card{min-height:105px!important;padding:.5rem!important;}
     }
 
+
+    /* Final portrait dashboard alignment: full date, centered Daily Tasks, centered Total Hours. */
+    @media(max-width:600px){
+      .gallery-header-bar{
+        display:grid!important;
+        grid-template-columns:minmax(0,1fr)!important;
+        grid-template-areas:"date" "daily" "total"!important;
+        justify-items:center!important;
+        align-items:center!important;
+        gap:.65rem!important;
+      }
+      .gallery-header-left{
+        grid-area:date!important;
+        display:flex!important;
+        width:100%!important;
+        min-width:0!important;
+        justify-content:center!important;
+      }
+      .date-selector-pill{
+        display:flex!important;
+        width:100%!important;
+        max-width:none!important;
+        min-width:0!important;
+        min-height:52px!important;
+        box-sizing:border-box!important;
+        justify-content:center!important;
+        align-items:center!important;
+        flex-wrap:nowrap!important;
+        gap:.65rem!important;
+        padding:.55rem .8rem!important;
+        font-size:.9rem!important;
+        white-space:nowrap!important;
+      }
+      .date-selector-pill > span:first-child{
+        flex:0 0 auto!important;
+        white-space:nowrap!important;
+        font-size:.9rem!important;
+      }
+      .date-selector-pill input{
+        display:block!important;
+        flex:1 1 190px!important;
+        width:auto!important;
+        min-width:0!important;
+        max-width:230px!important;
+        min-height:36px!important;
+        font-size:.9rem!important;
+        padding:.25rem .35rem!important;
+        text-align:center!important;
+      }
+      .date-selector-pill #trackingDateErrorMark{flex:0 0 auto!important;}
+      .daily-task-open-btn{
+        grid-area:daily!important;
+        justify-self:center!important;
+        width:max-content!important;
+        max-width:100%!important;
+        min-width:min(270px,100%)!important;
+        min-height:48px!important;
+        margin:0 auto!important;
+        padding:.62rem 1.1rem!important;
+      }
+      .total-hours-badge{
+        grid-area:total!important;
+        justify-self:center!important;
+        align-self:center!important;
+        width:max-content!important;
+        min-width:150px!important;
+        margin:0 auto!important;
+        padding:.45rem .85rem!important;
+      }
+    }
+
     /* Portrait Mobile & Tablet Daily Task Checklist Card */
     .portrait-task-card {
       background: var(--bg-elevated);

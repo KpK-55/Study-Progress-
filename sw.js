@@ -1,4 +1,4 @@
-const CACHE_NAME = "time-task-tracker-v-sync-restore-toolbar-7";
+const CACHE_NAME = "time-task-tracker-v-mobile-centered-header-8";
 const APP_SHELL = [
   "./",
   "./index.html",
