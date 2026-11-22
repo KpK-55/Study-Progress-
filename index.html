@@ -1947,6 +1947,31 @@
     .daily-checkbox-dropdown-options input{accent-color:var(--accent);}
     @media(max-width:640px){.daily-task-summary-content{grid-template-columns:1fr;}.daily-task-summary-panel{padding:.7rem;}}
 
+  
+    .daily-task-open-btn{display:inline-flex;align-items:center;gap:.45rem;font-weight:750;white-space:nowrap;}
+    .daily-task-open-btn span{font-size:.7rem;font-weight:800;padding:.12rem .42rem;border-radius:999px;background:var(--bg-hover);color:var(--text-secondary);}
+    .daily-task-modal-backdrop{z-index:1200;align-items:center;justify-content:center;padding:1rem;}
+    .daily-task-modal-card{width:min(900px,96vw);max-width:900px;max-height:min(86vh,900px);display:flex;flex-direction:column;overflow:hidden;}
+    .daily-task-modal-header{flex-shrink:0;align-items:flex-start;}
+    .daily-task-modal-header h3{margin:0;font-size:1.05rem;font-weight:850;}
+    .daily-task-modal-progress{display:flex;justify-content:flex-end;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text-secondary);flex-shrink:0;}
+    .daily-task-summary-list{overflow:auto;overscroll-behavior:contain;padding:.7rem .1rem .2rem;display:flex;flex-direction:column;gap:.85rem;}
+    .daily-task-subject-block{border:1px solid var(--border);border-radius:12px;padding:.75rem .85rem;background:var(--bg-surface);}
+    .daily-task-subject-heading{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding-bottom:.55rem;border-bottom:1px solid var(--border);font-size:.95rem;font-weight:850;}
+    .daily-task-subject-heading span{display:flex;align-items:center;gap:.5rem;}
+    .daily-task-subject-heading i{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .daily-task-subject-heading strong{font-size:.82rem;color:var(--text-secondary);}
+    .daily-task-chapter-row{padding:.65rem .15rem .55rem;border-bottom:1px solid var(--border);}
+    .daily-task-chapter-row:last-child{border-bottom:0;padding-bottom:.1rem;}
+    .daily-task-chapter-name{font-size:.9rem;font-weight:800;line-height:1.35;margin-bottom:.55rem;overflow-wrap:anywhere;}
+    .daily-task-checkboxes{display:flex;flex-wrap:wrap;gap:.45rem .6rem;}
+    .daily-task-check{display:inline-flex;align-items:center;gap:.4rem;min-height:34px;padding:.28rem .55rem;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-size:.82rem;color:var(--text-primary);}
+    .daily-task-check input{width:17px;height:17px;accent-color:var(--accent);margin:0;flex-shrink:0;}
+    .daily-task-check.is-done{color:var(--text-secondary);background:var(--bg-hover);}
+    .daily-task-check.is-done span{text-decoration:line-through;text-decoration-thickness:1px;}
+    .daily-task-summary-empty{font-size:.85rem;color:var(--text-muted);padding:1rem .5rem;}
+    @media(max-width:640px){.daily-task-modal-backdrop{padding:.45rem;}.daily-task-modal-card{width:100%;max-height:92vh;padding:.8rem;}.daily-task-subject-block{padding:.65rem;}.daily-task-checkboxes{gap:.35rem;}.daily-task-check{font-size:.78rem;}}
+
   </style>
   <script type="module" src="./firebase-client.js"></script>
 </head>
@@ -2038,6 +2063,7 @@
             <input type="date" id="activeDatePicker" class="input-field" style="min-height: 26px; padding: 0.15rem 0.4rem;" />
             <span class="date-error-badge" id="trackingDateErrorMark" title="Tracking Date does not match today's local date">⚠️ Not Today</span>
           </label>
+          <button type="button" class="btn daily-task-open-btn" id="openDailyTaskSummaryBtn">☑ Daily Tasks <span id="dailyTaskSummaryCount">0/0</span></button>
           <button type="button" class="btn" id="openChallengeBoardBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">Challenge Board</button>
           <button type="button" class="btn" id="openExamPrepBtn" style="border-radius: 999px; border-color: var(--text-primary); padding: 0.42rem 1.15rem; font-weight: 700;">Exam Prep</button>
         </div>
@@ -2052,16 +2078,20 @@
         </div>
       </div>
 
-      <section id="dailyTaskSummaryPanel" class="daily-task-summary-panel">
-        <div class="daily-task-summary-head">
-          <div><strong>☑ Daily checklist summary</strong><div class="daily-task-summary-subtitle" id="dailyTaskSummarySubtitle">Tasks assigned for the selected date</div></div>
-          <span class="daily-task-summary-count" id="dailyTaskSummaryCount">0 tasks</span>
-        </div>
-        <div id="dailyTaskSummaryContent" class="daily-task-summary-content"></div>
-      </section>
       <div class="subject-gallery-row" id="subjectGalleryRow"></div>
     </section>
 
+
+    <div class="modal-backdrop hidden daily-task-modal-backdrop" id="dailyTaskSummaryModal">
+      <div class="modal-card daily-task-modal-card" role="dialog" aria-modal="true" aria-labelledby="dailyTaskSummaryTitle">
+        <div class="modal-header daily-task-modal-header">
+          <div><h3 id="dailyTaskSummaryTitle">☑ Daily Task Summary</h3><div class="daily-task-summary-subtitle" id="dailyTaskSummarySubtitle">Tasks assigned for the selected date</div></div>
+          <button type="button" class="btn btn-icon" id="closeDailyTaskSummaryBtn" aria-label="Close daily task summary">✕</button>
+        </div>
+        <div class="daily-task-modal-progress"><strong id="dailyTaskSummaryProgress">0/0 completed</strong></div>
+        <div id="dailyTaskSummaryContent" class="daily-task-summary-list"></div>
+      </div>
+    </div>
 
     <section id="revisionScheduleView" class="hidden-view">
       <div class="revision-screen-header">
@@ -3373,22 +3403,39 @@
             chapterGroups.push({chapter,tasks:tasks.map(col=>({name:col.name,checked:Boolean(row.cells[col.id])}))});
           });
           if(!chapterGroups.length)return "";
-          return `<section class="daily-task-summary-subject">
-            <div class="daily-task-summary-subject-title"><span style="color:${escapeHtml(db.color||"var(--accent)")}">● ${escapeHtml(db.displayName||key)}</span><span>${chapterGroups.reduce((n,g)=>n+g.tasks.filter(t=>t.checked).length,0)}/${chapterGroups.reduce((n,g)=>n+g.tasks.length,0)}</span></div>
-            ${chapterGroups.map(group=>`<div class="daily-task-summary-chapter">${escapeHtml(group.chapter)}</div>${group.tasks.map(task=>`<label class="daily-task-summary-task"><input type="checkbox" disabled ${task.checked?"checked":""}><span>${escapeHtml(task.name)}</span></label>`).join("")}`).join("")}
+          const subjectDone=chapterGroups.reduce((n,g)=>n+g.tasks.filter(t=>t.checked).length,0);
+          const subjectTotal=chapterGroups.reduce((n,g)=>n+g.tasks.length,0);
+          return `<section class="daily-task-subject-block">
+            <div class="daily-task-subject-heading">
+              <span><i style="background:${escapeHtml(db.color||"var(--accent)")}"></i>${escapeHtml(db.displayName||key)}</span>
+              <strong>${subjectDone}/${subjectTotal}</strong>
+            </div>
+            ${chapterGroups.map(group=>`
+              <div class="daily-task-chapter-row">
+                <div class="daily-task-chapter-name">${escapeHtml(group.chapter)}</div>
+                <div class="daily-task-checkboxes">${group.tasks.map(task=>`<label class="daily-task-check ${task.checked?"is-done":""}"><input type="checkbox" disabled ${task.checked?"checked":""}><span>${escapeHtml(task.name)}</span></label>`).join("")}</div>
+              </div>`).join("")}
           </section>`;
         }).filter(Boolean);
         return {html:groups.join("")||'<div class="daily-task-summary-empty">No tasks assigned for this date yet. Assign tasks in a subject Daily Checklist, or check scheduled revisions.</div>',total,done,subjects:groups.length};
       }
       function renderDailyTaskSummary(dateStr=trackedDateStr||getLocalTodayStr()) {
         const panel=document.getElementById("dailyTaskSummaryContent");
-        if(!panel)return;
         const summary=buildDailyTaskSummaryHtml(dateStr);
-        panel.innerHTML=summary.html;
+        if(panel)panel.innerHTML=summary.html;
         const subtitle=document.getElementById("dailyTaskSummarySubtitle");
         const count=document.getElementById("dailyTaskSummaryCount");
+        const progress=document.getElementById("dailyTaskSummaryProgress");
         if(subtitle)subtitle.textContent=`Assigned tasks for ${formatShortDate(dateStr)} · ${summary.subjects} subject(s)`;
-        if(count)count.textContent=`${summary.done}/${summary.total} completed`;
+        if(count)count.textContent=`${summary.done}/${summary.total}`;
+        if(progress)progress.textContent=`${summary.done}/${summary.total} completed`;
+      }
+      function openDailyTaskSummary() {
+        renderDailyTaskSummary(trackedDateStr||getLocalTodayStr());
+        document.getElementById("dailyTaskSummaryModal")?.classList.remove("hidden");
+      }
+      function closeDailyTaskSummary() {
+        document.getElementById("dailyTaskSummaryModal")?.classList.add("hidden");
       }
 
       function renderGalleryCards() {
@@ -4942,6 +4989,10 @@
         });
         document.getElementById("focusTimerDiscardBtn")?.addEventListener("click", () => { if (confirm("Discard this timer session without saving?")) discardActiveTimer(); });
         document.getElementById("focusTimerCloseBtn")?.addEventListener("click", () => { document.getElementById("focusTimerOverlay")?.classList.add("hidden-view"); });
+        document.getElementById("openDailyTaskSummaryBtn")?.addEventListener("click", openDailyTaskSummary);
+        document.getElementById("closeDailyTaskSummaryBtn")?.addEventListener("click", closeDailyTaskSummary);
+        document.getElementById("dailyTaskSummaryModal")?.addEventListener("click", (e) => { if(e.target.id==="dailyTaskSummaryModal") closeDailyTaskSummary(); });
+        document.addEventListener("keydown", (e) => { if(e.key==="Escape") closeDailyTaskSummary(); });
         document.getElementById("openManualTimeBtn")?.addEventListener("click", openManualTimeEntry);
         document.getElementById("manualTimeSubject")?.addEventListener("change", renderManualTimeChapters);
         document.getElementById("manualTimeChapterOptions")?.addEventListener("change", () => { updateManualTimeChapterSummary(); renderManualTimeTasks(); });
